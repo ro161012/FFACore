@@ -16,6 +16,7 @@ import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -101,7 +102,8 @@ public final class ConfigMenu {
         final ActionButton close = closeButton();
 
         final Dialog dialog = Dialog.create(builder -> builder.empty()
-                .base(DialogBase.builder(Component.text("FFACore Configuration", NamedTextColor.AQUA))
+                .base(DialogBase.builder(Component.text("FFACore Configuration",
+                        NamedTextColor.WHITE, TextDecoration.BOLD))
                         .body(List.of(DialogBody.plainMessage(Component.text(
                                 "Edit any value below - changes apply in realtime when you hit Save & Apply.",
                                 NamedTextColor.GRAY), BODY_WIDTH)))
@@ -390,7 +392,7 @@ public final class ConfigMenu {
 
     private ActionButton button(final String text, final Component tooltip,
                                 final DialogAction action) {
-        return ActionButton.builder(Component.text(text, NamedTextColor.AQUA))
+        return ActionButton.builder(Component.text(text, NamedTextColor.WHITE))
                 .tooltip(tooltip)
                 .width(BUTTON_WIDTH)
                 .action(action)

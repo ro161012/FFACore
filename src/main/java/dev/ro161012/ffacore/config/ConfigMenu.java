@@ -25,29 +25,31 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * In-game configuration menus built on the Paper 1.21.6+ Dialog API.
+ * In-game configuration menu built on the Paper 1.21.6+ Dialog API.
  *
- * <p>Admins open the menu with {@code /ffa config}, pick a section, edit the
- * inputs and hit "Save &amp; Apply". The response view is written straight
- * back into {@code config.yml}, saved, and pushed to every subsystem through
- * {@link FFACore#applyConfig()} so the change takes effect immediately.
+ * <p>Admins open the menu with {@code /ffa config}: a single dialog lists
+ * every editable option at once, prefilled with the current values. Hitting
+ * "Save &amp; Apply" writes the response straight back into {@code config.yml},
+ * saves it, and pushes the change through {@link FFACore#applyConfig()} so it
+ * takes effect in realtime without a restart.
  */
 public final class ConfigMenu {
 
     private static final int BUTTON_WIDTH = 200;
     private static final int BODY_WIDTH = 400;
+    private static final int MAX_STRING_LENGTH = 256;
 
     private final FFACore plugin;
-    private final List<Section> sections;
+    private final List<ConfigOption> options;
 
     /**
-     * Creates the config menu and defines the editable sections.
+     * Creates the config menu and defines the editable options.
      *
      * @param plugin owning FFACore plugin
      */
     public ConfigMenu(final FFACore plugin) {
         this.plugin = plugin;
-        this.sections = defineSections();
+        this.options = defineOptions();
     }
 
     // ------------------------------------------------------------------
@@ -55,7 +57,7 @@ public final class ConfigMenu {
     // ------------------------------------------------------------------
 
     /**
-     * Opens the top-level configuration dialog for a player.
+     * Opens the configuration dialog for a player.
      *
      * @param player the player to show the menu to
      */
@@ -64,85 +66,164 @@ public final class ConfigMenu {
             Messages.raw(player, "&cYou don't have permission for that.");
             return;
         }
-
-        final List<ActionButton> buttons = new ArrayList<>();
-        for (final Section section : sections) {
-            buttons.add(button(section.title(), tooltip(section.description()),
-                    click((view, audience) -> {
-                        if (audience instanceof Player target) {
-                            onMainThread(() -> openSection(target, section));
-                        }
-                    })));
+        try {
+            openConfigDialog(player);
+        } catch (final RuntimeException ex) {
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to build the config dialog", ex);
+            Messages.raw(player, "&cFailed to open the config dialog: &f" + ex.getMessage());
         }
-        buttons.add(button("Reload from disk",
-                tooltip("Discard unsaved edits and re-read config.yml."),
-                click((view, audience) -> {
-                    if (audience instanceof Player target) {
-                        onMainThread(() -> {
-                            plugin.reloadConfig();
-                            plugin.applyConfig();
-                            confirmReloaded(target);
-                        });
-                    }
-                })));
-
-        final Dialog dialog = Dialog.create(builder -> builder.empty()
-                .base(DialogBase.builder(Component.text("FFACore Configuration", NamedTextColor.AQUA))
-                        .body(List.of(DialogBody.plainMessage(Component.text(
-                                "Pick a section to configure. Changes are applied in realtime.",
-                                NamedTextColor.GRAY), BODY_WIDTH)))
-                        .afterAction(DialogAfterAction.CLOSE)
-                        .canCloseWithEscape(true)
-                        .build())
-                .type(DialogType.multiAction(buttons, closeButton(), 1)));
-
-        player.showDialog(dialog);
     }
 
     // ------------------------------------------------------------------
-    //  Section dialogs
+    //  The single configuration dialog
     // ------------------------------------------------------------------
 
-    private void openSection(final Player player, final Section section) {
+    private void openConfigDialog(final Player player) {
         final List<DialogInput> inputs = new ArrayList<>();
-        for (final ConfigOption option : section.options()) {
+        for (final ConfigOption option : options) {
             inputs.add(buildInput(option));
         }
 
         final ActionButton save = button("Save & Apply",
-                tooltip("Write the new values to config.yml and apply them now."),
+                tooltip("Write every new value to config.yml and apply it right now."),
                 click((view, audience) -> {
                     if (audience instanceof Player target) {
-                        onMainThread(() -> applySection(target, section, view));
+                        onMainThread(() -> safeApply(target, view));
                     }
                 }));
-        final ActionButton discard = button("Discard",
-                tooltip("Close without saving."),
+        final ActionButton reload = button("Reload from disk",
+                tooltip("Discard unsaved edits and re-read config.yml."),
                 click((view, audience) -> {
                     if (audience instanceof Player target) {
-                        target.closeDialog();
+                        onMainThread(() -> safeReload(target));
                     }
                 }));
+        final ActionButton close = closeButton();
 
         final Dialog dialog = Dialog.create(builder -> builder.empty()
-                .base(DialogBase.builder(Component.text(section.title(), NamedTextColor.AQUA))
-                        .body(List.of(DialogBody.plainMessage(
-                                Component.text(section.description(), NamedTextColor.GRAY),
-                                BODY_WIDTH)))
+                .base(DialogBase.builder(Component.text("FFACore Configuration", NamedTextColor.AQUA))
+                        .body(List.of(DialogBody.plainMessage(Component.text(
+                                "Edit any value below - changes apply in realtime when you hit Save & Apply.",
+                                NamedTextColor.GRAY), BODY_WIDTH)))
                         .inputs(inputs)
                         .afterAction(DialogAfterAction.CLOSE)
                         .canCloseWithEscape(true)
                         .build())
-                .type(DialogType.multiAction(List.of(save, discard), backButton(), 2)));
+                .type(DialogType.multiAction(List.of(save, reload, close), close, 1)));
 
         player.showDialog(dialog);
     }
 
-    private void confirmSaved(final Player player, final Section section) {
+    // ------------------------------------------------------------------
+    //  Inputs
+    // ------------------------------------------------------------------
+
+    private DialogInput buildInput(final ConfigOption option) {
+        final Object current = option.currentValue(plugin.getConfig());
+        return switch (option.kind()) {
+            case BOOLEAN -> DialogInput.bool(option.key(), label(option))
+                    .initial((Boolean) current)
+                    .onTrue("Enabled")
+                    .onFalse("Disabled")
+                    .build();
+            case INTEGER -> DialogInput.numberRange(option.key(), label(option),
+                    option.min(), option.max())
+                    .initial(clamp(((Number) current).floatValue(), option.min(), option.max()))
+                    .step(stepFor(option))
+                    .width(BODY_WIDTH)
+                    .build();
+            case STRING -> {
+                final String value = (String) current;
+                yield DialogInput.text(option.key(), label(option))
+                        .initial(value.length() > MAX_STRING_LENGTH
+                                ? value.substring(0, MAX_STRING_LENGTH) : value)
+                        .maxLength(MAX_STRING_LENGTH)
+                        .width(BODY_WIDTH)
+                        .build();
+            }
+            case ENUM -> {
+                final String selected = ((String) current).toUpperCase(Locale.ROOT);
+                final List<SingleOptionDialogInput.OptionEntry> entries = new ArrayList<>();
+                for (final String choice : option.choices()) {
+                    entries.add(SingleOptionDialogInput.OptionEntry.create(choice,
+                            label(choice), choice.equals(selected)));
+                }
+                yield DialogInput.singleOption(option.key(), label(option), entries)
+                        .width(BODY_WIDTH)
+                        .build();
+            }
+        };
+    }
+
+    /**
+     * Picks a sensible slider step so the whole range stays navigable.
+     *
+     * @param option the integer option
+     * @return the step
+     */
+    private float stepFor(final ConfigOption option) {
+        final float span = option.max() - option.min();
+        if (span <= 10f) {
+            return 1f;
+        }
+        if (span <= 100f) {
+            return 5f;
+        }
+        if (span <= 1000f) {
+            return 25f;
+        }
+        return 100f;
+    }
+
+    private static float clamp(final float value, final float min, final float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    // ------------------------------------------------------------------
+    //  Saving and reloading
+    // ------------------------------------------------------------------
+
+    /**
+     * Applies the dialog response, telling the player what happened - even
+     * when something goes wrong, so failures are never silent.
+     *
+     * @param player the player who clicked
+     * @param view   the dialog response view
+     */
+    private void safeApply(final Player player, final DialogResponseView view) {
+        try {
+            final FileConfiguration config = plugin.getConfig();
+            for (final ConfigOption option : options) {
+                final Object value = readValue(option, view);
+                if (value != null) {
+                    config.set(option.path(), value);
+                }
+            }
+            plugin.saveConfig();
+            plugin.applyConfig();
+            confirmSaved(player);
+        } catch (final RuntimeException ex) {
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to apply config changes", ex);
+            Messages.raw(player, "&cFailed to apply changes: &f" + ex.getMessage());
+        }
+    }
+
+    private void safeReload(final Player player) {
+        try {
+            plugin.reloadConfig();
+            plugin.applyConfig();
+            confirmReloaded(player);
+        } catch (final RuntimeException ex) {
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to reload config", ex);
+            Messages.raw(player, "&cFailed to reload config: &f" + ex.getMessage());
+        }
+    }
+
+    private void confirmSaved(final Player player) {
         final Dialog dialog = Dialog.create(builder -> builder.empty()
                 .base(DialogBase.builder(Component.text("Saved", NamedTextColor.GREEN))
                         .body(List.of(DialogBody.plainMessage(Component.text(
-                                section.title() + " updated and applied in realtime.",
+                                "Configuration updated and applied in realtime.",
                                 NamedTextColor.GRAY), BODY_WIDTH)))
                         .afterAction(DialogAfterAction.CLOSE)
                         .canCloseWithEscape(true)
@@ -164,61 +245,6 @@ public final class ConfigMenu {
                 .type(DialogType.notice(backToMenuButton())));
 
         player.showDialog(dialog);
-    }
-
-    // ------------------------------------------------------------------
-    //  Inputs
-    // ------------------------------------------------------------------
-
-    private DialogInput buildInput(final ConfigOption option) {
-        final Object current = option.currentValue(plugin.getConfig());
-        return switch (option.kind()) {
-            case BOOLEAN -> DialogInput.bool(option.key(), label(option))
-                    .initial((Boolean) current)
-                    .onTrue("Enabled")
-                    .onFalse("Disabled")
-                    .build();
-            case INTEGER -> DialogInput.numberRange(option.key(), label(option),
-                    option.min(), option.max())
-                    .initial((float) ((Number) current).intValue())
-                    .step(1f)
-                    .width(BODY_WIDTH)
-                    .build();
-            case STRING -> DialogInput.text(option.key(), label(option))
-                    .initial((String) current)
-                    .maxLength(128)
-                    .width(BODY_WIDTH)
-                    .build();
-            case ENUM -> {
-                final String selected = ((String) current).toUpperCase(Locale.ROOT);
-                final List<SingleOptionDialogInput.OptionEntry> entries = new ArrayList<>();
-                for (final String choice : option.choices()) {
-                    entries.add(SingleOptionDialogInput.OptionEntry.create(choice,
-                            label(choice), choice.equals(selected)));
-                }
-                yield DialogInput.singleOption(option.key(), label(option), entries)
-                        .width(BODY_WIDTH)
-                        .build();
-            }
-        };
-    }
-
-    // ------------------------------------------------------------------
-    //  Saving
-    // ------------------------------------------------------------------
-
-    private void applySection(final Player player, final Section section,
-                              final DialogResponseView view) {
-        final FileConfiguration config = plugin.getConfig();
-        for (final ConfigOption option : section.options()) {
-            final Object value = readValue(option, view);
-            if (value != null) {
-                config.set(option.path(), value);
-            }
-        }
-        plugin.saveConfig();
-        plugin.applyConfig();
-        confirmSaved(player, section);
     }
 
     /**
@@ -249,137 +275,113 @@ public final class ConfigMenu {
     }
 
     // ------------------------------------------------------------------
-    //  Sections
+    //  Options
     // ------------------------------------------------------------------
 
-    private List<Section> defineSections() {
+    private List<ConfigOption> defineOptions() {
         return List.of(
-                new Section("general", "General",
-                        "Plugin prefix, arena GUI layout and schedule checks.",
-                        List.of(
-                                ConfigOption.string("general.prefix", "Chat prefix",
-                                        "Prefix used on FFACore chat messages.",
-                                        "&8[&bFFACore&8]&r"),
-                                ConfigOption.bool("general.auto-load-on-startup",
-                                        "Load arenas on startup",
-                                        "Load saved arenas when the server starts.", true),
-                                ConfigOption.integer("schedule.check-interval-seconds",
-                                        "Schedule check interval",
-                                        "How often scheduled regenerations are checked, in seconds.",
-                                        1, 60, 1),
-                                ConfigOption.integer("gui.rows", "Arena GUI rows",
-                                        "Height of the arena management GUI (1-6 rows).",
-                                        1, 6, 6),
-                                ConfigOption.string("gui.title", "Arena GUI title",
-                                        "Title of the arena management GUI.",
-                                        "&8Arena Management")
-                        )),
-                new Section("regeneration", "Regeneration",
-                        "How arenas restore their blocks after a fight.",
-                        List.of(
-                                ConfigOption.enumOption("regeneration.default-mode", "Default mode",
-                                        "Restoration algorithm used for new arenas.",
-                                        List.of("STANDARD", "PHASED", "SELECTIVE", "WAVE", "WORLD_EDIT"),
-                                        "STANDARD"),
-                                ConfigOption.integer("regeneration.max-concurrent", "Max concurrent",
-                                        "How many arenas may regenerate at the same time.",
-                                        1, 16, 2),
-                                ConfigOption.integer("regeneration.tick-budget", "Tick budget",
-                                        "Max milliseconds of block placement per tick.",
-                                        1, 100, 15),
-                                ConfigOption.integer("regeneration.batch-size", "Batch size",
-                                        "Blocks placed per tick in STANDARD/SELECTIVE modes.",
-                                        1, 100000, 1000),
-                                ConfigOption.bool("regeneration.teleport-players-to-spawn",
-                                        "Teleport players out",
-                                        "Teleport players inside an arena to its spawn before restoring.",
-                                        true),
-                                ConfigOption.integer("regeneration.phased.blocks-per-second",
-                                        "Phased rate",
-                                        "Blocks restored per second in PHASED mode.",
-                                        1, 1000000, 50000),
-                                ConfigOption.integer("regeneration.phased.delay-between-phases",
-                                        "Phased delay",
-                                        "Ticks between PHASED mode phases.", 0, 60, 2),
-                                ConfigOption.integer("regeneration.wave.wave-speed", "Wave speed",
-                                        "Blocks restored per second in WAVE mode.",
-                                        1, 1000000, 10000),
-                                ConfigOption.bool("regeneration.wave.reverse-order", "Reverse wave",
-                                        "Restore WAVE mode from the far side instead.", false)
-                        )),
-                new Section("killtoken", "Kill Token",
-                        "The PvP currency: drops, cooldowns and killstreaks.",
-                        List.of(
-                                ConfigOption.integer("tokens-per-kill", "Tokens per kill",
-                                        "Tokens dropped per qualifying kill before the streak multiplier.",
-                                        1, 64, 1),
-                                ConfigOption.integer("cooldown-seconds", "Pair cooldown",
-                                        "Seconds a killer-victim pair waits before another token can drop.",
-                                        0, 3600, 60),
-                                ConfigOption.bool("notify-on-cooldown", "Notify on cooldown",
-                                        "Warn the killer when the pair cooldown suppresses a drop.",
-                                        true),
-                                ConfigOption.string("kill-message", "Kill message",
-                                        "Message sent to the killer when a token drops. Empty disables it.",
-                                        "&4&l+1 &cKill Token"),
-                                ConfigOption.bool("killstreak.enabled", "Killstreaks",
-                                        "Enable killstreak announcements and token multipliers.", true),
-                                ConfigOption.integer("killstreak.announcement-minimum",
-                                        "Announce at streak",
-                                        "Streak length from which announcements are broadcast.",
-                                        1, 50, 2),
-                                ConfigOption.integer("killstreak.reward-start", "Multiplier starts at",
-                                        "Streak where the token multiplier kicks in.", 1, 50, 3),
-                                ConfigOption.integer("killstreak.reward-step", "Multiplier step",
-                                        "Kills between multiplier increases.", 1, 50, 3),
-                                ConfigOption.integer("killstreak.max-token-multiplier", "Max multiplier",
-                                        "Highest streak token multiplier.", 1, 5, 5)
-                        )),
-                new Section("afk", "AFK Zones",
-                        "AFK Shards earned by idle players inside a zone.",
-                        List.of(
-                                ConfigOption.bool("afk.enabled", "AFK rewards",
-                                        "Whether the AFK shard reward loop runs.", true),
-                                ConfigOption.integer("afk.reward-interval-seconds", "Reward interval",
-                                        "How often the reward loop runs, in seconds.", 5, 3600, 30),
-                                ConfigOption.integer("afk.shards-per-interval", "Shards per reward",
-                                        "Shards awarded per reward when the player qualifies.",
-                                        1, 64, 1),
-                                ConfigOption.integer("afk.min-idle-seconds", "Minimum idle time",
-                                        "Seconds a player must be idle before earning shards.",
-                                        0, 3600, 60),
-                                ConfigOption.integer("afk.max-shards-per-hour", "Hourly cap",
-                                        "Hard cap on shards per player per hour. -1 disables it.",
-                                        -1, 10000, 100),
-                                ConfigOption.bool("afk.notify-on-earn", "Notify on earn",
-                                        "Tell the player when they earn shards.", true),
-                                ConfigOption.string("afk.earn-message", "Earn message",
-                                        "Message sent when the player earns shards.",
-                                        "&b+1 &3AFK Shard &7(the deep rewards patience)")
-                        )),
-                new Section("performance", "Storage & Performance",
-                        "Snapshot compression, caching and async I/O.",
-                        List.of(
-                                ConfigOption.bool("performance.use-async-save", "Async snapshot saves",
-                                        "Write block snapshots off the main thread.", true),
-                                ConfigOption.bool("performance.use-async-load", "Async snapshot loads",
-                                        "Read block snapshots off the main thread.", true),
-                                ConfigOption.bool("performance.cache-snapshots", "Cache snapshots",
-                                        "Keep recently used snapshots in memory.", true),
-                                ConfigOption.integer("performance.max-cached-snapshots", "Cache size",
-                                        "Maximum snapshot lists kept in memory before eviction.",
-                                        1, 50, 10),
-                                ConfigOption.bool("performance.compress-snapshots", "Compress snapshots",
-                                        "GZIP-compress snapshots on disk.", true),
-                                ConfigOption.integer("storage.save-interval-minutes", "Auto-save interval",
-                                        "Minutes between automatic arena metadata saves.",
-                                        1, 1440, 30)
-                        ))
+                ConfigOption.string("general.prefix", "Chat prefix",
+                        "Prefix used on FFACore chat messages.",
+                        "&8[&bFFACore&8]&r"),
+                ConfigOption.bool("general.auto-load-on-startup",
+                        "Load arenas on startup",
+                        "Load saved arenas when the server starts.", true),
+                ConfigOption.integer("schedule.check-interval-seconds",
+                        "Schedule check interval",
+                        "How often scheduled regenerations are checked, in seconds.",
+                        1, 60, 1),
+                ConfigOption.integer("gui.rows", "Arena GUI rows",
+                        "Height of the arena management GUI (1-6 rows).",
+                        1, 6, 6),
+                ConfigOption.string("gui.title", "Arena GUI title",
+                        "Title of the arena management GUI.",
+                        "&8Arena Management"),
+                ConfigOption.enumOption("regeneration.default-mode", "Regen default mode",
+                        "Restoration algorithm used for new arenas.",
+                        List.of("STANDARD", "PHASED", "SELECTIVE", "WAVE", "WORLD_EDIT"),
+                        "STANDARD"),
+                ConfigOption.integer("regeneration.max-concurrent", "Regen max concurrent",
+                        "How many arenas may regenerate at the same time.",
+                        1, 16, 2),
+                ConfigOption.integer("regeneration.tick-budget", "Regen tick budget",
+                        "Max milliseconds of block placement per tick.",
+                        1, 100, 15),
+                ConfigOption.integer("regeneration.batch-size", "Regen batch size",
+                        "Blocks placed per tick in STANDARD/SELECTIVE modes.",
+                        1, 100000, 1000),
+                ConfigOption.bool("regeneration.teleport-players-to-spawn",
+                        "Teleport players out",
+                        "Teleport players inside an arena to its spawn before restoring.",
+                        true),
+                ConfigOption.integer("regeneration.phased.blocks-per-second",
+                        "Phased rate",
+                        "Blocks restored per second in PHASED mode.",
+                        1, 1000000, 50000),
+                ConfigOption.integer("regeneration.phased.delay-between-phases",
+                        "Phased delay",
+                        "Ticks between PHASED mode phases.", 0, 60, 2),
+                ConfigOption.integer("regeneration.wave.wave-speed", "Wave speed",
+                        "Blocks restored per second in WAVE mode.",
+                        1, 1000000, 10000),
+                ConfigOption.bool("regeneration.wave.reverse-order", "Reverse wave",
+                        "Restore WAVE mode from the far side instead.", false),
+                ConfigOption.integer("tokens-per-kill", "Tokens per kill",
+                        "Tokens dropped per qualifying kill before the streak multiplier.",
+                        1, 64, 1),
+                ConfigOption.integer("cooldown-seconds", "Pair cooldown",
+                        "Seconds a killer-victim pair waits before another token can drop.",
+                        0, 3600, 60),
+                ConfigOption.bool("notify-on-cooldown", "Notify on cooldown",
+                        "Warn the killer when the pair cooldown suppresses a drop.",
+                        true),
+                ConfigOption.string("kill-message", "Kill message",
+                        "Message sent to the killer when a token drops. Empty disables it.",
+                        "&4&l+1 &cKill Token"),
+                ConfigOption.bool("killstreak.enabled", "Killstreaks",
+                        "Enable killstreak announcements and token multipliers.", true),
+                ConfigOption.integer("killstreak.announcement-minimum",
+                        "Announce at streak",
+                        "Streak length from which announcements are broadcast.",
+                        1, 50, 2),
+                ConfigOption.integer("killstreak.reward-start", "Multiplier starts at",
+                        "Streak where the token multiplier kicks in.", 1, 50, 3),
+                ConfigOption.integer("killstreak.reward-step", "Multiplier step",
+                        "Kills between multiplier increases.", 1, 50, 3),
+                ConfigOption.integer("killstreak.max-token-multiplier", "Max multiplier",
+                        "Highest streak token multiplier.", 1, 5, 5),
+                ConfigOption.bool("afk.enabled", "AFK rewards",
+                        "Whether the AFK shard reward loop runs.", true),
+                ConfigOption.integer("afk.reward-interval-seconds", "AFK reward interval",
+                        "How often the reward loop runs, in seconds.", 5, 3600, 30),
+                ConfigOption.integer("afk.shards-per-interval", "AFK shards per reward",
+                        "Shards awarded per reward when the player qualifies.",
+                        1, 64, 1),
+                ConfigOption.integer("afk.min-idle-seconds", "AFK minimum idle",
+                        "Seconds a player must be idle before earning shards.",
+                        0, 3600, 60),
+                ConfigOption.integer("afk.max-shards-per-hour", "AFK hourly cap",
+                        "Hard cap on shards per player per hour. -1 disables it.",
+                        -1, 10000, 100),
+                ConfigOption.bool("afk.notify-on-earn", "AFK notify on earn",
+                        "Tell the player when they earn shards.", true),
+                ConfigOption.string("afk.earn-message", "AFK earn message",
+                        "Message sent when the player earns shards.",
+                        "&b+1 &3AFK Shard &7(the deep rewards patience)"),
+                ConfigOption.bool("performance.use-async-save", "Async snapshot saves",
+                        "Write block snapshots off the main thread.", true),
+                ConfigOption.bool("performance.use-async-load", "Async snapshot loads",
+                        "Read block snapshots off the main thread.", true),
+                ConfigOption.bool("performance.cache-snapshots", "Cache snapshots",
+                        "Keep recently used snapshots in memory.", true),
+                ConfigOption.integer("performance.max-cached-snapshots", "Snapshot cache size",
+                        "Maximum snapshot lists kept in memory before eviction.",
+                        1, 50, 10),
+                ConfigOption.bool("performance.compress-snapshots", "Compress snapshots",
+                        "GZIP-compress snapshots on disk.", true),
+                ConfigOption.integer("storage.save-interval-minutes", "Auto-save interval",
+                        "Minutes between automatic arena metadata saves.",
+                        1, 1440, 30)
         );
-    }
-
-    private record Section(String id, String title, String description,
-                           List<ConfigOption> options) {
     }
 
     // ------------------------------------------------------------------
@@ -412,15 +414,6 @@ public final class ConfigMenu {
                 click((view, audience) -> {
                     if (audience instanceof Player target) {
                         target.closeDialog();
-                    }
-                }));
-    }
-
-    private ActionButton backButton() {
-        return button("Back", tooltip("Return to the configuration menu."),
-                click((view, audience) -> {
-                    if (audience instanceof Player target) {
-                        openMainMenu(target);
                     }
                 }));
     }

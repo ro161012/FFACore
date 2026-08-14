@@ -3,6 +3,7 @@ package dev.ro161012.ffacore.killtoken;
 import java.util.List;
 import java.util.Locale;
 
+import dev.ro161012.ffacore.util.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -93,6 +94,8 @@ public final class CompressedBlockManager {
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
             stack.setItemMeta(meta);
         }
+        // Same ember gradient background as the Kill Token.
+        ItemUtils.applyTooltipStyle(stack, ItemUtils.EMBER_TOOLTIP);
         return stack;
     }
 

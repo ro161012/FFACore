@@ -7,6 +7,7 @@ import dev.ro161012.ffacore.arena.ArenaListener;
 import dev.ro161012.ffacore.arena.ArenaManager;
 import dev.ro161012.ffacore.command.ArenaCommand;
 import dev.ro161012.ffacore.command.FfaCommand;
+import dev.ro161012.ffacore.config.ConfigMenu;
 import dev.ro161012.ffacore.gui.ArenaMenu;
 import dev.ro161012.ffacore.hooks.WorldEditHook;
 import dev.ro161012.ffacore.killtoken.CompressedBlockListener;
@@ -54,6 +55,7 @@ public final class FFACore extends JavaPlugin {
     private KillTokenManager killTokenManager;
     private AfkManager afkManager;
 
+    private ConfigMenu configMenu;
     private Messages messages;
 
     @Override
@@ -81,6 +83,7 @@ public final class FFACore extends JavaPlugin {
 
         killTokenManager = new KillTokenManager(this);
         afkManager = new AfkManager(this);
+        configMenu = new ConfigMenu(this);
 
         registerArena();
         registerKillToken();
@@ -136,6 +139,21 @@ public final class FFACore extends JavaPlugin {
             command.setExecutor(executor);
             command.setTabCompleter(executor);
         }
+    }
+
+    /**
+     * Pushes the current in-memory configuration to every subsystem so edits
+     * made through the dialog config menu (or a reload) take effect without
+     * a server restart.
+     */
+    public void applyConfig() {
+        messages.reload();
+        killTokenManager.applyConfig();
+        afkManager.applyConfig();
+        regenerationManager.applyConfig();
+        scheduleManager.applyConfig();
+        arenaStorage.applyConfig();
+        getLogger().info("Configuration applied to all FFACore subsystems.");
     }
 
     private void registerExpansions() {
@@ -210,6 +228,10 @@ public final class FFACore extends JavaPlugin {
 
     public AfkManager getAfkManager() {
         return afkManager;
+    }
+
+    public ConfigMenu getConfigMenu() {
+        return configMenu;
     }
 
     public Messages getMessages() {

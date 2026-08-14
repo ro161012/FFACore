@@ -15,11 +15,23 @@ public class ScheduleManager {
     private final FFACore plugin;
     private final Map<UUID, ScheduledRegen> schedules = new ConcurrentHashMap<>();
     private BukkitTask checkerTask;
-    private final int checkInterval;
+    private int checkInterval;
 
     public ScheduleManager(FFACore plugin) {
         this.plugin = plugin;
-        this.checkInterval = plugin.getConfig().getInt("schedule.check-interval-seconds", 1);
+        applyConfig();
+    }
+
+    /**
+     * Re-reads the check interval from {@code config.yml} and restarts the
+     * checker so config menu changes apply immediately.
+     */
+    public void applyConfig() {
+        this.checkInterval = Math.max(1,
+                plugin.getConfig().getInt("schedule.check-interval-seconds", 1));
+        if (checkerTask != null) {
+            checkerTask.cancel();
+        }
         startChecker();
     }
 

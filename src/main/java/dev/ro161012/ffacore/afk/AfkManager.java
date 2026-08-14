@@ -43,13 +43,13 @@ public final class AfkManager {
     private final Map<String, AfkZone> zones = new ConcurrentHashMap<>();
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    private final boolean enabled;
-    private final long rewardIntervalSeconds;
-    private final int shardsPerInterval;
-    private final long minIdleSeconds;
-    private final int maxShardsPerHour;
-    private final boolean notifyOnEarn;
-    private final String earnMessage;
+    private boolean enabled;
+    private long rewardIntervalSeconds;
+    private int shardsPerInterval;
+    private long minIdleSeconds;
+    private int maxShardsPerHour;
+    private boolean notifyOnEarn;
+    private String earnMessage;
 
     private BukkitTask rewardTask;
 
@@ -60,17 +60,7 @@ public final class AfkManager {
      */
     public AfkManager(final FFACore plugin) {
         this.plugin = plugin;
-        this.enabled = plugin.getConfig().getBoolean("afk.enabled", true);
-        this.rewardIntervalSeconds = Math.max(5,
-                plugin.getConfig().getLong("afk.reward-interval-seconds", 30L));
-        this.shardsPerInterval = Math.max(1,
-                plugin.getConfig().getInt("afk.shards-per-interval", 1));
-        this.minIdleSeconds = Math.max(0,
-                plugin.getConfig().getLong("afk.min-idle-seconds", 60L));
-        this.maxShardsPerHour = plugin.getConfig().getInt("afk.max-shards-per-hour", 100);
-        this.notifyOnEarn = plugin.getConfig().getBoolean("afk.notify-on-earn", true);
-        this.earnMessage = Messages.color(plugin.getConfig().getString(
-                "afk.earn-message", "&b+1 &3AFK Shard &7(the deep rewards patience)"));
+        refreshConfig();
 
         loadZones();
         if (enabled) {
@@ -403,6 +393,35 @@ public final class AfkManager {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * Re-reads the AFK reward settings from {@code config.yml} and restarts
+     * the reward loop so menu changes apply immediately.
+     */
+    public void applyConfig() {
+        refreshConfig();
+        shutdown();
+        if (enabled) {
+            startRewardTask();
+        }
+    }
+
+    /**
+     * Caches every configuration value used by the reward loop.
+     */
+    private void refreshConfig() {
+        this.enabled = plugin.getConfig().getBoolean("afk.enabled", true);
+        this.rewardIntervalSeconds = Math.max(5,
+                plugin.getConfig().getLong("afk.reward-interval-seconds", 30L));
+        this.shardsPerInterval = Math.max(1,
+                plugin.getConfig().getInt("afk.shards-per-interval", 1));
+        this.minIdleSeconds = Math.max(0,
+                plugin.getConfig().getLong("afk.min-idle-seconds", 60L));
+        this.maxShardsPerHour = plugin.getConfig().getInt("afk.max-shards-per-hour", 100);
+        this.notifyOnEarn = plugin.getConfig().getBoolean("afk.notify-on-earn", true);
+        this.earnMessage = Messages.color(plugin.getConfig().getString(
+                "afk.earn-message", "&b+1 &3AFK Shard &7(the deep rewards patience)"));
     }
 
     /**

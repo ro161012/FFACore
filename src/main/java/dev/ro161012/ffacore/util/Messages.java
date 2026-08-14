@@ -10,10 +10,18 @@ import org.bukkit.entity.Player;
 public class Messages {
 
     private final FFACore plugin;
-    private final String prefix;
+    private String prefix;
 
     public Messages(FFACore plugin) {
         this.plugin = plugin;
+        reload();
+    }
+
+    /**
+     * Re-reads the chat prefix from {@code config.yml} so prefix changes made
+     * through the config menu apply immediately.
+     */
+    public void reload() {
         this.prefix = ChatColor.translateAlternateColorCodes('&',
                 plugin.getConfig().getString("general.prefix", "&8[&bFFACore&8]&r"));
     }

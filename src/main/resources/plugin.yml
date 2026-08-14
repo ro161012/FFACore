@@ -10,8 +10,8 @@ softdepend: [PlaceholderAPI, WorldEdit]
 
 commands:
   ffa:
-    description: FFACore overview and reload.
-    usage: /ffa [reload]
+    description: FFACore overview, in-game config menu and reload.
+    usage: /ffa [config|reload]
   arena:
     description: Arena regeneration management.
     aliases: [ar]
@@ -31,6 +31,11 @@ permissions:
       ffacore.arena.admin: true
       ffacore.killtoken.admin: true
       ffacore.afk.admin: true
+      ffacore.config: true
+
+  ffacore.config:
+    description: Open the in-game config menu and apply changes in realtime.
+    default: op
 
   # ---- Arena ----
   ffacore.arena.use:

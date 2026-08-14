@@ -23,12 +23,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RegenerationManager {
 
     private final FFACore plugin;
-    private final int maxConcurrent;
-    private final int tickBudget;
-    private final int defaultBatchSize;
-    private final int phasedBlocksPerSecond;
-    private final int phasedDelay;
-    private final int waveSpeed;
+    private int maxConcurrent;
+    private int tickBudget;
+    private int defaultBatchSize;
+    private int phasedBlocksPerSecond;
+    private int phasedDelay;
+    private int waveSpeed;
 
     private final Map<UUID, RegenerationTask> activeRegenerations = new ConcurrentHashMap<>();
     private final Queue<PendingRegen> queue = new ConcurrentLinkedQueue<>();
@@ -37,15 +37,29 @@ public class RegenerationManager {
 
     public RegenerationManager(FFACore plugin) {
         this.plugin = plugin;
-        this.maxConcurrent = plugin.getConfig().getInt("regeneration.max-concurrent", 2);
-        this.tickBudget = plugin.getConfig().getInt("regeneration.tick-budget", 15);
-        this.defaultBatchSize = plugin.getConfig().getInt("regeneration.batch-size", 1000);
-        this.phasedBlocksPerSecond = plugin.getConfig().getInt("regeneration.phased.blocks-per-second", 50000);
-        this.phasedDelay = plugin.getConfig().getInt("regeneration.phased.delay-between-phases", 2);
-        this.waveSpeed = plugin.getConfig().getInt("regeneration.wave.wave-speed", 10000);
+        applyConfig();
 
         // Start processing queue
         startProcessor();
+    }
+
+    /**
+     * Re-reads the regeneration limits from {@code config.yml} so changes
+     * made through the config menu apply to the next restoration immediately.
+     */
+    public void applyConfig() {
+        this.maxConcurrent = Math.max(1,
+                plugin.getConfig().getInt("regeneration.max-concurrent", 2));
+        this.tickBudget = Math.max(1,
+                plugin.getConfig().getInt("regeneration.tick-budget", 15));
+        this.defaultBatchSize = Math.max(1,
+                plugin.getConfig().getInt("regeneration.batch-size", 1000));
+        this.phasedBlocksPerSecond = Math.max(1,
+                plugin.getConfig().getInt("regeneration.phased.blocks-per-second", 50000));
+        this.phasedDelay = Math.max(0,
+                plugin.getConfig().getInt("regeneration.phased.delay-between-phases", 2));
+        this.waveSpeed = Math.max(1,
+                plugin.getConfig().getInt("regeneration.wave.wave-speed", 10000));
     }
 
     /**

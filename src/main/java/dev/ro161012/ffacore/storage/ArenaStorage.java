@@ -39,10 +39,10 @@ public class ArenaStorage {
     private final Path dataFolder;
     private final Path arenasFile;
     private final Path snapshotsFolder;
-    private final boolean compressSnapshots;
-    private final boolean useAsyncSave;
-    private final boolean useAsyncLoad;
-    private final int maxCachedSnapshots;
+    private boolean compressSnapshots;
+    private boolean useAsyncSave;
+    private boolean useAsyncLoad;
+    private int maxCachedSnapshots;
 
     // Cache of loaded snapshots: arenaId -> list of block snapshots
     private final Map<UUID, List<BlockSnapshot>> snapshotCache = new ConcurrentHashMap<>();
@@ -53,10 +53,7 @@ public class ArenaStorage {
         this.dataFolder = plugin.getDataFolder().toPath();
         this.arenasFile = dataFolder.resolve("arenas.json");
         this.snapshotsFolder = dataFolder.resolve("snapshots");
-        this.compressSnapshots = plugin.getConfig().getBoolean("performance.compress-snapshots", true);
-        this.useAsyncSave = plugin.getConfig().getBoolean("performance.use-async-save", true);
-        this.useAsyncLoad = plugin.getConfig().getBoolean("performance.use-async-load", true);
-        this.maxCachedSnapshots = plugin.getConfig().getInt("performance.max-cached-snapshots", 10);
+        applyConfig();
 
         try {
             Files.createDirectories(dataFolder);
@@ -64,6 +61,18 @@ public class ArenaStorage {
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to create data folders: " + e.getMessage());
         }
+    }
+
+    /**
+     * Re-reads the snapshot I/O settings from {@code config.yml} so config
+     * menu changes apply to the next save/load cycle immediately.
+     */
+    public void applyConfig() {
+        this.compressSnapshots = plugin.getConfig().getBoolean("performance.compress-snapshots", true);
+        this.useAsyncSave = plugin.getConfig().getBoolean("performance.use-async-save", true);
+        this.useAsyncLoad = plugin.getConfig().getBoolean("performance.use-async-load", true);
+        this.maxCachedSnapshots = Math.max(1,
+                plugin.getConfig().getInt("performance.max-cached-snapshots", 10));
     }
 
     /**

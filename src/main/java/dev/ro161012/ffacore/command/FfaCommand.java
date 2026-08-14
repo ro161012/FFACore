@@ -30,13 +30,25 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command,
                              final String label, final String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("config")) {
+            if (!sender.hasPermission("ffacore.admin")) {
+                Messages.raw(sender, "&cYou don't have permission for that.");
+                return true;
+            }
+            if (!(sender instanceof org.bukkit.entity.Player player)) {
+                Messages.raw(sender, "&cOnly players can open the config menu.");
+                return true;
+            }
+            plugin.getConfigMenu().openMainMenu(player);
+            return true;
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("ffacore.admin")) {
                 Messages.raw(sender, "&cYou don't have permission for that.");
                 return true;
             }
             plugin.reloadConfig();
-            plugin.getKillTokenManager().reload();
+            plugin.applyConfig();
             plugin.getMessages().msg(sender, "&aFFACore configuration reloaded.");
             return true;
         }
@@ -51,7 +63,8 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/afk&8)");
         messages.raw(sender, "&8&m--------------------------------");
-        messages.raw(sender, "&7Use &f/ffa reload &7to reload the configuration.");
+        messages.raw(sender, "&7Use &f/ffa config &7to open the in-game config menu.");
+        messages.raw(sender, "&7Use &f/ffa reload &7to reload config.yml from disk.");
         return true;
     }
 
@@ -60,7 +73,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                                       final String alias, final String[] args) {
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
-            return List.of("reload").stream()
+            return List.of("config", "reload").stream()
                     .filter(s -> s.startsWith(prefix)).toList();
         }
         return List.of();

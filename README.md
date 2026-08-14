@@ -102,8 +102,21 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 
 ### `/ffa`
 
-Shows a live overview of all three subsystems. `/ffa reload` (permission
-`ffacore.admin`) reloads the whole configuration.
+| Command | Permission | Description |
+|---|---|---|
+| `/ffa config` | `ffacore.config` | Open the in-game config menu |
+| `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
+
+Without arguments it shows a live overview of all three subsystems.
+
+#### In-game config menu (`/ffa config`)
+
+Opens a native Paper dialog (1.21.6+ client) with one screen per section:
+General, Regeneration, Kill Token, AFK Zones, and Storage & Performance.
+Toggle booleans, drag sliders, pick enum options or type values, then hit
+**Save & Apply** — the change is written to `config.yml` and pushed to every
+subsystem immediately, no restart or reload required. **Reload from disk**
+discards unsaved edits and re-reads the file.
 
 ## Permissions
 

@@ -16,16 +16,16 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Executor and tab-completer for {@code /afk}.
+ * Executor and tab-completer for {@code /ffa afk}.
  *
  * <ul>
- *   <li>{@code /afk wand} &mdash; receive the selection wand.</li>
- *   <li>{@code /afk create <name>} &mdash; create a zone from a selection.</li>
- *   <li>{@code /afk delete <name>} &mdash; delete a zone.</li>
- *   <li>{@code /afk list} &mdash; list every zone.</li>
- *   <li>{@code /afk info [name]} &mdash; zone details, or your own status.</li>
- *   <li>{@code /afk give [player] [amount]} &mdash; hand out AFK Shards.</li>
- *   <li>{@code /afk reload} &mdash; reload the configuration.</li>
+ *   <li>{@code /ffa afk wand} &mdash; receive the selection wand.</li>
+ *   <li>{@code /ffa afk create <name>} &mdash; create a zone from a selection.</li>
+ *   <li>{@code /ffa afk delete <name>} &mdash; delete a zone.</li>
+ *   <li>{@code /ffa afk list} &mdash; list every zone.</li>
+ *   <li>{@code /ffa afk info [name]} &mdash; zone details, or your own status.</li>
+ *   <li>{@code /ffa afk give [player] [amount]} &mdash; hand out AFK Shards.</li>
+ *   <li>{@code /ffa afk reload} &mdash; reload the configuration.</li>
  * </ul>
  */
 public final class AfkCommand implements CommandExecutor, TabCompleter {
@@ -96,7 +96,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
         }
         final Player player = (Player) sender;
         if (args.length < 2) {
-            messages.msg(player, "&cUsage: /afk create <name>");
+            messages.msg(player, "&cUsage: /ffa afk create <name>");
             return;
         }
         final String name = args[1];
@@ -106,7 +106,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
         }
         final Selection sel = plugin.getSelectionManager().getSelection(player);
         if (sel == null || !sel.isComplete()) {
-            messages.msg(player, "&cMake a selection first with &f/afk wand&c.");
+            messages.msg(player, "&cMake a selection first with &f/ffa afk wand&c.");
             return;
         }
         final AfkZone zone = plugin.getAfkManager().createZone(
@@ -121,7 +121,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (args.length < 2) {
-            messages.msg(sender, "&cUsage: /afk delete <name>");
+            messages.msg(sender, "&cUsage: /ffa afk delete <name>");
             return;
         }
         if (plugin.getAfkManager().deleteZone(args[1])) {
@@ -137,7 +137,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
         }
         final var zones = plugin.getAfkManager().getZones();
         if (zones.isEmpty()) {
-            messages.msg(sender, "&7No AFK zones yet. Create one with &f/afk create <name>&7.");
+            messages.msg(sender, "&7No AFK zones yet. Create one with &f/ffa afk create <name>&7.");
             return;
         }
         messages.raw(sender, "&3&lAFK Zones &7(" + zones.size() + ")");
@@ -155,7 +155,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
             if (sender instanceof Player player) {
                 showStatus(player);
             } else {
-                messages.msg(sender, "&cUsage: /afk info <name>");
+                messages.msg(sender, "&cUsage: /ffa afk info <name>");
             }
             return;
         }
@@ -211,7 +211,7 @@ public final class AfkCommand implements CommandExecutor, TabCompleter {
             }
         } else {
             if (!(sender instanceof Player player)) {
-                messages.msg(sender, "&cUsage: /afk give <player> [amount]");
+                messages.msg(sender, "&cUsage: /ffa afk give <player> [amount]");
                 return;
             }
             target = player;

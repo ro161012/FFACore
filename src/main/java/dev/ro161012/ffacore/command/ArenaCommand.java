@@ -70,28 +70,28 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.use")) return;
         plugin.getMessages().sendRaw(sender, "&b&lFFACore &7Arena Command Help");
         plugin.getMessages().sendRaw(sender, "&8&m-------------------------------");
-        plugin.getMessages().sendRaw(sender, "&e/ar help &7- Show this help");
-        plugin.getMessages().sendRaw(sender, "&e/ar wand &7- Get selection wand");
-        plugin.getMessages().sendRaw(sender, "&e/ar create <name> &7- Create arena from selection");
-        plugin.getMessages().sendRaw(sender, "&e/ar list &7- List all arenas");
-        plugin.getMessages().sendRaw(sender, "&e/ar info <name> &7- Arena info");
-        plugin.getMessages().sendRaw(sender, "&e/ar rename <old> <new> &7- Rename an arena");
-        plugin.getMessages().sendRaw(sender, "&e/ar setspawn <name> &7- Set arena spawn");
-        plugin.getMessages().sendRaw(sender, "&e/ar teleport <name> &7- Teleport to arena");
-        plugin.getMessages().sendRaw(sender, "&e/ar delspawn <name> &7- Delete arena spawn");
-        plugin.getMessages().sendRaw(sender, "&e/ar delete <name> &7- Delete arena");
-        plugin.getMessages().sendRaw(sender, "&e/ar resize <name> &7- Resize arena to new selection");
-        plugin.getMessages().sendRaw(sender, "&e/ar regenerate <name> [mode] &7- Regenerate arena");
-        plugin.getMessages().sendRaw(sender, "&e/ar cancel <name> &7- Cancel in-progress regen");
-        plugin.getMessages().sendRaw(sender, "&e/ar schedule <name> <time> &7- Schedule auto-regen");
-        plugin.getMessages().sendRaw(sender, "&e/ar preview <name> &7- Preview arena borders");
-        plugin.getMessages().sendRaw(sender, "&e/ar reload &7- Reload config");
-        plugin.getMessages().sendRaw(sender, "&e/ar menu [name] &7- Open arena menu");
-        plugin.getMessages().sendRaw(sender, "&e/ar settings <name> &7- View/edit settings");
-        plugin.getMessages().sendRaw(sender, "&e/ar subarena ... &7- Manage sub arenas");
-        plugin.getMessages().sendRaw(sender, "&e/ar perf &7- Performance stats");
-        plugin.getMessages().sendRaw(sender, "&e/ar debug <name> &7- Debug info");
-        plugin.getMessages().sendRaw(sender, "&e/ar migrate <arena|all> &7- Migrate storage");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena help &7- Show this help");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena wand &7- Get selection wand");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena create <name> &7- Create arena from selection");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena list &7- List all arenas");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena info <name> &7- Arena info");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena rename <old> <new> &7- Rename an arena");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena setspawn <name> &7- Set arena spawn");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena teleport <name> &7- Teleport to arena");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena delspawn <name> &7- Delete arena spawn");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena delete <name> &7- Delete arena");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena resize <name> &7- Resize arena to new selection");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena regenerate <name> [mode] &7- Regenerate arena");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena cancel <name> &7- Cancel in-progress regen");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena schedule <name> <time> &7- Schedule auto-regen");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena preview <name> &7- Preview arena borders");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena reload &7- Reload config");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena menu [name] &7- Open arena menu");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena settings <name> &7- View/edit settings");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena subarena ... &7- Manage sub arenas");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena perf &7- Performance stats");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena debug <name> &7- Debug info");
+        plugin.getMessages().sendRaw(sender, "&e/ffa arena migrate <arena|all> &7- Migrate storage");
     }
 
     // ==================== WAND ====================
@@ -109,7 +109,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            plugin.getMessages().send(player, "create.usage", "&cUsage: /ar create <name>");
+            plugin.getMessages().send(player, "create.usage", "&cUsage: /ffa arena create <name>");
             return;
         }
 
@@ -122,7 +122,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Selection sel = plugin.getSelectionManager().getSelection(player);
         if (sel == null || !sel.isComplete()) {
             plugin.getMessages().send(player, "create.no-selection",
-                    "&cYou must make a selection first! Use &e/ar wand");
+                    "&cYou must make a selection first! Use &e/ffa arena wand");
             return;
         }
 
@@ -151,7 +151,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
 
         var arenas = plugin.getArenaManager().getArenas();
         if (arenas.isEmpty()) {
-            plugin.getMessages().send(sender, "list.empty", "&7No arenas found. Create one with &e/ar create <name>");
+            plugin.getMessages().send(sender, "list.empty", "&7No arenas found. Create one with &e/ffa arena create <name>");
             return;
         }
 
@@ -173,7 +173,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.use")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "info.usage", "&cUsage: /ar info <name>");
+            plugin.getMessages().send(sender, "info.usage", "&cUsage: /ffa arena info <name>");
             return;
         }
 
@@ -226,7 +226,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            plugin.getMessages().send(player, "setspawn.usage", "&cUsage: /ar setspawn <name>");
+            plugin.getMessages().send(player, "setspawn.usage", "&cUsage: /ffa arena setspawn <name>");
             return;
         }
 
@@ -248,7 +248,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            plugin.getMessages().send(player, "teleport.usage", "&cUsage: /ar teleport <name>");
+            plugin.getMessages().send(player, "teleport.usage", "&cUsage: /ffa arena teleport <name>");
             return;
         }
 
@@ -285,7 +285,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.create")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "delspawn.usage", "&cUsage: /ar delspawn <name>");
+            plugin.getMessages().send(sender, "delspawn.usage", "&cUsage: /ffa arena delspawn <name>");
             return;
         }
 
@@ -306,7 +306,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.delete")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "delete.usage", "&cUsage: /ar delete <name>");
+            plugin.getMessages().send(sender, "delete.usage", "&cUsage: /ffa arena delete <name>");
             return;
         }
 
@@ -338,7 +338,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            plugin.getMessages().send(player, "resize.usage", "&cUsage: /ar resize <name>");
+            plugin.getMessages().send(player, "resize.usage", "&cUsage: /ffa arena resize <name>");
             return;
         }
 
@@ -351,7 +351,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Selection sel = plugin.getSelectionManager().getSelection(player);
         if (sel == null || !sel.isComplete()) {
             plugin.getMessages().send(player, "resize.no-selection",
-                    "&cYou must make a new selection first! Use &e/ar wand");
+                    "&cYou must make a new selection first! Use &e/ffa arena wand");
             return;
         }
 
@@ -373,7 +373,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.regenerate")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "regen.usage", "&cUsage: /ar regenerate <name> [mode]");
+            plugin.getMessages().send(sender, "regen.usage", "&cUsage: /ffa arena regenerate <name> [mode]");
             return;
         }
 
@@ -414,7 +414,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
 
         if (args.length < 2) {
             plugin.getMessages().send(sender, "schedule.usage",
-                    "&cUsage: /ar schedule <name> <time|off>");
+                    "&cUsage: /ffa arena schedule <name> <time|off>");
             plugin.getMessages().sendRaw(sender, "&7Time format: 30s, 5m, 2h, 1d, 1w");
             return;
         }
@@ -457,7 +457,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length < 2) {
-            plugin.getMessages().send(player, "preview.usage", "&cUsage: /ar preview <name>");
+            plugin.getMessages().send(player, "preview.usage", "&cUsage: /ffa arena preview <name>");
             return;
         }
 
@@ -504,7 +504,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.settings")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "settings.usage", "&cUsage: /ar settings <name> [key] [value]");
+            plugin.getMessages().send(sender, "settings.usage", "&cUsage: /ffa arena settings <name> [key] [value]");
             return;
         }
 
@@ -530,7 +530,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
                 plugin.getMessages().sendRaw(sender, "&7No custom settings.");
             }
 
-            plugin.getMessages().sendRaw(sender, "&7&oUse /ar settings " + arena.getName() +
+            plugin.getMessages().sendRaw(sender, "&7&oUse /ffa arena settings " + arena.getName() +
                     " <mode|schedule> <value> to change");
         } else if (args.length >= 3) {
             // Edit setting
@@ -585,7 +585,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
 
         if (args.length < 3) {
             plugin.getMessages().send(sender, "subarena.usage",
-                    "&cUsage: /ar subarena <parent> <create|delete|list> [name]");
+                    "&cUsage: /ffa arena subarena <parent> <create|delete|list> [name]");
             return;
         }
 
@@ -607,14 +607,14 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
                 Player player = (Player) sender;
                 if (args.length < 4) {
                     plugin.getMessages().send(player, "subarena.usage",
-                            "&cUsage: /ar subarena <parent> create <name>");
+                            "&cUsage: /ffa arena subarena <parent> create <name>");
                     return;
                 }
 
                 Selection sel = plugin.getSelectionManager().getSelection(player);
                 if (sel == null || !sel.isComplete()) {
                     plugin.getMessages().send(player, "subarena.no-selection",
-                            "&cMake a selection first with &e/ar wand");
+                            "&cMake a selection first with &e/ffa arena wand");
                     return;
                 }
 
@@ -638,7 +638,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
             case "delete" -> {
                 if (args.length < 4) {
                     plugin.getMessages().send(sender, "subarena.usage",
-                            "&cUsage: /ar subarena <parent> delete <name>");
+                            "&cUsage: /ffa arena subarena <parent> delete <name>");
                     return;
                 }
                 Arena sub = plugin.getArenaManager().getArena(args[3]);
@@ -687,7 +687,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.debug")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "debug.usage", "&cUsage: /ar debug <name>");
+            plugin.getMessages().send(sender, "debug.usage", "&cUsage: /ffa arena debug <name>");
             return;
         }
 
@@ -744,7 +744,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.regenerate")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "cancel.usage", "&cUsage: /ar cancel <name>");
+            plugin.getMessages().send(sender, "cancel.usage", "&cUsage: /ffa arena cancel <name>");
             return;
         }
 
@@ -772,7 +772,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
 
         if (args.length < 3) {
             plugin.getMessages().send(sender, "rename.usage",
-                    "&cUsage: /ar rename <oldName> <newName>");
+                    "&cUsage: /ffa arena rename <oldName> <newName>");
             return;
         }
 
@@ -813,7 +813,7 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
         if (!checkPerm(sender, "ffacore.arena.migrate")) return;
 
         if (args.length < 2) {
-            plugin.getMessages().send(sender, "migrate.usage", "&cUsage: /ar migrate <arena|all>");
+            plugin.getMessages().send(sender, "migrate.usage", "&cUsage: /ffa arena migrate <arena|all>");
             return;
         }
 

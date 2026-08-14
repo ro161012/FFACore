@@ -33,90 +33,97 @@ A default `plugins/FFACore/config.yml` is created on first run.
 ## Quick start
 
 ```text
-/arena wand              # receive the selection wand
-# left-click a block     # set position 1
-# right-click a block    # set position 2
-/arena create duel       # create an arena (snapshot saved automatically)
-/arena setspawn duel     # set the spawn point
-/arena regenerate duel   # restore the arena to its saved state
+/ffa arena wand              # receive the selection wand
+# left-click a block         # set position 1
+# right-click a block        # set position 2
+/ffa arena create duel       # create an arena (snapshot saved automatically)
+/ffa arena setspawn duel     # set the spawn point
+/ffa arena regenerate duel   # restore the arena to its saved state
 
-/afk wand                # receive the selection wand
-/afk create lounge       # create an AFK zone from your selection
+/ffa afk wand                # receive the selection wand
+/ffa afk create lounge       # create an AFK zone from your selection
 # players standing idle inside now earn AFK Shards
 ```
 
 ## Commands
 
-### `/arena` (alias `/ar`)
+### `/ffa arena` (aliases `/arena`, `/ar`)
 
 | Command | Permission | Description |
 |---|---|---|
-| `/arena help` | `ffacore.arena.use` | Show the command list |
-| `/arena wand` | `ffacore.arena.wand` | Receive the selection tool |
-| `/arena create <name>` | `ffacore.arena.create` | Create an arena from your selection |
-| `/arena list` | `ffacore.arena.use` | List all arenas |
-| `/arena info <name>` | `ffacore.arena.use` | Show arena details |
-| `/arena rename <old> <new>` | `ffacore.arena.create` | Rename an arena |
-| `/arena setspawn <name>` | `ffacore.arena.create` | Set the arena spawn point |
-| `/arena teleport <name>` | `ffacore.arena.teleport` | Teleport to the arena spawn |
-| `/arena delspawn <name>` | `ffacore.arena.create` | Remove the arena spawn point |
-| `/arena delete <name>` | `ffacore.arena.delete` | Delete an arena |
-| `/arena resize <name>` | `ffacore.arena.create` | Resize an arena to a new selection |
-| `/arena regenerate <name> [mode]` | `ffacore.arena.regenerate` | Regenerate an arena |
-| `/arena cancel <name>` | `ffacore.arena.regenerate` | Cancel an in-progress regeneration |
-| `/arena schedule <name> <time\|off>` | `ffacore.arena.schedule` | Schedule automatic regeneration |
-| `/arena preview <name>` | `ffacore.arena.preview` | Show arena borders with particles |
-| `/arena menu [name]` | `ffacore.arena.menu` | Open the GUI dashboard |
-| `/arena settings <name> [key] [value]` | `ffacore.arena.settings` | View or change settings |
-| `/arena subarena <parent> create\|delete\|list` | `ffacore.arena.subarena` | Manage sub-arenas |
-| `/arena perf` | `ffacore.arena.perf` | View performance metrics |
-| `/arena debug <name>` | `ffacore.arena.debug` | View arena diagnostics |
-| `/arena migrate <arena\|all>` | `ffacore.arena.migrate` | Resave snapshots |
-| `/arena reload` | `ffacore.arena.reload` | Reload configuration |
+| `/ffa arena help` | `ffacore.arena.use` | Show the command list |
+| `/ffa arena wand` | `ffacore.arena.wand` | Receive the selection tool |
+| `/ffa arena create <name>` | `ffacore.arena.create` | Create an arena from your selection |
+| `/ffa arena list` | `ffacore.arena.use` | List all arenas |
+| `/ffa arena info <name>` | `ffacore.arena.use` | Show arena details |
+| `/ffa arena rename <old> <new>` | `ffacore.arena.create` | Rename an arena |
+| `/ffa arena setspawn <name>` | `ffacore.arena.create` | Set the arena spawn point |
+| `/ffa arena teleport <name>` | `ffacore.arena.teleport` | Teleport to the arena spawn |
+| `/ffa arena delspawn <name>` | `ffacore.arena.create` | Remove the arena spawn point |
+| `/ffa arena delete <name>` | `ffacore.arena.delete` | Delete an arena |
+| `/ffa arena resize <name>` | `ffacore.arena.create` | Resize an arena to a new selection |
+| `/ffa arena regenerate <name> [mode]` | `ffacore.arena.regenerate` | Regenerate an arena |
+| `/ffa arena cancel <name>` | `ffacore.arena.regenerate` | Cancel an in-progress regeneration |
+| `/ffa arena schedule <name> <time\|off>` | `ffacore.arena.schedule` | Schedule automatic regeneration |
+| `/ffa arena preview <name>` | `ffacore.arena.preview` | Show arena borders with particles |
+| `/ffa arena menu [name]` | `ffacore.arena.menu` | Open the GUI dashboard |
+| `/ffa arena settings <name> [key] [value]` | `ffacore.arena.settings` | View or change settings |
+| `/ffa arena subarena <parent> create\|delete\|list` | `ffacore.arena.subarena` | Manage sub-arenas |
+| `/ffa arena perf` | `ffacore.arena.perf` | View performance metrics |
+| `/ffa arena debug <name>` | `ffacore.arena.debug` | View arena diagnostics |
+| `/ffa arena migrate <arena\|all>` | `ffacore.arena.migrate` | Resave snapshots |
+| `/ffa arena reload` | `ffacore.arena.reload` | Reload configuration |
 
 Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 
-### `/killtoken`
+### `/ffa killtoken` (alias `/killtoken`)
 
 | Command | Permission | Description |
 |---|---|---|
-| `/killtoken set` | `ffacore.killtoken.set` | Use your held item as the Kill Token |
-| `/killtoken give [player] [amount]` | `ffacore.killtoken.give` | Hand out tokens |
-| `/killtoken giveblock [player] [amount]` | `ffacore.killtoken.give` | Hand out compressed blocks (64 tokens) |
-| `/killtoken stats [player]` | — | View kills, deaths, KDR, streak |
-| `/killtoken top [page]` | — | Kill leaderboard |
-| `/killtoken test` | `ffacore.killtoken.test` | Preview killstreak systems |
-| `/killtoken reload` | `ffacore.killtoken.reload` | Reload configuration |
+| `/ffa killtoken set` | `ffacore.killtoken.set` | Use your held item as the Kill Token |
+| `/ffa killtoken give [player] [amount]` | `ffacore.killtoken.give` | Hand out tokens |
+| `/ffa killtoken giveblock [player] [amount]` | `ffacore.killtoken.give` | Hand out compressed blocks (64 tokens) |
+| `/ffa killtoken stats [player]` | — | View kills, deaths, KDR, streak |
+| `/ffa killtoken top [page]` | — | Kill leaderboard |
+| `/ffa killtoken test` | `ffacore.killtoken.test` | Preview killstreak systems |
+| `/ffa killtoken reload` | `ffacore.killtoken.reload` | Reload configuration |
 
-### `/afk`
+### `/ffa afk` (alias `/afk`)
 
 | Command | Permission | Description |
 |---|---|---|
-| `/afk create <name>` | `ffacore.afk.create` | Create a zone from your selection |
-| `/afk delete <name>` | `ffacore.afk.delete` | Delete a zone |
-| `/afk list` | `ffacore.afk.use` | List all zones |
-| `/afk info [name]` | `ffacore.afk.use` | Zone details, or your own AFK status |
-| `/afk wand` | `ffacore.afk.create` | Receive the selection wand |
-| `/afk give [player] [amount]` | `ffacore.afk.give` | Hand out AFK Shards |
-| `/afk reload` | `ffacore.afk.reload` | Reload configuration |
+| `/ffa afk create <name>` | `ffacore.afk.create` | Create a zone from your selection |
+| `/ffa afk delete <name>` | `ffacore.afk.delete` | Delete a zone |
+| `/ffa afk list` | `ffacore.afk.use` | List all zones |
+| `/ffa afk info [name]` | `ffacore.afk.use` | Zone details, or your own AFK status |
+| `/ffa afk wand` | `ffacore.afk.create` | Receive the selection wand |
+| `/ffa afk give [player] [amount]` | `ffacore.afk.give` | Hand out AFK Shards |
+| `/ffa afk reload` | `ffacore.afk.reload` | Reload configuration |
 
 ### `/ffa`
 
+Every FFACore command lives under `/ffa`:
+
 | Command | Permission | Description |
 |---|---|---|
+| `/ffa arena ...` | `ffacore.arena.*` | Arena regeneration management |
+| `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
+| `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
-Without arguments it shows a live overview of all three subsystems.
+Without arguments it shows a live overview of all three subsystems. The
+legacy `/arena`, `/ar`, `/killtoken` and `/afk` commands still work as
+aliases.
 
 #### In-game config menu (`/ffa config`)
 
-Opens a native Paper dialog (1.21.6+ client) with one screen per section:
-General, Regeneration, Kill Token, AFK Zones, and Storage & Performance.
-Toggle booleans, drag sliders, pick enum options or type values, then hit
-**Save & Apply** — the change is written to `config.yml` and pushed to every
-subsystem immediately, no restart or reload required. **Reload from disk**
-discards unsaved edits and re-reads the file.
+Opens a native Paper dialog (1.21.6+ client) listing every option on a
+single screen: General, Regeneration, Kill Token, AFK Zones, and Storage &
+Performance. Toggle booleans, drag sliders, pick enum options or type
+values, then hit **Save & Apply** — the change is written to `config.yml`
+and pushed to every subsystem immediately, no restart or reload required.
+**Reload from disk** discards unsaved edits and re-reads the file.
 
 ## Permissions
 

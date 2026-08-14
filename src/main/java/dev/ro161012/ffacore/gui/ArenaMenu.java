@@ -184,11 +184,11 @@ public class ArenaMenu implements Listener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&7Current schedule: &e" + (arena.getSchedule() != null ? arena.getSchedule() : "None")));
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&7Use &e/ar schedule " + arena.getName() + " <time> &7to set"));
+                        "&7Use &e/ffa arena schedule " + arena.getName() + " <time> &7to set"));
             }
             case "Settings" -> {
                 player.closeInventory();
-                player.chat("/ar settings " + arena.getName());
+                player.chat("/ffa arena settings " + arena.getName());
             }
             case "Preview Borders" -> {
                 player.closeInventory();
@@ -200,7 +200,7 @@ public class ArenaMenu implements Listener {
             case "Sub Arenas" -> {
                 // Could open sub-arena list
                 player.closeInventory();
-                player.chat("/ar subarena " + arena.getName() + " list");
+                player.chat("/ffa arena subarena " + arena.getName() + " list");
             }
             default -> plugin.getLogger().warning("Unknown arena detail action: " + displayName);
         }

@@ -13,17 +13,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Executor and tab-completer for {@code /killtoken}.
+ * Executor and tab-completer for {@code /ffa killtoken}.
  *
  * <ul>
- *   <li>{@code /killtoken set} &mdash; the item in the sender's main hand
+ *   <li>{@code /ffa killtoken set} &mdash; the item in the sender's main hand
  *       becomes the new Kill Token currency item.</li>
- *   <li>{@code /killtoken give [player] [amount]} &mdash; grants tokens
+ *   <li>{@code /ffa killtoken give [player] [amount]} &mdash; grants tokens
  *       directly, e.g. for rewards or manual payouts.</li>
- *   <li>{@code /killtoken giveblock [player] [amount]} &mdash; grants
+ *   <li>{@code /ffa killtoken giveblock [player] [amount]} &mdash; grants
  *       compressed Kill Token blocks (each worth 64 tokens).</li>
- *   <li>{@code /killtoken reload} &mdash; reloads {@code config.yml}.</li>
- *   <li>{@code /killtoken test} &mdash; previews the configured killstreak
+ *   <li>{@code /ffa killtoken reload} &mdash; reloads {@code config.yml}.</li>
+ *   <li>{@code /ffa killtoken test} &mdash; previews the configured killstreak
  *       announcements, sound, and multiplier token drop.</li>
  * </ul>
  *
@@ -37,10 +37,10 @@ public final class KillTokenCommand implements TabExecutor {
             "set", "give", "giveblock", "reload", "test", "stats", "top");
     private static final List<String> AMOUNT_SUGGESTIONS = List.of("1", "16", "64");
 
-    /** Hard cap for a single {@code /killtoken give} payout (36 stacks). */
+    /** Hard cap for a single {@code /ffa killtoken give} payout (36 stacks). */
     static final int MAX_GIVE_AMOUNT = 2304;
 
-    /** Hard cap for a single {@code /killtoken giveblock} payout (9 stacks). */
+    /** Hard cap for a single {@code /ffa killtoken giveblock} payout (9 stacks). */
     static final int MAX_BLOCK_GIVE_AMOUNT = 576;
 
     private final KillTokenManager plugin;
@@ -144,7 +144,7 @@ public final class KillTokenCommand implements TabExecutor {
         } else {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(KillTokenManager.color(
-                        "&cUsage: /killtoken give <player> [amount]"));
+                        "&cUsage: /ffa killtoken give <player> [amount]"));
                 return;
             }
             target = player;
@@ -202,7 +202,7 @@ public final class KillTokenCommand implements TabExecutor {
         } else {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(KillTokenManager.color(
-                        "&cUsage: /killtoken giveblock <player> [amount]"));
+                        "&cUsage: /ffa killtoken giveblock <player> [amount]"));
                 return;
             }
             target = player;

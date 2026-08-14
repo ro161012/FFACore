@@ -85,13 +85,18 @@ public final class FFACore extends JavaPlugin {
         afkManager = new AfkManager(this);
         configMenu = new ConfigMenu(this);
 
+        final ArenaCommand arenaCommand = new ArenaCommand(this);
+        final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
+        final AfkCommand afkCommand = new AfkCommand(this);
+
         registerArena();
         registerKillToken();
         registerAfk();
 
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
-            final FfaCommand executor = new FfaCommand(this);
+            final FfaCommand executor = new FfaCommand(this, arenaCommand,
+                    killTokenCommand, afkCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }
@@ -106,12 +111,6 @@ public final class FFACore extends JavaPlugin {
     }
 
     private void registerArena() {
-        final PluginCommand command = getCommand("arena");
-        if (command != null) {
-            final ArenaCommand executor = new ArenaCommand(this);
-            command.setExecutor(executor);
-            command.setTabCompleter(executor);
-        }
         getServer().getPluginManager().registerEvents(selectionManager, this);
         getServer().getPluginManager().registerEvents(arenaMenu, this);
         getServer().getPluginManager().registerEvents(new ArenaListener(this), this);
@@ -121,24 +120,10 @@ public final class FFACore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KillListener(killTokenManager), this);
         getServer().getPluginManager().registerEvents(new CompressedBlockListener(), this);
         getServer().getPluginManager().registerEvents(new KillTokenGuiListener(killTokenManager), this);
-
-        final PluginCommand command = getCommand("killtoken");
-        if (command != null) {
-            final KillTokenCommand executor = new KillTokenCommand(killTokenManager);
-            command.setExecutor(executor);
-            command.setTabCompleter(executor);
-        }
     }
 
     private void registerAfk() {
         getServer().getPluginManager().registerEvents(new AfkListener(this), this);
-
-        final PluginCommand command = getCommand("afk");
-        if (command != null) {
-            final AfkCommand executor = new AfkCommand(this);
-            command.setExecutor(executor);
-            command.setTabCompleter(executor);
-        }
     }
 
     /**

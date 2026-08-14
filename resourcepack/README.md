@@ -23,7 +23,10 @@ their display names.
 2. Place the zip in the server's `resourcepacks/` folder (or configure it as a
    server resource pack so players receive it automatically).
 
-Requires Minecraft **1.21.11** or newer (`pack_format` 75, forward-compatible).
+Targets Minecraft **1.21.11** (`min_format`/`max_format` 75). Since 1.21.9
+Minecraft reads the new `min_format`/`max_format` fields instead of the
+legacy `pack_format`/`supported_formats` — the old fields made the pack
+show as incompatible on 1.21.11.
 
 ## How the gradient tooltips work
 

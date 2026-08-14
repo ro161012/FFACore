@@ -3,7 +3,7 @@ version: '${project.version}'
 main: dev.ro161012.ffacore.FFACore
 api-version: '1.21'
 prefix: FFACore
-description: All-in-one Free-For-All core: arena regeneration, PvP Kill Token currency, and AFK zones that pay AFK Shards.
+description: 'All-in-one Free-For-All core: arena regeneration, PvP Kill Token currency, and AFK zones that pay AFK Shards.'
 authors: [ro161012]
 website: https://github.com/ro161012/FFACore
 softdepend: [PlaceholderAPI, WorldEdit]

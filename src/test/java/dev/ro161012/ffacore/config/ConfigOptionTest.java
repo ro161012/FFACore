@@ -62,7 +62,56 @@ class ConfigOptionTest {
                 "regeneration.phased.delay-between-phases", "Phased delay",
                 "Ticks between phases.", 0, 60, 2);
 
-        assertEquals("regeneration_phased_delay-between-phases", option.key());
+        assertEquals("regeneration_phased_delay_between_phases", option.key());
+    }
+
+    @Test
+    void dialogKeysAreAlwaysValidInputNames() {
+        // Minecraft's dialog inputs reject any key that is not lowercase
+        // alphanumerics and underscores ("key must be a valid input name").
+        final java.util.regex.Pattern valid =
+                java.util.regex.Pattern.compile("^[a-z0-9_]+$");
+        for (final String path : java.util.List.of(
+                "general.prefix",
+                "general.auto-load-on-startup",
+                "schedule.check-interval-seconds",
+                "gui.rows",
+                "gui.title",
+                "regeneration.default-mode",
+                "regeneration.max-concurrent",
+                "regeneration.tick-budget",
+                "regeneration.batch-size",
+                "regeneration.teleport-players-to-spawn",
+                "regeneration.phased.blocks-per-second",
+                "regeneration.phased.delay-between-phases",
+                "regeneration.wave.wave-speed",
+                "regeneration.wave.reverse-order",
+                "tokens-per-kill",
+                "cooldown-seconds",
+                "notify-on-cooldown",
+                "kill-message",
+                "killstreak.enabled",
+                "killstreak.announcement-minimum",
+                "killstreak.reward-start",
+                "killstreak.reward-step",
+                "killstreak.max-token-multiplier",
+                "afk.enabled",
+                "afk.reward-interval-seconds",
+                "afk.shards-per-interval",
+                "afk.min-idle-seconds",
+                "afk.max-shards-per-hour",
+                "afk.notify-on-earn",
+                "afk.earn-message",
+                "performance.use-async-save",
+                "performance.use-async-load",
+                "performance.cache-snapshots",
+                "performance.max-cached-snapshots",
+                "performance.compress-snapshots",
+                "storage.save-interval-minutes")) {
+            final ConfigOption option = ConfigOption.bool(path, "x", "y", true);
+            assertTrue(valid.matcher(option.key()).matches(),
+                    "invalid dialog key: " + option.key());
+        }
     }
 
     @Test

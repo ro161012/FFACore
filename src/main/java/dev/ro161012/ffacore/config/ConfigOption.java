@@ -122,13 +122,15 @@ public final class ConfigOption {
     }
 
     /**
-     * Returns a dialog-safe input key derived from the config path (dots and
-     * anything else are replaced with underscores).
+     * Returns a dialog-safe input key derived from the config path. Only
+     * lowercase letters, digits and underscores are kept - Minecraft's
+     * dialog inputs reject any other character (including hyphens) with
+     * "key must be a valid input name".
      *
      * @return the input key
      */
     public String key() {
-        return path.replaceAll("[^a-zA-Z0-9_-]", "_").toLowerCase(Locale.ROOT);
+        return path.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase(Locale.ROOT);
     }
 
     /**

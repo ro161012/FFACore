@@ -11,7 +11,6 @@ softdepend: [PlaceholderAPI, WorldEdit]
 commands:
   ffa:
     description: FFACore - arena regeneration, Kill Token currency and AFK zones.
-    aliases: [arena, ar, killtoken, afk]
     usage: /ffa <arena|killtoken|afk|config|reload>
 
 permissions:

@@ -26,9 +26,7 @@ import java.util.Locale;
  *   <li>{@code /ffa reload} &mdash; reload config.yml from disk.</li>
  * </ul>
  *
- * <p>The legacy {@code /arena} (alias {@code /ar}), {@code /killtoken} and
- * {@code /afk} commands remain available as aliases of {@code /ffa} and are
- * dispatched here based on the label the player typed.
+ * <p>There are no standalone commands: everything lives under {@code /ffa}.
  */
 public final class FfaCommand implements CommandExecutor, TabCompleter {
 
@@ -57,18 +55,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command,
                              final String label, final String[] args) {
-        // Legacy aliases: /arena, /ar, /killtoken, /afk keep working by
-        // dispatching straight through to the matching executor.
-        if (label.equalsIgnoreCase("arena") || label.equalsIgnoreCase("ar")) {
-            return arenaCommand.onCommand(sender, command, label, args);
-        }
-        if (label.equalsIgnoreCase("killtoken")) {
-            return killTokenCommand.onCommand(sender, command, label, args);
-        }
-        if (label.equalsIgnoreCase("afk")) {
-            return afkCommand.onCommand(sender, command, label, args);
-        }
-
         if (args.length > 0) {
             final String sub = args[0].toLowerCase(Locale.ROOT);
             final String[] rest = Arrays.copyOfRange(args, 1, args.length);
@@ -136,17 +122,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command,
                                       final String alias, final String[] args) {
-        // Legacy aliases complete against their own subcommands.
-        if (alias.equalsIgnoreCase("arena") || alias.equalsIgnoreCase("ar")) {
-            return arenaCommand.onTabComplete(sender, command, alias, args);
-        }
-        if (alias.equalsIgnoreCase("killtoken")) {
-            return killTokenCommand.onTabComplete(sender, command, alias, args);
-        }
-        if (alias.equalsIgnoreCase("afk")) {
-            return afkCommand.onTabComplete(sender, command, alias, args);
-        }
-
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
             return List.of("arena", "killtoken", "afk", "config", "reload").stream()

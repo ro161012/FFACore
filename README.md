@@ -47,7 +47,7 @@ A default `plugins/FFACore/config.yml` is created on first run.
 
 ## Commands
 
-### `/ffa arena` (aliases `/arena`, `/ar`)
+### `/ffa arena`
 
 | Command | Permission | Description |
 |---|---|---|
@@ -76,7 +76,7 @@ A default `plugins/FFACore/config.yml` is created on first run.
 
 Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 
-### `/ffa killtoken` (alias `/killtoken`)
+### `/ffa killtoken`
 
 | Command | Permission | Description |
 |---|---|---|
@@ -88,7 +88,7 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | `/ffa killtoken test` | `ffacore.killtoken.test` | Preview killstreak systems |
 | `/ffa killtoken reload` | `ffacore.killtoken.reload` | Reload configuration |
 
-### `/ffa afk` (alias `/afk`)
+### `/ffa afk`
 
 | Command | Permission | Description |
 |---|---|---|
@@ -112,9 +112,9 @@ Every FFACore command lives under `/ffa`:
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
-Without arguments it shows a live overview of all three subsystems. The
-legacy `/arena`, `/ar`, `/killtoken` and `/afk` commands still work as
-aliases.
+Without arguments it shows a live overview of all three subsystems. These
+are the only commands the plugin registers - there are no standalone
+`/arena`, `/killtoken` or `/afk` commands.
 
 #### In-game config menu (`/ffa config`)
 

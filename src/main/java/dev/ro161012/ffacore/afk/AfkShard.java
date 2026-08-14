@@ -16,10 +16,10 @@ import java.util.List;
  * Builds the AFK Shard currency item.
  *
  * <p>The shard is an {@link Material#ECHO_SHARD} carrying the
- * {@code ffacore:afk_shard} NBT tag, the {@code ffacore:ocean} tooltip style
- * (a deep-ocean gradient background + frame from the resource pack), and a
- * custom model data value for its crystal texture. The item is built once
- * and cloned per award.
+ * {@code ffacore:afk_shard} NBT tag, the {@code altarsmp:cutlass} tooltip
+ * style (an animated ocean gradient background + frame from the resource
+ * pack), and a custom model data value for its crystal texture. The item is
+ * built once and cloned per award.
  */
 public final class AfkShard {
 

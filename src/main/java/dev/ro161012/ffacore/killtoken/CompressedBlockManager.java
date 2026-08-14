@@ -94,7 +94,7 @@ public final class CompressedBlockManager {
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
             stack.setItemMeta(meta);
         }
-        // Same ember gradient background as the Kill Token.
+        // Same animated bloodlust gradient background as the Kill Token.
         ItemUtils.applyTooltipStyle(stack, ItemUtils.EMBER_TOOLTIP);
         return stack;
     }

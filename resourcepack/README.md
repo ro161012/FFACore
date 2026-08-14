@@ -12,8 +12,10 @@ their display names.
 | `assets/minecraft/items/echo_shard.json` | AFK Shard texture (custom model data `1002`) |
 | `assets/ffacore/models/item/*.json` | The custom item models |
 | `assets/ffacore/textures/item/*.png` | The currency textures |
-| `assets/ffacore/textures/gui/sprites/tooltip/ocean_*.png` | Ocean gradient tooltip background + frame |
-| `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Ember gradient tooltip background + frame |
+| `assets/ffacore/textures/gui/sprites/tooltip/ocean_*.png` | Legacy ocean gradient tooltip (kept for old items) |
+| `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Legacy ember gradient tooltip (kept for old items) |
+| `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
+| `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
 
 ## Installation
 
@@ -33,17 +35,22 @@ show as incompatible on 1.21.11.
 The display names of the Kill Token and AFK Shard use a smooth per-character
 gradient, and the items carry a `minecraft:tooltip_style` data component:
 
-* AFK Shard &rarr; `ffacore:ocean`
-* Kill Token &rarr; `ffacore:ember`
+* AFK Shard &rarr; `altarsmp:cutlass` (animated)
+* Kill Token &rarr; `altarsmp:bloodlust` (animated)
+* Compressed Kill Token Block &rarr; `altarsmp:bloodlust` (animated)
 
 The client resolves each style to a pair of nine-slice sprites under
 `textures/gui/sprites/tooltip/` &mdash; `<style>_background.png` (stretched
 gradient fill) and `<style>_frame.png` (the border). The `.mcmeta` files next
 to each PNG define the nine-slice border (9px for backgrounds, 10px for
-frames) so the gradient stretches cleanly to any tooltip size.
+frames) and the animation (20 frames, 3 ticks each, interpolated) so the
+gradient flows behind the tooltip.
 
-This is the same technique used by the Altar SMP texture pack (custom tooltip
-styles, added in 1.21.2), applied to FFACore's own ocean and ember palettes.
+The `cutlass` and `bloodlust` sprites are sourced from the Altar SMP texture
+pack (custom tooltip styles, added in 1.21.2) and shipped inside this pack so
+players see them even without the Altar pack installed. The legacy
+`ffacore:ocean`/`ffacore:ember` styles are kept for items handed out before
+the switch.
 
 ## Regenerating the art
 

@@ -16,9 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
  *
  * <p>The Kill Token and AFK Shard use a smooth per-character gradient for
  * their display name, a custom {@code minecraft:tooltip_style} that renders
- * the ocean/ember gradient background drawn by the companion resource pack,
- * and a {@code NamespacedKey} tag so the items can be identified reliably
- * without string matching.
+ * the animated cutlass/bloodlust gradient background drawn by the companion
+ * resource pack, and a {@code NamespacedKey} tag so the items can be
+ * identified reliably without string matching.
  */
 public final class ItemUtils {
 
@@ -36,11 +36,11 @@ public final class ItemUtils {
     public static final NamespacedKey AFK_SHARD_KEY =
             new NamespacedKey("ffacore", "afk_shard");
 
-    /** Tooltip style (gradient background + frame) for the AFK Shard. */
-    public static final Key OCEAN_TOOLTIP = Key.key("ffacore", "ocean");
+    /** Tooltip style (animated gradient background + frame) for the AFK Shard. */
+    public static final Key OCEAN_TOOLTIP = Key.key("altarsmp", "cutlass");
 
-    /** Tooltip style (gradient background + frame) for the Kill Token. */
-    public static final Key EMBER_TOOLTIP = Key.key("ffacore", "ember");
+    /** Tooltip style (animated gradient background + frame) for the Kill Token. */
+    public static final Key EMBER_TOOLTIP = Key.key("altarsmp", "bloodlust");
 
     // Ocean palette (AFK Shard).
     private static final int OCEAN_FROM = 0x0A2A6B;
@@ -118,7 +118,7 @@ public final class ItemUtils {
      * pack.
      *
      * @param stack the item
-     * @param style tooltip style key, e.g. {@code ffacore:ocean}
+     * @param style tooltip style key, e.g. {@code altarsmp:cutlass}
      */
     public static void applyTooltipStyle(final ItemStack stack, final Key style) {
         try {

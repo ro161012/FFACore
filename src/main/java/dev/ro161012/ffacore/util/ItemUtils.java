@@ -87,13 +87,19 @@ public final class ItemUtils {
     }
 
     /**
-     * Ember-palette gradient text (dark red to bright red-orange), bold.
+     * Ember-palette gradient text (dark red to bright red-orange), bold and
+     * italic. Italic is forced explicitly: custom item names render
+     * non-italic by default in tooltips, and the Kill Token stored in the
+     * configuration carries italic, so the Compressed Kill Token Block must
+     * match it.
      *
      * @param text the title
      * @return the gradient component
      */
     public static Component emberTitle(final String text) {
-        return gradient(text, EMBER_FROM, EMBER_TO).decorate(TextDecoration.BOLD);
+        return gradient(text, EMBER_FROM, EMBER_TO)
+                .decorate(TextDecoration.BOLD)
+                .decoration(TextDecoration.ITALIC, true);
     }
 
     /**

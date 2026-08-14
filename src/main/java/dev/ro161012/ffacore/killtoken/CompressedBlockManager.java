@@ -84,7 +84,7 @@ public final class CompressedBlockManager {
         final ItemStack stack = new ItemStack(material);
         final ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(KillTokenManager.color("&c" + DISPLAY_NAME));
+            meta.displayName(ItemUtils.emberTitle(DISPLAY_NAME));
             meta.setLore(List.of(
                     KillTokenManager.color("&7A compact block of Kill Tokens."),
                     KillTokenManager.color("&8Value: &c" + COMPRESS_RATIO + " &fKill Tokens")));

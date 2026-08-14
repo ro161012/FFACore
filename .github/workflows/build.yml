@@ -1,0 +1,82 @@
+name: FFACore checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    name: Checkstyle + tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the project files
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run checkstyle and unit tests
+        run: ./mvnw -B -ntp test
+
+  build:
+    name: Build FFACore
+    needs: [checks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the project files
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build plugin and resource pack
+        run: ./mvnw -B -ntp -DskipTests package
+
+      - name: Save the plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: FFACore
+          path: target/FFACore-*.jar
+          if-no-files-found: error
+
+      - name: Save the resource pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: FFACore-Resourcepack
+          path: target/FFACore-Resourcepack.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish release files
+    needs: [build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Get the plugin jar
+        uses: actions/download-artifact@v4
+        with:
+          name: FFACore
+          path: dist
+
+      - name: Get the resource pack
+        uses: actions/download-artifact@v4
+        with:
+          name: FFACore-Resourcepack
+          path: dist
+
+      - name: Add files to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/FFACore-*.jar
+            dist/FFACore-Resourcepack.zip

@@ -1,0 +1,144 @@
+# ============================================================
+#  FFACore configuration
+#  Arena regeneration + Kill Token currency + AFK zones
+#  Docs: https://github.com/ro161012/FFACore
+# ============================================================
+
+# ------------------------------------------------------------
+#  General
+# ------------------------------------------------------------
+general:
+  # Prefix used on FFACore chat messages.
+  prefix: "&8[&bFFACore&8]&r"
+  # Load saved arenas on startup.
+  auto-load-on-startup: true
+
+# ------------------------------------------------------------
+#  Arena storage
+# ------------------------------------------------------------
+# Arena metadata is stored in arenas.json and block snapshots in the
+# snapshots/ folder, both under plugins/FFACore/.
+storage:
+  save-interval-minutes: 30
+
+# ------------------------------------------------------------
+#  Arena regeneration
+# ------------------------------------------------------------
+regeneration:
+  # STANDARD, PHASED, SELECTIVE, WAVE or WORLD_EDIT.
+  default-mode: STANDARD
+  # How many arenas may regenerate at the same time.
+  max-concurrent: 2
+  # Max milliseconds of block placement per tick.
+  tick-budget: 15
+  # Blocks placed per tick in STANDARD/SELECTIVE modes.
+  batch-size: 1000
+  # Teleport players inside an arena to its spawn before restoring blocks.
+  teleport-players-to-spawn: true
+  phased:
+    blocks-per-second: 50000
+    delay-between-phases: 2
+  selective:
+    track-changes: true
+    fallback-to-standard: true
+  wave:
+    wave-speed: 10000
+    reverse-order: false
+  world-edit:
+    use-schematic-fallback: true
+    schematic-folder: schematics
+
+# ------------------------------------------------------------
+#  Arena selection
+# ------------------------------------------------------------
+selection:
+  # Item given by /arena wand.
+  default-tool: STICK
+  # Largest allowed arena selection in blocks.
+  max-selection-size: 1000000
+  preview:
+    particle-type: VILLAGER_HAPPY
+    particle-count: 1
+    particle-interval: 0.5
+
+# ------------------------------------------------------------
+#  Arena scheduling
+# ------------------------------------------------------------
+schedule:
+  check-interval-seconds: 1
+
+# ------------------------------------------------------------
+#  Arena GUI
+# ------------------------------------------------------------
+gui:
+  title: "&8Arena Management"
+  rows: 6
+  auto-update-seconds: 5
+
+# ------------------------------------------------------------
+#  Performance
+# ------------------------------------------------------------
+performance:
+  use-async-save: true
+  use-async-load: true
+  cache-snapshots: true
+  # Maximum snapshot lists kept in memory before eviction.
+  max-cached-snapshots: 10
+  # GZIP-compress snapshots on disk.
+  compress-snapshots: true
+
+# ------------------------------------------------------------
+#  Kill Token currency
+# ------------------------------------------------------------
+# Seconds a killer<->victim pair must wait before another token can drop
+# between the same two players (in either direction).
+cooldown-seconds: 60
+
+# Tokens dropped per qualifying kill (before the streak multiplier).
+tokens-per-kill: 1
+
+# Warn the killer when the pair cooldown suppresses a drop.
+notify-on-cooldown: true
+cooldown-message: "&cNo Kill Token dropped - you and this player are on cooldown."
+
+# Message sent to the killer when a token drops. Leave empty to disable.
+kill-message: "&4&l+1 &cKill Token"
+
+killstreak:
+  enabled: true
+  # %player% is the killer's name; %streak% is their current streak.
+  message: "&4%player% &7is on a &c&l%streak% &7killstreak!"
+  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  announcement-minimum: 2
+  reward-start: 3
+  reward-step: 3
+  max-token-multiplier: 5
+
+# The Kill Token currency item is stored here as base64 bytes and updated
+# automatically by /killtoken set. It is seeded on first launch.
+# currency-item: ""
+
+# ------------------------------------------------------------
+#  Compressed Kill Token block
+# ------------------------------------------------------------
+compressed-blocks:
+  # Material of the Compressed Kill Token Block (64 tokens).
+  compressed-block-material: QUARTZ_BLOCK
+
+# ------------------------------------------------------------
+#  AFK zones
+# ------------------------------------------------------------
+# Players who stand idle inside a designated AFK zone earn AFK Shards.
+afk:
+  enabled: true
+  # How often the reward loop runs, in seconds.
+  reward-interval-seconds: 30
+  # Shards awarded per reward when the player qualifies.
+  shards-per-interval: 1
+  # A player must be idle this long (seconds) before earning shards.
+  min-idle-seconds: 60
+  # Hard cap on shards earned per player per hour. -1 disables the cap.
+  max-shards-per-hour: 100
+  # Notify the player when they earn shards.
+  notify-on-earn: true
+  earn-message: "&b+1 &3AFK Shard &7(the deep rewards patience)"

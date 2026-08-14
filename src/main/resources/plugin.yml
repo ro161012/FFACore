@@ -1,0 +1,129 @@
+name: FFACore
+version: '${project.version}'
+main: dev.ro161012.ffacore.FFACore
+api-version: '1.21'
+prefix: FFACore
+description: All-in-one Free-For-All core: arena regeneration, PvP Kill Token currency, and AFK zones that pay AFK Shards.
+authors: [ro161012]
+website: https://github.com/ro161012/FFACore
+softdepend: [PlaceholderAPI, WorldEdit]
+
+commands:
+  ffa:
+    description: FFACore overview and reload.
+    usage: /ffa [reload]
+  arena:
+    description: Arena regeneration management.
+    aliases: [ar]
+    usage: /arena <help>
+  killtoken:
+    description: Manage the Kill Token currency.
+    usage: /killtoken <set|give|giveblock|reload|test|stats|top>
+  afk:
+    description: Manage AFK zones and AFK Shards.
+    usage: /afk <create|delete|list|info|wand|give|reload>
+
+permissions:
+  ffacore.admin:
+    description: Grants every FFACore management permission.
+    default: op
+    children:
+      ffacore.arena.admin: true
+      ffacore.killtoken.admin: true
+      ffacore.afk.admin: true
+
+  # ---- Arena ----
+  ffacore.arena.use:
+    description: Basic arena information commands.
+    default: op
+  ffacore.arena.admin:
+    description: All arena commands.
+    default: op
+  ffacore.arena.create:
+    description: Create, resize, setspawn and delspawn arenas.
+    default: op
+  ffacore.arena.delete:
+    description: Delete arenas.
+    default: op
+  ffacore.arena.regenerate:
+    description: Trigger arena regeneration.
+    default: op
+  ffacore.arena.schedule:
+    description: Manage arena regeneration schedules.
+    default: op
+  ffacore.arena.wand:
+    description: Use the arena selection wand.
+    default: op
+  ffacore.arena.teleport:
+    description: Teleport to arenas.
+    default: op
+  ffacore.arena.menu:
+    description: Open the arena GUI.
+    default: op
+  ffacore.arena.preview:
+    description: Preview arena borders.
+    default: op
+  ffacore.arena.settings:
+    description: View and change arena settings.
+    default: op
+  ffacore.arena.debug:
+    description: View arena debug information.
+    default: op
+  ffacore.arena.perf:
+    description: View arena performance metrics.
+    default: op
+  ffacore.arena.subarena:
+    description: Manage sub-arenas.
+    default: op
+  ffacore.arena.reload:
+    description: Reload the arena configuration.
+    default: op
+  ffacore.arena.migrate:
+    description: Migrate arena storage format.
+    default: op
+
+  # ---- Kill Token ----
+  ffacore.killtoken.admin:
+    description: Grants every Kill Token permission.
+    default: op
+    children:
+      ffacore.killtoken.set: true
+      ffacore.killtoken.give: true
+      ffacore.killtoken.reload: true
+      ffacore.killtoken.test: true
+      ffacore.killtoken.stats: true
+  ffacore.killtoken.set:
+    description: Change the Kill Token currency item.
+    default: op
+  ffacore.killtoken.give:
+    description: Hand out Kill Tokens and compressed blocks.
+    default: op
+  ffacore.killtoken.reload:
+    description: Reload the Kill Token configuration.
+    default: op
+  ffacore.killtoken.test:
+    description: Preview the killstreak systems.
+    default: op
+  ffacore.killtoken.stats:
+    description: View other players' kill stats.
+    default: op
+
+  # ---- AFK ----
+  ffacore.afk.use:
+    description: Basic AFK zone information commands.
+    default: true
+  ffacore.afk.admin:
+    description: All AFK commands.
+    default: op
+  ffacore.afk.create:
+    description: Create AFK zones and use the selection wand.
+    default: op
+  ffacore.afk.delete:
+    description: Delete AFK zones.
+    default: op
+  ffacore.afk.give:
+    description: Hand out AFK Shards.
+    default: op
+  ffacore.afk.reload:
+    description: Reload the AFK configuration.
+    default: op

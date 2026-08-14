@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "minecraft:item/echo_shard"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1002
+      },
+      "model": {
+        "type": "minecraft:model",
+        "model": "ffacore:item/afk_shard"
+      }
+    }
+  ]
+}

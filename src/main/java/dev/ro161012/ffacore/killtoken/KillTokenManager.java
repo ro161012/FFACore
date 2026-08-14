@@ -238,8 +238,7 @@ public final class KillTokenManager {
         if (meta != null) {
             meta.displayName(ItemUtils.emberTitle(DEFAULT_TOKEN_NAME));
             meta.lore(List.of(
-                    Component.text(DEFAULT_TOKEN_LORE, NamedTextColor.GRAY),
-                    Component.text("PvP currency of FFACore.", NamedTextColor.DARK_GRAY)));
+                    Component.text(DEFAULT_TOKEN_LORE, NamedTextColor.GRAY)));
             meta.setCustomModelData(ItemUtils.KILL_TOKEN_MODEL_DATA);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
             stack.setItemMeta(meta);

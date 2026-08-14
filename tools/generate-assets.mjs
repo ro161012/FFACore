@@ -114,81 +114,14 @@ function save(rel, c) {
 // ---------------------------------------------------------------------------
 // 1. Tooltip backgrounds and frames (nine-slice, 100x100)
 // ---------------------------------------------------------------------------
-
-const OCEAN_DEEP = 0x071a3f;
-const OCEAN_MID = 0x12407e;
-const OCEAN_LIGHT = 0x6fd6ff;
-const EMBER_DEEP = 0x380808;
-const EMBER_MID = 0xa41f16;
-const EMBER_LIGHT = 0xffa06b;
-
-// Vertical gradient fill used by the stretched background.
-function tooltipBackground(top, mid, bottom) {
-  const c = canvas(100, 100);
-  for (let y = 0; y < 100; y++) {
-    const t = y / 99;
-    let r, g, b;
-    if (t < 0.5) {
-      const u = t / 0.5;
-      r = lerp(rgb(top)[0], rgb(mid)[0], u);
-      g = lerp(rgb(top)[1], rgb(mid)[1], u);
-      b = lerp(rgb(top)[2], rgb(mid)[2], u);
-    } else {
-      const u = (t - 0.5) / 0.5;
-      r = lerp(rgb(mid)[0], rgb(bottom)[0], u);
-      g = lerp(rgb(mid)[1], rgb(bottom)[1], u);
-      b = lerp(rgb(mid)[2], rgb(bottom)[2], u);
-    }
-    for (let x = 0; x < 100; x++) {
-      px(c, x, y, r, g, b, 246);
-    }
-  }
-  return c;
-}
-
-// Bevel frame: the outer 10px ring fades from a light edge to a dark inner
-// shadow; the center stays transparent so the background shows through.
-function tooltipFrame(light, mid, dark) {
-  const c = canvas(100, 100);
-  const border = 10;
-  const lightRgb = rgb(light);
-  const midRgb = rgb(mid);
-  const darkRgb = rgb(dark);
-  for (let y = 0; y < 100; y++) {
-    for (let x = 0; x < 100; x++) {
-      const d = Math.min(
-        x, y, 99 - x, 99 - y,
-      );
-      if (d >= border) continue; // transparent center
-      // Distance from the outer edge (0) to the inner edge (border).
-      const t = d / (border - 1);
-      let r, g, b;
-      if (t < 0.4) {
-        const u = t / 0.4;
-        r = lerp(lightRgb[0], midRgb[0], u);
-        g = lerp(lightRgb[1], midRgb[1], u);
-        b = lerp(lightRgb[2], midRgb[2], u);
-      } else {
-        const u = (t - 0.4) / 0.6;
-        r = lerp(midRgb[0], darkRgb[0], u);
-        g = lerp(midRgb[1], darkRgb[1], u);
-        b = lerp(midRgb[2], darkRgb[2], u);
-      }
-      const alpha = 235 - Math.round(60 * t);
-      px(c, x, y, r, g, b, alpha);
-    }
-  }
-  return c;
-}
-
-save('ffacore/textures/gui/sprites/tooltip/ocean_background.png',
-  tooltipBackground(OCEAN_DEEP, OCEAN_MID, OCEAN_MID));
-save('ffacore/textures/gui/sprites/tooltip/ocean_frame.png',
-  tooltipFrame(OCEAN_LIGHT, OCEAN_MID, OCEAN_DEEP));
-save('ffacore/textures/gui/sprites/tooltip/ember_background.png',
-  tooltipBackground(EMBER_DEEP, EMBER_MID, EMBER_MID));
-save('ffacore/textures/gui/sprites/tooltip/ember_frame.png',
-  tooltipFrame(EMBER_LIGHT, EMBER_MID, EMBER_DEEP));
+//
+// These four sprites are vendored 1:1 from the Altar SMP texture pack and
+// ship as committed PNGs under assets/ffacore/textures/gui/sprites/tooltip/.
+// They are intentionally NOT generated here so the art stays identical:
+//   ocean_background.png  <- Altar "tidebreaker" (deep ocean teal)
+//   ocean_frame.png       <- Altar "tidebreaker"
+//   ember_background.png  <- Altar "red" (deep ember red)
+//   ember_frame.png       <- Altar "red"
 
 // ---------------------------------------------------------------------------
 // 2. Kill Token (ember star) 16x16

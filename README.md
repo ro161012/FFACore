@@ -123,8 +123,7 @@ General, Regeneration, Kill Token, AFK Zones, and Storage & Performance.
 Each section opens its own screen where you toggle booleans, drag sliders,
 pick enum options or type values, then hit **Save & Apply** — the change is
 written to `config.yml` and pushed to every subsystem immediately, no
-restart or reload required. **Back** returns to the section list and
-**Reload from disk** discards unsaved edits and re-reads the file.
+restart or reload required. **Back** returns to the section list.
 
 ## Permissions
 

@@ -37,8 +37,9 @@ import java.util.Locale;
  *
  * <p>Every dialog is built defensively: slider values are clamped into their
  * ranges, string defaults are truncated to the input limit, and any failure
- * while opening, saving or reloading is shown to the player instead of being
- * silently swallowed by the click callback.
+ * while opening or saving is shown to the player instead of being silently
+ * swallowed by the click callback. Saving always applies the new values to
+ * every subsystem immediately - there is no separate refresh step.
  */
 public final class ConfigMenu {
 
@@ -95,20 +96,13 @@ public final class ConfigMenu {
                         }
                     })));
         }
-        final ActionButton reload = button("Reload from disk",
-                tooltip("Discard unsaved edits and re-read config.yml."),
-                click((view, audience) -> {
-                    if (audience instanceof Player target) {
-                        onMainThread(() -> safeReload(target));
-                    }
-                }));
         final ActionButton close = closeButton();
 
         final Dialog dialog = Dialog.create(builder -> builder.empty()
                 .base(DialogBase.builder(Component.text("FFACore Configuration",
                         NamedTextColor.WHITE, TextDecoration.BOLD))
                         .body(List.of(DialogBody.plainMessage(Component.text(
-                                "Pick a section to configure. Changes apply in realtime.",
+                                "Pick a section to configure. Changes apply automatically when you save.",
                                 NamedTextColor.GRAY), BODY_WIDTH)))
                         .afterAction(DialogAfterAction.CLOSE)
                         .canCloseWithEscape(true)
@@ -266,38 +260,12 @@ public final class ConfigMenu {
         }
     }
 
-    private void safeReload(final Player player) {
-        try {
-            plugin.reloadConfig();
-            plugin.applyConfig();
-            confirmReloaded(player);
-        } catch (final RuntimeException ex) {
-            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to reload config", ex);
-            Messages.raw(player, "&cFailed to reload config: &f" + ex.getMessage());
-        }
-    }
-
     private void confirmSaved(final Player player, final Section section) {
         final Dialog dialog = Dialog.create(builder -> builder.empty()
                 .base(DialogBase.builder(Component.text("Saved",
                         NamedTextColor.GREEN, TextDecoration.BOLD))
                         .body(List.of(DialogBody.plainMessage(Component.text(
                                 section.title() + " updated and applied in realtime.",
-                                NamedTextColor.GRAY), BODY_WIDTH)))
-                        .afterAction(DialogAfterAction.CLOSE)
-                        .canCloseWithEscape(true)
-                        .build())
-                .type(DialogType.notice(backToMenuButton())));
-
-        player.showDialog(dialog);
-    }
-
-    private void confirmReloaded(final Player player) {
-        final Dialog dialog = Dialog.create(builder -> builder.empty()
-                .base(DialogBase.builder(Component.text("Reloaded",
-                        NamedTextColor.GREEN, TextDecoration.BOLD))
-                        .body(List.of(DialogBody.plainMessage(Component.text(
-                                "config.yml reloaded from disk and applied.",
                                 NamedTextColor.GRAY), BODY_WIDTH)))
                         .afterAction(DialogAfterAction.CLOSE)
                         .canCloseWithEscape(true)

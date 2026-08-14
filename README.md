@@ -1,7 +1,7 @@
 # FFACore
 
 [![Build](https://img.shields.io/github/actions/workflow/status/ro161012/FFACore/build.yml?branch=main&logo=github&label=build)](https://github.com/ro161012/FFACore/actions)
-[![Paper](https://img.shields.io/badge/Paper-1.21.4%2B-00A8A8)](https://papermc.io)
+[![Paper](https://img.shields.io/badge/Paper-1.21.11%2B-00A8A8)](https://papermc.io)
 [![Java](https://img.shields.io/badge/Java-21%2B-orange?logo=openjdk)](https://adoptium.net)
 [![License](https://img.shields.io/github/license/ro161012/FFACore?label=license)](LICENSE)
 

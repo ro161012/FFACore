@@ -35,10 +35,10 @@
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
-        <paper.api.version>1.21.4-R0.1-SNAPSHOT</paper.api.version>
+        <paper.api.version>1.21.11-R0.1-SNAPSHOT</paper.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.11.4</junit.version>
-        <mockbukkit.version>4.45.1</mockbukkit.version>
+        <mockbukkit.version>4.100.0</mockbukkit.version>
         <checkstyle.plugin.version>3.6.0</checkstyle.plugin.version>
         <checkstyle.version>10.21.1</checkstyle.version>
     </properties>

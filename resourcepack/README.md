@@ -23,7 +23,7 @@ their display names.
 2. Place the zip in the server's `resourcepacks/` folder (or configure it as a
    server resource pack so players receive it automatically).
 
-Requires Minecraft **1.21.4** or newer (`pack_format` 46, forward-compatible).
+Requires Minecraft **1.21.11** or newer (`pack_format` 75, forward-compatible).
 
 ## How the gradient tooltips work
 

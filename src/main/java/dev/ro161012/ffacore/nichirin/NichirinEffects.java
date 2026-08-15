@@ -205,6 +205,53 @@ public final class NichirinEffects {
     }
 
     /**
+     * Erupts actual lava blocks outward in a ring around the caster. The lava
+     * arcs up and out, then disappears once the burst finishes.
+     *
+     * @param plugin owning plugin (for the scheduler)
+     * @param player the caster
+     * @param radius how far the lava shoots out, in blocks
+     */
+    public static void lavaBurst(final JavaPlugin plugin, final Player player,
+                                 final double radius) {
+        final Location center = player.getLocation().add(0.0, 0.2, 0.0);
+        final int count = 28;
+        final List<BlockDisplay> lava = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            final BlockDisplay display = player.getWorld().spawn(center, BlockDisplay.class);
+            display.setBlock(Material.LAVA.createBlockData());
+            display.setBrightness(new Display.Brightness(15, 15));
+            display.setInterpolationDuration(1);
+            display.setInterpolationDelay(0);
+            setScale(display, 0.6f, 0.6f, 0.6f);
+            lava.add(display);
+        }
+
+        final int duration = 20;
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= duration) {
+                    lava.forEach(BlockDisplay::remove);
+                    cancel();
+                    return;
+                }
+                final double progress = tick / (double) (duration - 1);
+                for (int i = 0; i < lava.size(); i++) {
+                    final double angle = i * (TAU / lava.size()) + progress * 0.6;
+                    final double dist = 0.4 + progress * radius * 0.9;
+                    final double height = Math.sin(progress * Math.PI) * 1.6;
+                    lava.get(i).teleport(center.clone().add(
+                            Math.sin(angle) * dist, height, Math.cos(angle) * dist));
+                }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
      * Spawns a full-bright glowing block display with the given cube scale.
      */
     private static BlockDisplay spawnBlock(final Player player, final Location location,

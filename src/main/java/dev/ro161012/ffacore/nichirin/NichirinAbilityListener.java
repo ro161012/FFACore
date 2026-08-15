@@ -4,10 +4,7 @@ import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.weapon.AbilityBossBars;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -25,8 +22,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -267,7 +262,7 @@ public final class NichirinAbilityListener implements Listener {
                 clearSkyBoost + player.getVelocity().getY());
         player.setVelocity(player.getVelocity().setY(upward));
         NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyRadius);
-        scorchGround(player);
+        NichirinEffects.lavaBurst(plugin, player, clearSkyRadius);
 
         // Horizontal cylinder: hits everyone around and below, whatever height
         // they are at relative to the caster.
@@ -357,42 +352,6 @@ public final class NichirinAbilityListener implements Listener {
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
-    }
-
-    /**
-     * Scorches the ground in a ring around the caster with temporary fire,
-     * removed again once the searing window closes.
-     */
-    private void scorchGround(final Player player) {
-        final World world = player.getWorld();
-        final Location origin = player.getLocation();
-        final List<Block> fires = new ArrayList<>();
-        final int ring = 16;
-        for (int i = 0; i < ring; i++) {
-            final double angle = i * (Math.PI * 2.0 / ring);
-            final double radius = clearSkyRadius * 0.85;
-            final int x = origin.getBlockX() + (int) Math.round(Math.sin(angle) * radius);
-            final int z = origin.getBlockZ() + (int) Math.round(Math.cos(angle) * radius);
-            final Block top = world.getHighestBlockAt(x, z);
-            final Block above = top.getRelative(0, 1, 0);
-            if (above.getType() == Material.AIR && top.getType().isSolid()) {
-                above.setType(Material.FIRE);
-                fires.add(above);
-            }
-        }
-        if (fires.isEmpty()) {
-            return;
-        }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (final Block block : fires) {
-                    if (block.getType() == Material.FIRE) {
-                        block.setType(Material.AIR);
-                    }
-                }
-            }
-        }.runTaskLater(plugin, clearSkyFireSeconds * 20L);
     }
 
     /**

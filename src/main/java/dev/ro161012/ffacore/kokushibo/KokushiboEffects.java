@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -96,41 +97,39 @@ public final class KokushiboEffects {
             final double radius = startRadius + (maxRadius - startRadius) * progress;
             final double spin = Math.toRadians(tick * 34);
 
-            // Inner ring: tight, fast orbit with a white trail streaking behind.
+            // Inner ring: tight, fast orbit, spinning flat around the
+            // vertical axis as it grows, with a white trail behind.
             for (int i = 0; i < innerCount; i++) {
                 final double angle = Math.toRadians(i * (360.0 / innerCount)) + spin;
                 final double orbit = radius * 0.55;
-                final double bob = Math.sin(tick * 0.45 + i) * 0.6;
                 displays.get(i).teleport(eye.clone().add(
-                        Math.sin(angle) * orbit, -0.2 + bob, Math.cos(angle) * orbit));
+                        Math.sin(angle) * orbit, -0.3, Math.cos(angle) * orbit));
                 final float scale = 1.3f + (float) (progress * 1.4)
                         + (float) Math.sin(tick * 0.5 + i) * 0.25f;
-                setScale(displays.get(i), scale, scale, scale);
+                setSpinScale(displays.get(i), scale, angle);
                 trail(displays.get(i));
             }
 
-            // Mid ring: counter-rotating, medium orbit, incrementally growing.
+            // Mid ring: counter-rotating, medium orbit, spinning flat as it grows.
             for (int i = 0; i < midCount; i++) {
                 final double angle = -spin + Math.toRadians(i * (360.0 / midCount));
                 final double orbit = radius * 0.78;
-                final double bob = Math.sin(tick * 0.35 + i) * 0.7;
                 displays.get(innerCount + i).teleport(eye.clone().add(
-                        Math.sin(angle) * orbit, -0.4 + bob, Math.cos(angle) * orbit));
+                        Math.sin(angle) * orbit, -0.4, Math.cos(angle) * orbit));
                 final float scale = 1.6f + (float) (progress * 1.6)
                         + (float) Math.sin(tick * 0.5 + i) * 0.3f;
-                setScale(displays.get(innerCount + i), scale, scale, scale);
+                setSpinScale(displays.get(innerCount + i), scale, angle);
                 trail(displays.get(innerCount + i));
             }
 
-            // Outer ring: widest, slowest, biggest crescents.
+            // Outer ring: widest, slowest, biggest crescents, spinning flat.
             for (int i = 0; i < outerCount; i++) {
                 final double angle = spin * 0.8 + Math.toRadians(i * (360.0 / outerCount));
-                final double bob = Math.sin(tick * 0.3 + i) * 0.8;
                 displays.get(innerCount + midCount + i).teleport(eye.clone().add(
-                        Math.sin(angle) * radius, -0.6 + bob, Math.cos(angle) * radius));
+                        Math.sin(angle) * radius, -0.5, Math.cos(angle) * radius));
                 final float scale = 1.9f + (float) (progress * 1.8)
                         + (float) Math.sin(tick * 0.5 + i) * 0.35f;
-                setScale(displays.get(innerCount + midCount + i), scale, scale, scale);
+                setSpinScale(displays.get(innerCount + midCount + i), scale, angle);
                 trail(displays.get(innerCount + midCount + i));
             }
 
@@ -407,18 +406,40 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Spawns a billboarded crescent item display facing the camera. Only its
-     * position and scale are animated, so it never flickers.
+     * How far the Catastrophe crescents lean up from fully horizontal, so they
+     * read as spinning blades without vanishing edge-on.
+     */
+    private static final float CRESCENT_TILT = 0.55f;
+
+    /**
+     * Spawns a crescent item display with a fixed (non-billboarded) orientation
+     * so the Catastrophe vortex can spin it flat around the vertical axis.
      */
     private static ItemDisplay spawnCrescent(final Player player, final Location location) {
         final ItemDisplay display = player.getWorld().spawn(location, ItemDisplay.class);
         display.setItemStack(KokushiboSword.crescentItem());
-        display.setBillboard(Display.Billboard.CENTER);
+        display.setBillboard(Display.Billboard.FIXED);
         display.setBrightness(new Display.Brightness(15, 15));
         display.setInterpolationDuration(1);
         display.setInterpolationDelay(0);
         setScale(display, 1.4f, 1.4f, 1.4f);
         return display;
+    }
+
+    /**
+     * Applies a scale plus a horizontal spin (rotation about the vertical
+     * axis) to a crescent, tilted up slightly so the flat blade stays visible.
+     */
+    private static void setSpinScale(final Display display, final float scale,
+                                     final double yaw) {
+        final Quaternionf rotation = new Quaternionf()
+                .rotateY((float) yaw)
+                .rotateX(CRESCENT_TILT);
+        display.setTransformation(new Transformation(
+                new Vector3f(0f, 0f, 0f),
+                new AxisAngle4f(rotation),
+                new Vector3f(scale, scale, scale),
+                new AxisAngle4f(0f, 0f, 0f, 1f)));
     }
 
     /**

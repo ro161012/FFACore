@@ -116,16 +116,17 @@ public final class NichirinEffects {
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
      * @param ticks  how long the sequence plays (shorter = snappier)
+     * @param radius final reach of the slash and shockwave in blocks
      */
     public static void playEnbu(final JavaPlugin plugin, final Player player,
-                                final int ticks) {
+                                final int ticks, final double radius) {
         final Location eye = player.getEyeLocation();
         final Vector facing = horizontalFacing(player);
         final Vector up = new Vector(0.0, 1.0, 0.0);
 
-        final int crescentOuter = 16;
-        final int crescentInner = 12;
-        final int shockwave = 20;
+        final int crescentOuter = Math.max(16, (int) Math.round(radius * 2.0));
+        final int crescentInner = Math.max(10, crescentOuter * 3 / 4);
+        final int shockwave = Math.max(24, (int) Math.round(Math.PI * 2.0 * radius / 1.8));
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < crescentOuter; i++) {
@@ -158,7 +159,7 @@ public final class NichirinEffects {
             // The crescent sweeps forward: a vertical arc of fire in the
             // facing plane, growing from the body outward.
             final double slashProgress = clamp((progress - 0.15) / 0.6);
-            final double slashRadius = 0.4 + slashProgress * 3.8;
+            final double slashRadius = 0.4 + slashProgress * radius;
             for (int i = 0; i < crescentOuter; i++) {
                 final double t = i / (double) (crescentOuter - 1);
                 final double angle = Math.toRadians(-80.0 + t * 160.0);
@@ -180,7 +181,7 @@ public final class NichirinEffects {
             // Impact shockwave: a horizontal ring spreads across the ground,
             // merging the yellow lightning and orange fire.
             final double impactProgress = clamp((progress - 0.75) / 0.25);
-            final double ringRadius = 0.5 + impactProgress * 3.0;
+            final double ringRadius = 0.5 + impactProgress * radius;
             for (int i = 0; i < shockwave; i++) {
                 final double angle = i * (TAU / shockwave);
                 displays.get(crescentOuter + crescentInner + i).teleport(

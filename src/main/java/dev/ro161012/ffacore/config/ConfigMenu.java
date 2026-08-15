@@ -563,7 +563,7 @@ public final class ConfigMenu {
                                 1, 20, 2).withColor(NICHIRIN),
                         ConfigOption.decimal("nichirin.enbu.radius", "Dancing Flash radius",
                                 "Radius of the dash in blocks.",
-                                1f, 10f, 0.1f, 3.0).withColor(NICHIRIN),
+                                1f, 20f, 0.5f, 8.0).withColor(NICHIRIN),
                         ConfigOption.integer("nichirin.enbu.absorption-lock-seconds",
                                 "Absorption lock",
                                 "Seconds targets cannot gain absorption.",

@@ -239,6 +239,7 @@ nichirin:
   enbu:
     cooldown-seconds: 70
     damage-hearts: 2.0
+    radius: 8.0          # dash reach
     vfx-ticks: 20
 
 kokushibo:

@@ -492,7 +492,7 @@ public final class ConfigMenu {
                                         "&b+1 &3AFK Shard &7(the deep rewards patience)")
                         )),
                 new Section("customweapons", "Custom Weapons",
-                        "Tune the Nichirin Blade and Kokoshibos Sword abilities.",
+                        "Tune the Nichirin Blade and Kokushibo Sword abilities.",
                         List.of(), List.of(nichirinSection(), kokushiboSection())),
                 new Section("performance", "Storage & Performance",
                         "Snapshot compression, caching and async I/O.",
@@ -576,7 +576,7 @@ public final class ConfigMenu {
     }
 
     private Section kokushiboSection() {
-        return new Section("customweapons-kokushibo", "Kokoshibos Sword",
+        return new Section("customweapons-kokushibo", "Kokushibo Sword",
                 "Upper Moon One passive and the moon abilities.",
                 List.of(
                         ConfigOption.decimal("kokushibo.upper-moon-one.proc-chance",

@@ -16,7 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 
 /**
- * Builds the Kokoshibos Sword, the Upper Moon One FFA weapon.
+ * Builds the Kokushibo Sword, the Upper Moon One FFA weapon.
  *
  * <p>The sword is a {@link Material#NETHERITE_SWORD} carrying custom model
  * data {@code 1605} (the kokushibo model), the {@code altarsmp:kokoshibo_sword}
@@ -26,7 +26,7 @@ import java.util.List;
 public final class KokushiboSword {
 
     /** Display name of the sword. */
-    public static final String DISPLAY_NAME = "Kokoshibos Sword";
+    public static final String DISPLAY_NAME = "Kokushibo Sword";
 
     /** Custom model data selecting the kokushibo model. */
     public static final int MODEL_DATA = 1605;
@@ -37,25 +37,25 @@ public final class KokushiboSword {
     /** Custom model data of the white Moonbow gleam crescent. */
     public static final int WHITE_CRESCENT_MODEL_DATA = 2003;
 
-    /** NBT tag identifying a Kokoshibos Sword. */
+    /** NBT tag identifying a Kokushibo Sword. */
     public static final NamespacedKey KEY = new NamespacedKey("ffacore", "kokushibo_sword");
 
     /** Tooltip style: the animated purple gradient background and frame. */
     public static final Key TOOLTIP_STYLE = Key.key("altarsmp", "kokoshibo_sword");
 
-    // Moon palette (bright purple, matching the animated tooltip border).
-    private static final int MOON_FROM = 0xA855F7;
-    private static final int MOON_TO = 0xE9D5FF;
-    private static final TextColor HEADER = TextColor.color(0xC084FC);
-    private static final TextColor TAG = TextColor.color(0x9E9E9E);
-    private static final TextColor BODY = TextColor.color(0xD9CCEA);
+    // Moon palette (vivid bright purple, matching the animated tooltip border).
+    private static final int MOON_FROM = 0x8B00FF;
+    private static final int MOON_TO = 0xD15BFF;
+    private static final TextColor HEADER = TextColor.color(0xCF4FFF);
+    private static final TextColor TAG = TextColor.color(0xA97FD0);
+    private static final TextColor BODY = TextColor.color(0xC793F0);
 
     private KokushiboSword() {
         // Utility class.
     }
 
     /**
-     * Creates a fresh Kokoshibos Sword with the exact tooltip layout used by
+     * Creates a fresh Kokushibo Sword with the exact tooltip layout used by
      * the reference plugin: enchants, flavour lore, the passive and the two
      * active abilities.
      *
@@ -152,7 +152,7 @@ public final class KokushiboSword {
     }
 
     /**
-     * Tags an item as a Kokoshibos Sword so the ability listener recognises it.
+     * Tags an item as a Kokushibo Sword so the ability listener recognises it.
      *
      * @param stack the item to tag
      */
@@ -165,7 +165,7 @@ public final class KokushiboSword {
     }
 
     /**
-     * Returns whether the item is tagged as a Kokoshibos Sword.
+     * Returns whether the item is tagged as a Kokushibo Sword.
      *
      * @param stack the item to check, may be null
      * @return true when tagged

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * on cooldown.
  *
  * <p>Each ability keeps its own bar keyed by player and ability id, so a
- * player with both Nichirin Blade actives (or both Kokoshibos Sword actives)
+ * player with both Nichirin Blade actives (or both Kokushibo Sword actives)
  * on cooldown sees one bar per ability. Bars drain in real time and are
  * removed automatically the moment the cooldown expires; there are no chat
  * or action-bar indicators, only the boss bar.

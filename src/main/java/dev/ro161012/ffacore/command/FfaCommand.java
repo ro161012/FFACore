@@ -99,7 +99,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
         messages.raw(sender, "&3AFK Zones &8- &7" + plugin.getAfkManager().getZoneCount()
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/ffa afk&8)");
-        messages.raw(sender, "&5Custom Weapons &8- &7Nichirin Blade & Kokoshibos Sword &8(&f/ffa customweapons&8)");
+        messages.raw(sender, "&5Custom Weapons &8- &7Nichirin Blade & Kokushibo Sword &8(&f/ffa customweapons&8)");
         messages.raw(sender, "&8&m--------------------------------");
         messages.raw(sender, "&7Use &f/ffa config &7to open the in-game config menu.");
         messages.raw(sender, "&7Use &f/ffa reload &7to reload config.yml from disk.");

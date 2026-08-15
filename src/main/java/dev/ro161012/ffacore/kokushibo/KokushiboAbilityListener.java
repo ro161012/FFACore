@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implements the Kokoshibos Sword abilities.
+ * Implements the Kokushibo Sword abilities.
  *
  * <ul>
  *   <li><b>Upper Moon One</b> (passive): melee strikes unleash chaotic

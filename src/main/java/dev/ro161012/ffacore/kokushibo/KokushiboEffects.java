@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 /**
- * Renders the Kokoshibos Sword ability visuals as glowing purple geometry and
+ * Renders the Kokushibo Sword ability visuals as glowing purple geometry and
  * crescent displays.
  *
  * <p>Catastrophe expands a ring of purple glass blocks outward from the

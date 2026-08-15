@@ -14,7 +14,7 @@ single Paper plugin:
 | **Kill Token currency** | Players earn an ember-themed Kill Token for PvP kills, with pair anti-farming and killstreak multipliers. |
 | **AFK zones** | Designate regions where idle players earn ocean-themed **AFK Shards**. |
 | **Nichirin Blade** | A Demon Slayer FFA weapon with a passive combo and two offhand abilities. |
-| **Kokoshibos Sword** | The Upper Moon One weapon with a passive, an expanding moon ring, and an arm-then-shoot moonbow. |
+| **Kokushibo Sword** | The Upper Moon One weapon with a passive, an expanding moon ring, and an arm-then-shoot moonbow. |
 
 Both currencies ship with a custom resource pack: unique item textures plus
 gradient tooltip backgrounds.
@@ -111,9 +111,9 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | `/ffa customweapons list` | `ffacore.customweapons.admin` | List available weapons |
 
 This is the only command that hands out weapons. Available weapons:
-`nichirin` (Nichirin Blade) and `kokushibo` (Kokoshibos Sword).
+`nichirin` (Nichirin Blade) and `kokushibo` (Kokushibo Sword).
 
-#### Kokoshibos Sword abilities
+#### Kokushibo Sword abilities
 
 * **Upper Moon One** (passive) — melee strikes unleash chaotic crescent moon
   blades that fly toward the target and deal true damage (Kokushibo's
@@ -148,7 +148,7 @@ the abilities follow your keybind. Weapons are recognised by their persistent
 tag *or* their custom model data (1603 nichirin / 1605 kokushibo), so a
 hand-`/give`-n copy with the same model also triggers the abilities.
 Once cast, each ability shows its cooldown as a draining boss bar (red for
-Nichirin, purple for Kokoshibo) with no chat or action-bar indicator.
+Nichirin, purple for Kokushibo) with no chat or action-bar indicator.
 
 ### `/ffa`
 

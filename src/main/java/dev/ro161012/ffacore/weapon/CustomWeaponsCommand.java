@@ -153,7 +153,7 @@ public final class CustomWeaponsCommand implements CommandExecutor, TabCompleter
     private static String weaponName(final String key) {
         return switch (key.toLowerCase(Locale.ROOT)) {
             case "kokushibo", "koku", "kokoshibo", "kokushibosword", "moon" ->
-                    "Kokoshibos Sword";
+                    "Kokushibo Sword";
             default -> "Nichirin Blade";
         };
     }

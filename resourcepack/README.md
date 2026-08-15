@@ -17,12 +17,12 @@ their display names.
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/nichirin_sword_*.png` | Fiery orange/red tooltip (Nichirin Blade) |
-| `assets/altarsmp/textures/gui/sprites/tooltip/kokoshibo_sword_*.png` | Animated purple tooltip (Kokoshibos Sword, 20 frames) |
+| `assets/altarsmp/textures/gui/sprites/tooltip/kokoshibo_sword_*.png` | Animated purple tooltip (Kokushibo Sword, 20 frames) |
 | `assets/minecraft/items/netherite_sword.json` | Maps custom model data `1603`/`1605`/`2514` to the blade models |
 | `assets/minecraft/items/nether_star.json` | Maps custom model data `2` to the crescent, `1001` to the Kill Token and `2003` to the white Moonbow crescent |
 | `assets/nino/models/weapons/nichirin_blade.json` | The Nichirin Blade 3D model |
 | `assets/nino/textures/item/nichirin_blade.png` | The animated blade texture |
-| `assets/nino/models/weapons/kokushibo.json` | The Kokoshibos Sword 3D model |
+| `assets/nino/models/weapons/kokushibo.json` | The Kokushibo Sword 3D model |
 | `assets/nino/models/weapons/kokushibo2.json` | The animated empowered blade model (custom model data `2514`) |
 | `assets/nino/models/weapons/kokushibo_crescent.json` | The moon crescent projectile model |
 | `assets/nino/textures/item/kokushibo*.png`, `crescent.png` | Kokushibo blade and crescent textures |
@@ -80,9 +80,9 @@ yellow / red). A core shader override
 (`rendertype_item_entity_translucent_cull.fsh`) adds a soft emissive bloom so
 the glass reads as glowing molten energy instead of flat tinted glass.
 
-## Kokoshibos Sword
+## Kokushibo Sword
 
-The Kokoshibos Sword is a `netherite_sword` with custom model data `1605`
+The Kokushibo Sword is a `netherite_sword` with custom model data `1605`
 (`nino:weapons/kokushibo`), and its animated empowered variant is registered
 at `2514` (`kokushibo2`). The tooltip style (`altarsmp:kokoshibo_sword`) gives
 it the animated purple gradient border.

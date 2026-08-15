@@ -3,6 +3,7 @@ package dev.ro161012.ffacore.nichirin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -18,133 +19,183 @@ import java.util.List;
 import java.util.function.IntConsumer;
 
 /**
- * Renders the Nichirin Blade ability visuals as two distinct lava scenes.
+ * Renders the Nichirin Blade ability visuals as the two canonical Hinokami
+ * Kagura forms, built from full-bright translucent glass block displays and
+ * tinted by the pack's solar-fire core shader.
  *
- * <p><b>Clear Blue Sky</b> is a directional fan: a widening arc of glowing
- * translucent glass slashes outward in the direction the player faces.
- * <b>Enbu</b> is an omni-directional eruption: a ring of translucent glass
- * spreads across the ground while a glowing glass column erupts upward beneath
- * a counter-rotating ring. The blocks are full-bright translucent stained glass
- * so they read as molten energy, tinted by the pack's emissive core shader, and
- * every display is removed when the animation ends.
+ * <p><b>Clear Blue Sky</b> is a continuous 360&deg; disc of solar fire that
+ * spins around the caster's waist: an orange-red core ring inside a
+ * yellow-white outer ring, with a lingering afterimage and a trail of
+ * sparkling embers. <b>Enbu</b> opens with an electric launch (yellow sparks
+ * crackling at the feet), sweeps a massive vertical crescent of fire forward,
+ * and detonates into an expanding yellow/orange shockwave. Every display is
+ * removed when the animation ends.
  */
 public final class NichirinEffects {
+
+    private static final double TAU = Math.PI * 2.0;
 
     private NichirinEffects() {
         // Utility class.
     }
 
     /**
-     * Plays Clear Blue Sky: a fan of lava blocks slashing outward in the
-     * player's facing direction.
+     * Plays Clear Blue Sky: a spinning 360&deg; horizontal solar disc around
+     * the caster's waist — orange-red core, yellow-white rim, a lagging
+     * afterimage, and heat-haze embers.
      *
      * @param plugin     owning plugin (for the scheduler)
      * @param player     the caster
-     * @param ticks      how long the fan sweeps (shorter = snappier)
-     * @param arcDegrees width of the fan arc in degrees, centred on facing
+     * @param ticks      how long the disc spins (shorter = snappier)
+     * @param arcDegrees retained for signature compatibility; the canonical
+     *                   form is a full circle
      */
     public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
                                         final int ticks, final double arcDegrees) {
-        final Location eye = player.getEyeLocation();
-        final Vector facing = horizontalFacing(player);
-        final double halfArc = Math.toRadians(Math.max(10.0, arcDegrees) / 2.0);
-        final double startRadius = 0.5;
-
-        final int blades = 28;
-        final int inner = 14;
+        final Location waist = player.getEyeLocation().add(0.0, -1.0, 0.0);
+        final int core = 20;
+        final int rim = 20;
+        final int afterimage = 20;
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        for (int i = 0; i < blades; i++) {
-            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.5f));
+        for (int i = 0; i < core; i++) {
+            displays.add(spawnBlock(player, waist, Material.ORANGE_STAINED_GLASS, 0.5f));
         }
-        for (int i = 0; i < inner; i++) {
-            displays.add(spawnBlock(player, eye, Material.YELLOW_STAINED_GLASS, 0.4f));
+        for (int i = 0; i < rim; i++) {
+            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.55f));
+        }
+        for (int i = 0; i < afterimage; i++) {
+            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.4f));
         }
 
         animate(plugin, displays, ticks, tick -> {
-            final double radius = startRadius + tick * 0.26;
-            for (int i = 0; i < blades; i++) {
-                final double t = i / (double) (blades - 1);
-                final double angle = -halfArc + t * (2.0 * halfArc);
-                final BlockDisplay block = displays.get(i);
-                block.teleport(eye.clone()
-                        .add(facing.clone().rotateAroundY(angle).multiply(radius))
-                        .add(0, -0.5, 0));
-                setScale(block, 0.5f, 0.5f, 0.5f);
+            final double progress = tick / (double) Math.max(1, ticks - 1);
+            final double radius = 0.6 + progress * 3.4;
+            final double spin = progress * TAU;
+
+            for (int i = 0; i < core; i++) {
+                final double angle = spin + i * (TAU / core);
+                displays.get(i).teleport(waist.clone().add(
+                        Math.sin(angle) * radius * 0.72, 0.0, Math.cos(angle) * radius * 0.72));
+                setScale(displays.get(i), 0.5f, 0.4f, 0.5f);
             }
-            for (int i = 0; i < inner; i++) {
-                final double t = i / (double) (inner - 1);
-                final double angle = -halfArc * 0.8 + t * (1.6 * halfArc);
-                final BlockDisplay block = displays.get(blades + i);
-                block.teleport(eye.clone()
-                        .add(facing.clone().rotateAroundY(angle).multiply(radius * 0.7))
-                        .add(0, -0.3, 0));
-                setScale(block, 0.4f, 0.4f, 0.4f);
+            for (int i = 0; i < rim; i++) {
+                final double angle = -spin + i * (TAU / rim);
+                displays.get(core + i).teleport(waist.clone().add(
+                        Math.sin(angle) * radius, 0.15 * Math.sin(progress * TAU),
+                        Math.cos(angle) * radius));
+                setScale(displays.get(core + i), 0.55f, 0.35f, 0.55f);
             }
-            // Molten droplets along the leading edge of the slash.
-            final Location edge = eye.clone()
-                    .add(facing.clone().multiply(radius)).add(0, -0.4, 0);
-            edge.getWorld().spawnParticle(Particle.LAVA, edge, 6, 0.5, 0.3, 0.5, 0.02);
-            edge.getWorld().spawnParticle(Particle.FLAME, edge, 4, 0.6, 0.4, 0.6, 0.05);
+            // Afterimage: trails the rim, spins slower, and shrinks as it fades.
+            final double ghostRadius = radius * 0.82;
+            final float ghostScale = (float) (0.4 * (1.0 - progress * 0.6));
+            for (int i = 0; i < afterimage; i++) {
+                final double angle = -spin * 0.7 + i * (TAU / afterimage);
+                displays.get(core + rim + i).teleport(waist.clone().add(
+                        Math.sin(angle) * ghostRadius, -0.1, Math.cos(angle) * ghostRadius));
+                setScale(displays.get(core + rim + i), ghostScale, ghostScale * 0.7f, ghostScale);
+            }
+
+            // Sparkling embers that fade like heat haze along the ring.
+            final Location edge = waist.clone().add(0.0, 0.15, 0.0);
+            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 10, radius, 0.4, radius, 0.01);
+            edge.getWorld().spawnParticle(Particle.FLAME, edge, 6, radius * 0.6, 0.3, radius * 0.6, 0.02);
+            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 3, radius * 0.5, 0.3, radius * 0.5, 0.0);
+            edge.getWorld().spawnParticle(Particle.LAVA, waist, 4, radius * 0.4, 0.1, radius * 0.4, 0.01);
         });
     }
 
     /**
-     * Plays Enbu: a full-circle lava eruption around the caster — a magma
-     * ring spreads across the ground, a shroomlight column erupts upward, and
-     * a glowstone ring counter-rotates overhead.
+     * Plays Enbu: an electric launch at the feet, then a massive vertical
+     * crescent of solar fire sweeping forward, detonating into an expanding
+     * yellow/orange shockwave.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
-     * @param ticks  how long the eruption plays (shorter = snappier)
+     * @param ticks  how long the sequence plays (shorter = snappier)
      */
     public static void playEnbu(final JavaPlugin plugin, final Player player,
                                 final int ticks) {
         final Location eye = player.getEyeLocation();
-        final int ground = 28;
-        final int upperRing = 16;
-        final int columnBlocks = 7;
+        final Vector facing = horizontalFacing(player);
+        final Vector up = new Vector(0.0, 1.0, 0.0);
+
+        final int crescentOuter = 16;
+        final int crescentInner = 12;
+        final int shockwave = 20;
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        for (int i = 0; i < ground; i++) {
-            displays.add(spawnBlock(player, eye, Material.RED_STAINED_GLASS, 0.5f));
+        for (int i = 0; i < crescentOuter; i++) {
+            displays.add(spawnBlock(player, eye, Material.YELLOW_STAINED_GLASS, 0.55f));
         }
-        for (int i = 0; i < upperRing; i++) {
-            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.4f));
+        for (int i = 0; i < crescentInner; i++) {
+            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.45f));
         }
-        for (int i = 0; i < columnBlocks; i++) {
-            displays.add(spawnBlock(player, eye.clone().add(0, -1.0, 0),
-                    i % 2 == 0 ? Material.ORANGE_STAINED_GLASS : Material.YELLOW_STAINED_GLASS, 0.5f));
+        for (int i = 0; i < shockwave; i++) {
+            displays.add(spawnBlock(player, eye.clone().add(0.0, -1.0, 0.0),
+                    i % 2 == 0 ? Material.YELLOW_STAINED_GLASS : Material.ORANGE_STAINED_GLASS,
+                    0.5f));
         }
 
-        player.getWorld().spawnParticle(Particle.LAVA, eye, 50, 0.9, 0.5, 0.9, 0.02);
-        player.getWorld().spawnParticle(Particle.FLAME, eye, 80, 1.0, 0.6, 1.0, 0.06);
+        player.getWorld().playSound(eye, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.7f, 1.3f);
 
         animate(plugin, displays, ticks, tick -> {
-            final double spin = Math.toRadians(tick * 22);
-            final double groundRadius = 0.6 + tick * 0.22;
-            for (int i = 0; i < ground; i++) {
-                final double angle = Math.toRadians(i * (360.0 / ground)) + spin * 0.5;
-                final BlockDisplay block = displays.get(i);
-                block.teleport(eye.clone().add(
-                        Math.sin(angle) * groundRadius, -0.95, Math.cos(angle) * groundRadius));
-                setScale(block, 0.5f, 0.5f, 0.5f);
+            final double progress = tick / (double) Math.max(1, ticks - 1);
+            final boolean launching = progress < 0.2;
+
+            // Electric launch: yellow lightning crackles around the feet.
+            if (launching) {
+                final Location feet = player.getLocation();
+                feet.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, feet.add(0.0, 0.2, 0.0),
+                        8, 0.5, 0.1, 0.5, 0.02);
+                feet.getWorld().spawnParticle(Particle.FIREWORK, feet.add(0.0, 0.6, 0.0),
+                        5, 0.4, 0.3, 0.4, 0.01);
             }
-            final double innerSpin = -Math.toRadians(tick * 30);
-            for (int i = 0; i < upperRing; i++) {
-                final double angle = Math.toRadians(i * (360.0 / upperRing)) + innerSpin;
-                final BlockDisplay block = displays.get(ground + i);
-                block.teleport(eye.clone().add(
-                        Math.sin(angle) * 1.4, -0.2, Math.cos(angle) * 1.4));
-                setScale(block, 0.4f, 0.4f, 0.4f);
+
+            // The crescent sweeps forward: a vertical arc of fire in the
+            // facing plane, growing from the body outward.
+            final double slashProgress = clamp((progress - 0.15) / 0.6);
+            final double slashRadius = 0.4 + slashProgress * 3.8;
+            for (int i = 0; i < crescentOuter; i++) {
+                final double t = i / (double) (crescentOuter - 1);
+                final double angle = Math.toRadians(-80.0 + t * 160.0);
+                final Vector dir = facing.clone().multiply(Math.cos(angle))
+                        .add(up.clone().multiply(Math.sin(angle)));
+                displays.get(i).teleport(eye.clone().add(dir.multiply(slashRadius)));
+                setScale(displays.get(i), 0.55f, 0.55f, 0.55f);
             }
-            // Molten glass geyser: a stack of uniform cubes rises, then falls back.
-            final double columnProgress = (double) tick / Math.max(1, ticks - 1);
-            final double columnRise = Math.sin(columnProgress * Math.PI) * 2.4;
-            for (int i = 0; i < columnBlocks; i++) {
-                final BlockDisplay block = displays.get(ground + upperRing + i);
-                block.teleport(eye.clone().add(0, -1.0 + columnRise + i * 0.45, 0));
-                setScale(block, 0.5f, 0.5f, 0.5f);
+            for (int i = 0; i < crescentInner; i++) {
+                final double t = i / (double) (crescentInner - 1);
+                final double angle = Math.toRadians(-70.0 + t * 140.0);
+                final Vector dir = facing.clone().multiply(Math.cos(angle))
+                        .add(up.clone().multiply(Math.sin(angle)));
+                displays.get(crescentOuter + i).teleport(
+                        eye.clone().add(dir.multiply(slashRadius * 0.8)));
+                setScale(displays.get(crescentOuter + i), 0.45f, 0.45f, 0.45f);
+            }
+
+            // Impact shockwave: a horizontal ring spreads across the ground,
+            // merging the yellow lightning and orange fire.
+            final double impactProgress = clamp((progress - 0.75) / 0.25);
+            final double ringRadius = 0.5 + impactProgress * 3.0;
+            for (int i = 0; i < shockwave; i++) {
+                final double angle = i * (TAU / shockwave);
+                displays.get(crescentOuter + crescentInner + i).teleport(
+                        eye.clone().add(
+                                Math.sin(angle) * ringRadius, -1.0, Math.cos(angle) * ringRadius));
+                setScale(displays.get(crescentOuter + crescentInner + i), 0.5f, 0.2f, 0.5f);
+            }
+
+            // Flame trail along the crescent and the final electric/fire burst.
+            final Location tip = eye.clone().add(facing.clone().multiply(slashRadius));
+            tip.getWorld().spawnParticle(Particle.FLAME, tip, 8, 0.6, 0.6, 0.6, 0.04);
+            tip.getWorld().spawnParticle(Particle.END_ROD, tip, 5, 0.5, 0.5, 0.5, 0.02);
+            if (impactProgress > 0.0) {
+                final Location ground = eye.clone().add(0.0, -1.0, 0.0);
+                ground.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, ground, 6,
+                        ringRadius, 0.3, ringRadius, 0.02);
+                ground.getWorld().spawnParticle(Particle.LAVA, ground, 8,
+                        ringRadius * 0.6, 0.2, ringRadius * 0.6, 0.02);
             }
         });
     }
@@ -204,5 +255,12 @@ public final class NichirinEffects {
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Clamps a value into the [0, 1] range.
+     */
+    private static double clamp(final double value) {
+        return Math.max(0.0, Math.min(1.0, value));
     }
 }

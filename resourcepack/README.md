@@ -26,7 +26,7 @@ their display names.
 | `assets/nino/models/weapons/kokushibo2.json` | The animated empowered blade model (custom model data `2514`) |
 | `assets/nino/models/weapons/kokushibo_crescent.json` | The moon crescent projectile model |
 | `assets/nino/textures/item/kokushibo*.png`, `crescent.png` | Kokushibo blade and crescent textures |
-| `assets/minecraft/shaders/core/rendertype_entity_alpha.fsh` | Core shader: applies display-entity tint so ability VFX glow |
+| `assets/minecraft/shaders/core/rendertype_item_entity_translucent_cull.fsh` | Core shader: emissive bloom for the translucent glass / crescent display entities |
 
 ## Installation
 
@@ -72,10 +72,11 @@ routed through `assets/minecraft/items/netherite_sword.json` to the
 texture and tooltip sprites are sourced 1-1 from the Altar SMP pack and
 shipped here so the blade renders standalone.
 
-The ability visuals (Clear Blue Sky fan, Enbu flame ring) are drawn with
-block display entities using translucent stained glass. A core shader
-override (`rendertype_entity_alpha.fsh`) applies the display tint so the
-glass renders in its full colour instead of unlit grey.
+The ability visuals (Clear Blue Sky fan, Enbu eruption) are drawn with
+block display entities using full-bright translucent stained glass (orange /
+yellow / red). A core shader override
+(`rendertype_item_entity_translucent_cull.fsh`) adds a soft emissive bloom so
+the glass reads as glowing molten energy instead of flat tinted glass.
 
 ## Kokoshibos Sword
 
@@ -86,9 +87,9 @@ it the animated purple gradient border.
 
 The crescent projectile and moonbow strikes are drawn with item display
 entities carrying the `nino:weapons/kokushibo_crescent` model (a `nether_star`
-with custom model data `2`), while the Lunar Eclipse window spins a ring of
-block display purple glass. All three effects are full-bright and reuse the
-same core shader override.
+with custom model data `2`), while Catastrophe spins a ring of block display
+purple glass. All three effects are full-bright and share the same emissive
+core shader override.
 
 ## Regenerating the art
 

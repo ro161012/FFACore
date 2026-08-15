@@ -21,12 +21,12 @@ import java.util.function.IntConsumer;
  * Renders the Nichirin Blade ability visuals as two distinct lava scenes.
  *
  * <p><b>Clear Blue Sky</b> is a directional fan: a widening arc of glowing
- * magma blocks slashes outward in the direction the player faces. <b>Enbu</b>
- * is an omni-directional eruption: a ring of magma spreads across the ground
- * while a shroomlight lava column erupts upward beneath a counter-rotating
- * glowstone ring. Both use full-bright lava-adjacent blocks (magma, shroomlight,
- * glowstone) so they read as molten rock, and every display is removed when
- * the animation ends.
+ * translucent glass slashes outward in the direction the player faces.
+ * <b>Enbu</b> is an omni-directional eruption: a ring of translucent glass
+ * spreads across the ground while a glowing glass column erupts upward beneath
+ * a counter-rotating ring. The blocks are full-bright translucent stained glass
+ * so they read as molten energy, tinted by the pack's emissive core shader, and
+ * every display is removed when the animation ends.
  */
 public final class NichirinEffects {
 
@@ -55,10 +55,10 @@ public final class NichirinEffects {
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < blades; i++) {
-            displays.add(spawnBlock(player, eye, Material.MAGMA_BLOCK, 0.5f));
+            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.5f));
         }
         for (int i = 0; i < inner; i++) {
-            displays.add(spawnBlock(player, eye, Material.SHROOMLIGHT, 0.4f));
+            displays.add(spawnBlock(player, eye, Material.YELLOW_STAINED_GLASS, 0.4f));
         }
 
         animate(plugin, displays, ticks, tick -> {
@@ -107,14 +107,14 @@ public final class NichirinEffects {
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < ground; i++) {
-            displays.add(spawnBlock(player, eye, Material.MAGMA_BLOCK, 0.5f));
+            displays.add(spawnBlock(player, eye, Material.RED_STAINED_GLASS, 0.5f));
         }
         for (int i = 0; i < upperRing; i++) {
-            displays.add(spawnBlock(player, eye, Material.GLOWSTONE, 0.4f));
+            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.4f));
         }
         for (int i = 0; i < columnBlocks; i++) {
             displays.add(spawnBlock(player, eye.clone().add(0, -1.0, 0),
-                    i % 2 == 0 ? Material.MAGMA_BLOCK : Material.SHROOMLIGHT, 0.5f));
+                    i % 2 == 0 ? Material.ORANGE_STAINED_GLASS : Material.YELLOW_STAINED_GLASS, 0.5f));
         }
 
         player.getWorld().spawnParticle(Particle.LAVA, eye, 50, 0.9, 0.5, 0.9, 0.02);
@@ -138,7 +138,7 @@ public final class NichirinEffects {
                         Math.sin(angle) * 1.4, -0.2, Math.cos(angle) * 1.4));
                 setScale(block, 0.4f, 0.4f, 0.4f);
             }
-            // Lava geyser: a stack of uniform cubes rises, then falls back.
+            // Molten glass geyser: a stack of uniform cubes rises, then falls back.
             final double columnProgress = (double) tick / Math.max(1, ticks - 1);
             final double columnRise = Math.sin(columnProgress * Math.PI) * 2.4;
             for (int i = 0; i < columnBlocks; i++) {

@@ -1,0 +1,20 @@
+{
+  "format_version": "1.9.0",
+  "credit": "FFACore",
+  "texture_size": [64, 64],
+  "textures": {
+    "0": "ffacore:vfx/flame_orb",
+    "particle": "ffacore:vfx/flame_orb"
+  },
+  "elements": [
+    {
+      "from": [-16, 0, -16],
+      "to": [16, 0, 16],
+      "faces": {
+        "up": { "uv": [0, 0, 16, 16], "texture": "#0" },
+        "down": { "uv": [0, 0, 16, 16], "texture": "#0" }
+      }
+    }
+  ],
+  "gui_light": "front"
+}

@@ -6,12 +6,16 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -20,19 +24,32 @@ import java.util.function.IntConsumer;
 
 /**
  * Renders the Nichirin Blade ability visuals as the two canonical Hinokami
- * Kagura forms, built from full-bright translucent glass block displays and
- * tinted by the pack's solar-fire core shader.
+ * Kagura forms. The geometry is a mix of full-bright translucent glass block
+ * displays and custom flame models from the resource pack (the
+ * {@code ffacore:vfx/flame_blade} slash and {@code ffacore:vfx/flame_orb}
+ * glow, rendered as {@link ItemDisplay} entities), tinted by the pack's
+ * solar-fire core shader.
  *
  * <p><b>Clear Blue Sky</b> is a continuous 360&deg; disc of solar fire that
  * spins around the caster's waist: an orange-red core ring inside a
- * yellow-white outer ring, with a lingering afterimage and a trail of     * sparkling embers. <b>Dancing Flash</b> opens with an electric launch (yellow sparks
- * crackling at the feet), sweeps a massive vertical crescent of fire forward,
- * and detonates into an expanding yellow/orange shockwave. Every display is
- * removed when the animation ends.
+ * yellow-white outer ring, a whirling set of flat flame blades, and a
+ * lingering afterimage. <b>Dancing Flash</b> opens with an electric launch,
+ * sweeps a massive vertical crescent of flame blades forward, and detonates
+ * into an expanding yellow/orange shockwave. Every display is removed when
+ * the animation ends.
  */
 public final class NichirinEffects {
 
     private static final double TAU = Math.PI * 2.0;
+
+    /** Custom model data for the flat flame-blade slash model. */
+    private static final int FLAME_BLADE_CMD = 2001;
+
+    /** Custom model data for the round flame-orb glow model. */
+    private static final int FLAME_ORB_CMD = 2002;
+
+    /** How far the Clear Blue Sky flame blades lean up from fully horizontal. */
+    private static final float FLAME_BLADE_TILT = 0.5f;
 
     private NichirinEffects() {
         // Utility class.
@@ -40,8 +57,9 @@ public final class NichirinEffects {
 
     /**
      * Plays Clear Blue Sky: a spinning 360&deg; horizontal solar disc around
-     * the caster's waist — orange-red core, yellow-white rim, a lagging
-     * afterimage, and lava that shoots outward before fading.
+     * the caster's waist — orange-red core, yellow-white rim, whirling flat
+     * flame blades, a lagging afterimage, and lava that shoots outward before
+     * fading.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
@@ -57,8 +75,9 @@ public final class NichirinEffects {
         final int core = perRing;
         final int rim = perRing;
         final int afterimage = Math.max(12, perRing / 2);
+        final int bladeCount = Math.max(20, perRing / 2);
 
-        final List<BlockDisplay> displays = new ArrayList<>();
+        final List<Display> displays = new ArrayList<>();
         for (int i = 0; i < core; i++) {
             displays.add(spawnBlock(player, waist, Material.ORANGE_STAINED_GLASS, 0.6f));
         }
@@ -67,6 +86,10 @@ public final class NichirinEffects {
         }
         for (int i = 0; i < afterimage; i++) {
             displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.45f));
+        }
+        for (int i = 0; i < bladeCount; i++) {
+            displays.add(spawnVfxItem(player, waist, FLAME_BLADE_CMD,
+                    Display.Billboard.FIXED));
         }
 
         animate(plugin, displays, ticks, tick -> {
@@ -98,6 +121,19 @@ public final class NichirinEffects {
                 setScale(displays.get(core + rim + i), ghostScale, ghostScale * 0.7f, ghostScale);
             }
 
+            // Whirling solar flame blades lying flat over the disc, spinning
+            // around the vertical axis as they ride the ring outward.
+            for (int i = 0; i < bladeCount; i++) {
+                final double angle = -spin * 1.3 + i * (TAU / bladeCount);
+                final double bladeRadius = 0.8 + progress * radius * 0.85;
+                displays.get(core + rim + afterimage + i).teleport(waist.clone().add(
+                        Math.sin(angle) * bladeRadius, 0.05, Math.cos(angle) * bladeRadius));
+                final float scale = (float) (1.5 + progress * 1.4
+                        + Math.sin(tick * 0.5 + i) * 0.2);
+                setSpinScale(displays.get(core + rim + afterimage + i), scale,
+                        angle, FLAME_BLADE_TILT);
+            }
+
             // Lava shoots outward from the rim, then fades like heat haze.
             final Location edge = waist.clone().add(0.0, 0.15, 0.0);
             edge.getWorld().spawnParticle(Particle.LAVA, edge, 14, ringRadius, 0.3, ringRadius, 0.08);
@@ -109,9 +145,9 @@ public final class NichirinEffects {
     }
 
     /**
-     * Plays Dancing Flash: an electric launch at the feet, then a massive vertical
-     * crescent of solar fire sweeping forward, detonating into an expanding
-     * yellow/orange shockwave.
+     * Plays Dancing Flash: an electric launch at the feet, then a massive
+     * vertical crescent of flame blades sweeping forward with a leading glow
+     * orb, detonating into an expanding yellow/orange shockwave.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
@@ -128,18 +164,25 @@ public final class NichirinEffects {
         final int crescentInner = Math.max(10, crescentOuter * 3 / 4);
         final int shockwave = Math.max(24, (int) Math.round(Math.PI * 2.0 * radius / 1.8));
 
-        final List<BlockDisplay> displays = new ArrayList<>();
+        final List<Display> displays = new ArrayList<>();
         for (int i = 0; i < crescentOuter; i++) {
-            displays.add(spawnBlock(player, eye, Material.YELLOW_STAINED_GLASS, 0.55f));
+            displays.add(spawnVfxItem(player, eye, FLAME_BLADE_CMD,
+                    Display.Billboard.CENTER));
         }
         for (int i = 0; i < crescentInner; i++) {
-            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.45f));
+            displays.add(spawnVfxItem(player, eye, FLAME_BLADE_CMD,
+                    Display.Billboard.CENTER));
         }
+        // Leading glow orb at the tip of the slash.
+        displays.add(spawnVfxItem(player, eye, FLAME_ORB_CMD,
+                Display.Billboard.CENTER));
+        final int orbIndex = crescentOuter + crescentInner;
         for (int i = 0; i < shockwave; i++) {
             displays.add(spawnBlock(player, eye.clone().add(0.0, -1.0, 0.0),
                     i % 2 == 0 ? Material.YELLOW_STAINED_GLASS : Material.ORANGE_STAINED_GLASS,
                     0.5f));
         }
+        final int shockIndex = orbIndex + 1;
 
         player.getWorld().playSound(eye, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.7f, 1.3f);
 
@@ -156,8 +199,8 @@ public final class NichirinEffects {
                         5, 0.4, 0.3, 0.4, 0.01);
             }
 
-            // The crescent sweeps forward: a vertical arc of fire in the
-            // facing plane, growing from the body outward.
+            // The crescent sweeps forward: a vertical arc of flame blades in
+            // the facing plane, growing from the body outward.
             final double slashProgress = clamp((progress - 0.15) / 0.6);
             final double slashRadius = 0.4 + slashProgress * radius;
             for (int i = 0; i < crescentOuter; i++) {
@@ -166,7 +209,7 @@ public final class NichirinEffects {
                 final Vector dir = facing.clone().multiply(Math.cos(angle))
                         .add(up.clone().multiply(Math.sin(angle)));
                 displays.get(i).teleport(eye.clone().add(dir.multiply(slashRadius)));
-                setScale(displays.get(i), 0.55f, 0.55f, 0.55f);
+                setScale(displays.get(i), 1.8f, 1.8f, 1.8f);
             }
             for (int i = 0; i < crescentInner; i++) {
                 final double t = i / (double) (crescentInner - 1);
@@ -175,8 +218,15 @@ public final class NichirinEffects {
                         .add(up.clone().multiply(Math.sin(angle)));
                 displays.get(crescentOuter + i).teleport(
                         eye.clone().add(dir.multiply(slashRadius * 0.8)));
-                setScale(displays.get(crescentOuter + i), 0.45f, 0.45f, 0.45f);
+                setScale(displays.get(crescentOuter + i), 1.4f, 1.4f, 1.4f);
             }
+
+            // Leading glow orb rides the tip, swelling then fading.
+            final Location tip = eye.clone().add(facing.clone().multiply(slashRadius));
+            displays.get(orbIndex).teleport(tip);
+            final float orbScale = (float) (1.2 + slashProgress * 2.2)
+                    * (1.0f - (float) progress * 0.35f);
+            setScale(displays.get(orbIndex), orbScale, orbScale, orbScale);
 
             // Impact shockwave: a horizontal ring spreads across the ground,
             // merging the yellow lightning and orange fire.
@@ -184,14 +234,13 @@ public final class NichirinEffects {
             final double ringRadius = 0.5 + impactProgress * radius;
             for (int i = 0; i < shockwave; i++) {
                 final double angle = i * (TAU / shockwave);
-                displays.get(crescentOuter + crescentInner + i).teleport(
+                displays.get(shockIndex + i).teleport(
                         eye.clone().add(
                                 Math.sin(angle) * ringRadius, -1.0, Math.cos(angle) * ringRadius));
-                setScale(displays.get(crescentOuter + crescentInner + i), 0.5f, 0.2f, 0.5f);
+                setScale(displays.get(shockIndex + i), 0.5f, 0.2f, 0.5f);
             }
 
             // Flame trail along the crescent and the final electric/fire burst.
-            final Location tip = eye.clone().add(facing.clone().multiply(slashRadius));
             tip.getWorld().spawnParticle(Particle.FLAME, tip, 8, 0.6, 0.6, 0.6, 0.04);
             tip.getWorld().spawnParticle(Particle.END_ROD, tip, 5, 0.5, 0.5, 0.5, 0.02);
             if (impactProgress > 0.0) {
@@ -266,6 +315,28 @@ public final class NichirinEffects {
     }
 
     /**
+     * Spawns a full-bright item display carrying one of the pack's flame VFX
+     * models (selected by custom model data).
+     */
+    private static ItemDisplay spawnVfxItem(final Player player, final Location location,
+                                            final int modelData,
+                                            final Display.Billboard billboard) {
+        final ItemStack stack = new ItemStack(Material.NETHER_STAR);
+        final ItemMeta meta = stack.getItemMeta();
+        if (meta != null) {
+            meta.setCustomModelData(modelData);
+            stack.setItemMeta(meta);
+        }
+        final ItemDisplay display = player.getWorld().spawn(location, ItemDisplay.class);
+        display.setItemStack(stack);
+        display.setBillboard(billboard);
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+        return display;
+    }
+
+    /**
      * Returns the player's horizontal facing direction (pitch flattened), or
      * north when they are looking straight up or down.
      */
@@ -288,9 +359,25 @@ public final class NichirinEffects {
     }
 
     /**
+     * Applies a scale plus a horizontal spin (rotation about the vertical
+     * axis) to a flat flame blade, tilted up slightly so it stays visible.
+     */
+    private static void setSpinScale(final Display display, final float scale,
+                                     final double yaw, final float tilt) {
+        final Quaternionf rotation = new Quaternionf()
+                .rotateY((float) yaw)
+                .rotateX(tilt);
+        display.setTransformation(new Transformation(
+                new Vector3f(0f, 0f, 0f),
+                new AxisAngle4f(rotation),
+                new Vector3f(scale, scale, scale),
+                new AxisAngle4f(0f, 0f, 0f, 1f)));
+    }
+
+    /**
      * Runs a per-tick animation callback, then removes every display.
      */
-    private static void animate(final JavaPlugin plugin, final List<BlockDisplay> displays,
+    private static void animate(final JavaPlugin plugin, final List<? extends Display> displays,
                                 final int totalTicks, final IntConsumer ticker) {
         new BukkitRunnable() {
             private int tick;
@@ -298,7 +385,7 @@ public final class NichirinEffects {
             @Override
             public void run() {
                 if (tick >= totalTicks) {
-                    displays.forEach(BlockDisplay::remove);
+                    displays.forEach(Display::remove);
                     cancel();
                     return;
                 }

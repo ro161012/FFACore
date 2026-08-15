@@ -16,6 +16,20 @@
           "type": "minecraft:model",
           "model": "ffacore:item/kill_token"
         }
+      },
+      {
+        "threshold": 2001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ffacore:vfx/flame_blade"
+        }
+      },
+      {
+        "threshold": 2002,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ffacore:vfx/flame_orb"
+        }
       }
     ],
     "fallback": {

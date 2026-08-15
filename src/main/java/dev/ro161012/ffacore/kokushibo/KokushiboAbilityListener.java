@@ -2,10 +2,10 @@ package dev.ro161012.ffacore.kokushibo;
 
 import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.nichirin.NichirinCooldown;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import dev.ro161012.ffacore.weapon.AbilityBossBars;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,6 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class KokushiboAbilityListener implements Listener {
 
     private final FFACore plugin;
+    private final AbilityBossBars bossBars;
 
     private final Set<UUID> trueDamageTargets = ConcurrentHashMap.newKeySet();
     private final Set<UUID> crescentSnowballs = ConcurrentHashMap.newKeySet();
@@ -75,6 +76,7 @@ public final class KokushiboAbilityListener implements Listener {
      */
     public KokushiboAbilityListener(final FFACore plugin) {
         this.plugin = plugin;
+        this.bossBars = new AbilityBossBars(plugin);
         this.crescentCooldown = new NichirinCooldown(70);
         this.moonbowCooldown = new NichirinCooldown(80);
         applyConfig();
@@ -134,10 +136,19 @@ public final class KokushiboAbilityListener implements Listener {
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
         final Player player = event.getPlayer();
-        if (!KokushiboSword.isKokushiboSword(player.getInventory().getItemInOffHand())) {
+        final boolean inMainHand = KokushiboSword.isKokushiboSword(
+                player.getInventory().getItemInMainHand());
+        final boolean inOffHand = KokushiboSword.isKokushiboSword(
+                player.getInventory().getItemInOffHand());
+        if (!inMainHand && !inOffHand) {
             return;
         }
+        // The sword never moves between hands via the swap key: it can only
+        // be placed in the offhand manually. Swapping is the ability trigger.
         event.setCancelled(true);
+        if (!inOffHand) {
+            return;
+        }
         if (player.isSneaking()) {
             castMoonbow(player);
         } else {
@@ -197,29 +208,37 @@ public final class KokushiboAbilityListener implements Listener {
         lunarEclipseUntil.remove(id);
         nextCrescentFire.remove(id);
         nextUpperMoonGrant.remove(id);
+        bossBars.clear(id);
+    }
+
+    /**
+     * Removes every active cooldown bar (called on plugin disable).
+     */
+    public void close() {
+        bossBars.close();
     }
 
     private void castCrescentThrow(final Player player) {
         final UUID id = player.getUniqueId();
         if (crescentCooldown.isOnCooldown(id)) {
-            sendCooldown(player, crescentCooldown.remainingMillis(id));
             return;
         }
         crescentCooldown.apply(id);
+        bossBars.start(player, "crescent-throw", "Crescent Throw",
+                BarColor.PURPLE, crescentCooldown.getCooldownMillis());
         lunarEclipseUntil.put(id, System.currentTimeMillis() + windowMillis);
         KokushiboEffects.playEclipseBurst(plugin, player);
-        player.sendActionBar(Component.text("Lunar Eclipse - 10s window!",
-                NamedTextColor.LIGHT_PURPLE));
         player.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0f, 1.2f);
     }
 
     private void castMoonbow(final Player player) {
         final UUID id = player.getUniqueId();
         if (moonbowCooldown.isOnCooldown(id)) {
-            sendCooldown(player, moonbowCooldown.remainingMillis(id));
             return;
         }
         moonbowCooldown.apply(id);
+        bossBars.start(player, "moonbow", "Moonbow, Half Moon",
+                BarColor.PURPLE, moonbowCooldown.getCooldownMillis());
 
         final Location eye = player.getEyeLocation();
         final Vector facing = eye.getDirection();
@@ -290,11 +309,5 @@ public final class KokushiboAbilityListener implements Listener {
     private static boolean isHoldingSword(final Player player) {
         return KokushiboSword.isKokushiboSword(player.getInventory().getItemInMainHand())
                 || KokushiboSword.isKokushiboSword(player.getInventory().getItemInOffHand());
-    }
-
-    private void sendCooldown(final Player player, final long remainingMillis) {
-        final double seconds = Math.ceil(remainingMillis / 1000.0);
-        player.sendActionBar(Component.text(
-                "On cooldown - " + (long) seconds + "s", NamedTextColor.GRAY));
     }
 }

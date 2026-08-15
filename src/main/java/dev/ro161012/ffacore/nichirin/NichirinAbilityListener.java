@@ -1,9 +1,9 @@
 package dev.ro161012.ffacore.nichirin;
 
 import dev.ro161012.ffacore.FFACore;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import dev.ro161012.ffacore.weapon.AbilityBossBars;
 import org.bukkit.Sound;
+import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class NichirinAbilityListener implements Listener {
 
     private final FFACore plugin;
+    private final AbilityBossBars bossBars;
 
     private final Set<UUID> trueDamageTargets = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Long> absorptionLockedUntil = new ConcurrentHashMap<>();
@@ -71,6 +72,7 @@ public final class NichirinAbilityListener implements Listener {
      */
     public NichirinAbilityListener(final FFACore plugin) {
         this.plugin = plugin;
+        this.bossBars = new AbilityBossBars(plugin);
         applyConfig();
     }
 
@@ -139,7 +141,6 @@ public final class NichirinAbilityListener implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH,
                     strengthSeconds * 20, 1, false, true, true));
             player.playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 1.0f, 1.2f);
-            player.sendActionBar(Component.text("Flame Combo - Strength II!", NamedTextColor.RED));
         }
     }
 
@@ -160,10 +161,19 @@ public final class NichirinAbilityListener implements Listener {
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
         final Player player = event.getPlayer();
-        if (!NichirinBlade.isNichirinBlade(player.getInventory().getItemInOffHand())) {
+        final boolean inMainHand = NichirinBlade.isNichirinBlade(
+                player.getInventory().getItemInMainHand());
+        final boolean inOffHand = NichirinBlade.isNichirinBlade(
+                player.getInventory().getItemInOffHand());
+        if (!inMainHand && !inOffHand) {
             return;
         }
+        // The blade never moves between hands via the swap key: it can only
+        // be placed in the offhand manually. Swapping is the ability trigger.
         event.setCancelled(true);
+        if (!inOffHand) {
+            return;
+        }
         if (player.isSneaking()) {
             castEnbu(player);
         } else {
@@ -181,6 +191,14 @@ public final class NichirinAbilityListener implements Listener {
         clearSkyCooldown.clear(id);
         enbuCooldown.clear(id);
         absorptionLockedUntil.remove(id);
+        bossBars.clear(id);
+    }
+
+    /**
+     * Removes every active cooldown bar (called on plugin disable).
+     */
+    public void close() {
+        bossBars.close();
     }
 
     /**
@@ -205,10 +223,11 @@ public final class NichirinAbilityListener implements Listener {
     private void castClearBlueSky(final Player player) {
         final UUID id = player.getUniqueId();
         if (clearSkyCooldown.isOnCooldown(id)) {
-            sendCooldown(player, clearSkyCooldown.remainingMillis(id));
             return;
         }
         clearSkyCooldown.apply(id);
+        bossBars.start(player, "clear-blue-sky", "Clear Blue Sky",
+                BarColor.RED, clearSkyCooldown.getCooldownMillis());
         NichirinEffects.playClearBlueSky(plugin, player);
 
         final Vector facing = horizontalDirection(player);
@@ -228,10 +247,11 @@ public final class NichirinAbilityListener implements Listener {
     private void castEnbu(final Player player) {
         final UUID id = player.getUniqueId();
         if (enbuCooldown.isOnCooldown(id)) {
-            sendCooldown(player, enbuCooldown.remainingMillis(id));
             return;
         }
         enbuCooldown.apply(id);
+        bossBars.start(player, "enbu", "Enbu",
+                BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player);
 
         final long lockUntil = System.currentTimeMillis() + absorptionLockMillis;
@@ -285,11 +305,5 @@ public final class NichirinAbilityListener implements Listener {
     private static Vector horizontalDirection(final Player player) {
         final Vector direction = player.getLocation().getDirection().setY(0);
         return direction.lengthSquared() == 0 ? new Vector(0, 0, 1) : direction.normalize();
-    }
-
-    private void sendCooldown(final Player player, final long remainingMillis) {
-        final double seconds = Math.ceil(remainingMillis / 1000.0);
-        player.sendActionBar(Component.text(
-                "On cooldown - " + (long) seconds + "s", NamedTextColor.GRAY));
     }
 }

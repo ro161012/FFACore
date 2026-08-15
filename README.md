@@ -134,6 +134,11 @@ This is the only command that hands out weapons. Available weapons:
 The active abilities render their visuals with block display entities, and the
 resource pack ships a core shader override so the effect glass glows.
 
+The swap-hands key (F) never moves a weapon between hands: to use an offhand
+ability you place the sword in your offhand slot manually, then press F. Once
+cast, each ability shows its cooldown as a draining boss bar (red for Nichirin,
+purple for Kokoshibo) with no chat or action-bar indicator.
+
 ### `/ffa`
 
 Every FFACore command lives under `/ffa`:

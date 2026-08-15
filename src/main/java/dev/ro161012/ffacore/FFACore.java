@@ -190,6 +190,12 @@ public final class FFACore extends JavaPlugin {
         if (afkManager != null) {
             afkManager.shutdown();
         }
+        if (nichirinListener != null) {
+            nichirinListener.close();
+        }
+        if (kokushiboListener != null) {
+            kokushiboListener.close();
+        }
         getLogger().info("FFACore disabled.");
     }
 

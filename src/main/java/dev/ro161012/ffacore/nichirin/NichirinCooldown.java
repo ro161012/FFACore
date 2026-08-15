@@ -77,6 +77,15 @@ public final class NichirinCooldown {
     }
 
     /**
+     * Returns the current cooldown length in milliseconds.
+     *
+     * @return cooldown length in milliseconds
+     */
+    public long getCooldownMillis() {
+        return cooldownMillis;
+    }
+
+    /**
      * Updates the cooldown length for future activations. Active cooldowns
      * keep their original expiry time.
      *

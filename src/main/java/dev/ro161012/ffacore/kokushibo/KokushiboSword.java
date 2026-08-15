@@ -40,10 +40,10 @@ public final class KokushiboSword {
     /** Tooltip style: the animated purple gradient background and frame. */
     public static final Key TOOLTIP_STYLE = Key.key("altarsmp", "kokoshibo_sword");
 
-    // Moon palette (matches the purple tooltip border).
-    private static final int MOON_FROM = 0x2A0A4A;
-    private static final int MOON_TO = 0xB76BE8;
-    private static final TextColor HEADER = TextColor.color(0xB06BE8);
+    // Moon palette (soft muted violet, matching the recoloured tooltip border).
+    private static final int MOON_FROM = 0x3A2A5C;
+    private static final int MOON_TO = 0xA98BC8;
+    private static final TextColor HEADER = TextColor.color(0xA78BC8);
     private static final TextColor TAG = TextColor.color(0x9E9E9E);
     private static final TextColor BODY = TextColor.color(0xD6D6D6);
 

@@ -68,84 +68,51 @@ public final class KokushiboEffects {
         final Location eye = player.getEyeLocation();
         final int totalTicks = Math.max(1, ticks);
         final double startRadius = 1.6;
-        final int bladeCount = Math.max(8, Math.max(crescents, (int) Math.round(maxRadius)));
-        final int innerCount = bladeCount / 3;
-        final int midCount = bladeCount / 3;
-        final int outerCount = bladeCount - innerCount - midCount;
-        final int blockRing = Math.max(24, (int) Math.round(Math.PI * 2.0 * maxRadius / 2.0));
+        final int bladeCount = Math.max(12, Math.max(crescents, (int) Math.round(maxRadius)));
+        final int outerCount = bladeCount * 2 / 3;
+        final int innerCount = bladeCount - outerCount;
 
         final List<Display> displays = new ArrayList<>();
-        for (int i = 0; i < innerCount; i++) {
-            displays.add(spawnCrescent(player, eye));
-        }
-        for (int i = 0; i < midCount; i++) {
-            displays.add(spawnCrescent(player, eye));
-        }
         for (int i = 0; i < outerCount; i++) {
             displays.add(spawnCrescent(player, eye));
         }
-        for (int i = 0; i < blockRing; i++) {
-            displays.add(spawnBlock(player, eye, Material.PURPLE_STAINED_GLASS, 0.4f));
+        for (int i = 0; i < innerCount; i++) {
+            displays.add(spawnCrescent(player, eye));
         }
 
         final Set<UUID> struck = new HashSet<>();
-        player.getWorld().spawnParticle(Particle.WITCH, eye, 90, 1.5, 1.0, 1.5, 0.03);
-        player.getWorld().spawnParticle(Particle.END_ROD, eye, 40, 1.5, 1.0, 1.5, 0.02);
+        player.getWorld().spawnParticle(Particle.WITCH, eye, 40, 1.0, 0.6, 1.0, 0.02);
 
         animate(plugin, displays, totalTicks, tick -> {
             final double progress = tick / (double) totalTicks;
             final double radius = startRadius + (maxRadius - startRadius) * progress;
-            final double spin = Math.toRadians(tick * 34);
+            final double spin = Math.toRadians(tick * 26);
 
-            // Inner ring: tight, fast orbit, spinning flat around the
-            // vertical axis as it grows, with a white trail behind.
-            for (int i = 0; i < innerCount; i++) {
-                final double angle = Math.toRadians(i * (360.0 / innerCount)) + spin;
-                final double orbit = radius * 0.55;
+            // Outer ring: one clean, uniform whirl of crescents spinning flat
+            // around the vertical axis as it grows outward.
+            for (int i = 0; i < outerCount; i++) {
+                final double angle = Math.toRadians(i * (360.0 / outerCount)) + spin;
                 displays.get(i).teleport(eye.clone().add(
-                        Math.sin(angle) * orbit, -0.3, Math.cos(angle) * orbit));
-                final float scale = 1.3f + (float) (progress * 1.4)
-                        + (float) Math.sin(tick * 0.5 + i) * 0.25f;
+                        Math.sin(angle) * radius, -0.4, Math.cos(angle) * radius));
+                final float scale = (float) (1.6 + progress * 1.8);
                 setSpinScale(displays.get(i), scale, angle);
                 trail(displays.get(i));
             }
 
-            // Mid ring: counter-rotating, medium orbit, spinning flat as it grows.
-            for (int i = 0; i < midCount; i++) {
-                final double angle = -spin + Math.toRadians(i * (360.0 / midCount));
-                final double orbit = radius * 0.78;
-                displays.get(innerCount + i).teleport(eye.clone().add(
-                        Math.sin(angle) * orbit, -0.4, Math.cos(angle) * orbit));
-                final float scale = 1.6f + (float) (progress * 1.6)
-                        + (float) Math.sin(tick * 0.5 + i) * 0.3f;
-                setSpinScale(displays.get(innerCount + i), scale, angle);
-                trail(displays.get(innerCount + i));
+            // Inner ring: a tighter counter-rotating halo, slightly smaller.
+            for (int i = 0; i < innerCount; i++) {
+                final double angle = Math.toRadians(i * (360.0 / innerCount)) - spin * 1.25;
+                final double orbit = radius * 0.62;
+                displays.get(outerCount + i).teleport(eye.clone().add(
+                        Math.sin(angle) * orbit, -0.35, Math.cos(angle) * orbit));
+                final float scale = (float) (1.15 + progress * 1.4);
+                setSpinScale(displays.get(outerCount + i), scale, angle);
             }
 
-            // Outer ring: widest, slowest, biggest crescents, spinning flat.
-            for (int i = 0; i < outerCount; i++) {
-                final double angle = spin * 0.8 + Math.toRadians(i * (360.0 / outerCount));
-                displays.get(innerCount + midCount + i).teleport(eye.clone().add(
-                        Math.sin(angle) * radius, -0.5, Math.cos(angle) * radius));
-                final float scale = 1.9f + (float) (progress * 1.8)
-                        + (float) Math.sin(tick * 0.5 + i) * 0.35f;
-                setSpinScale(displays.get(innerCount + midCount + i), scale, angle);
-                trail(displays.get(innerCount + midCount + i));
-            }
-
-            // Counter-rotating purple glass ring woven through the crescents.
-            for (int i = 0; i < blockRing; i++) {
-                final double angle = Math.toRadians(i * (360.0 / blockRing)) + spin * 1.2;
-                displays.get(bladeCount + i).teleport(eye.clone().add(
-                        Math.sin(angle) * radius * 0.8, -0.3, Math.cos(angle) * radius * 0.8));
-                setScale(displays.get(bladeCount + i), 0.4f, 0.4f, 0.4f);
-            }
-
-            if (tick % 2 == 0) {
+            // Sparse sparkle drifting outward with the vortex.
+            if (tick % 3 == 0) {
                 eye.getWorld().spawnParticle(Particle.END_ROD,
-                        eye.clone().add(0, -0.3, 0), 4, radius, 0.3, radius, 0.01);
-                eye.getWorld().spawnParticle(Particle.WITCH,
-                        eye.clone().add(0, -0.3, 0), 3, radius, 0.4, radius, 0.01);
+                        eye.clone().add(0, -0.3, 0), 2, radius, 0.2, radius, 0.005);
             }
 
             for (final Entity entity : eye.getWorld().getNearbyEntities(
@@ -440,20 +407,6 @@ public final class KokushiboEffects {
                 new AxisAngle4f(rotation),
                 new Vector3f(scale, scale, scale),
                 new AxisAngle4f(0f, 0f, 0f, 1f)));
-    }
-
-    /**
-     * Spawns a full-bright glowing purple glass block display.
-     */
-    private static BlockDisplay spawnBlock(final Player player, final Location location,
-                                           final Material material, final float scale) {
-        final BlockDisplay display = player.getWorld().spawn(location, BlockDisplay.class);
-        display.setBlock(material.createBlockData());
-        display.setBrightness(new Display.Brightness(15, 15));
-        display.setInterpolationDuration(1);
-        display.setInterpolationDelay(0);
-        setScale(display, scale, scale, scale);
-        return display;
     }
 
     /**

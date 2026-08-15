@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -243,37 +244,34 @@ public final class NichirinEffects {
                                  final double radius) {
         final Location center = player.getLocation().add(0.0, 0.2, 0.0);
         final int count = 28;
-        final List<BlockDisplay> lava = new ArrayList<>();
+        final double speed = Math.max(0.4, 0.35 + radius * 0.015);
+        final List<FallingBlock> lava = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final BlockDisplay display = player.getWorld().spawn(center, BlockDisplay.class);
-            display.setBlock(Material.LAVA.createBlockData());
-            display.setBrightness(new Display.Brightness(15, 15));
-            display.setInterpolationDuration(1);
-            display.setInterpolationDelay(0);
-            setScale(display, 0.6f, 0.6f, 0.6f);
-            lava.add(display);
+            final double angle = i * (TAU / count);
+            // A real lava block entity (not a display/particle) that erupts
+            // outward and is removed once the burst ends.
+            final FallingBlock block = player.getWorld().spawnFallingBlock(
+                    center, Material.LAVA.createBlockData());
+            block.setDropItem(false);
+            block.setGravity(false);
+            block.setVelocity(new Vector(
+                    Math.sin(angle) * speed, 0.35, Math.cos(angle) * speed));
+            lava.add(block);
         }
 
-        final int duration = 20;
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick >= duration) {
-                    lava.forEach(BlockDisplay::remove);
+                if (tick++ >= 16) {
+                    lava.forEach(block -> {
+                        if (block.isValid()) {
+                            block.remove();
+                        }
+                    });
                     cancel();
-                    return;
                 }
-                final double progress = tick / (double) (duration - 1);
-                for (int i = 0; i < lava.size(); i++) {
-                    final double angle = i * (TAU / lava.size()) + progress * 0.6;
-                    final double dist = 0.4 + progress * radius * 0.9;
-                    final double height = Math.sin(progress * Math.PI) * 1.6;
-                    lava.get(i).teleport(center.clone().add(
-                            Math.sin(angle) * dist, height, Math.cos(angle) * dist));
-                }
-                tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
     }
@@ -291,52 +289,41 @@ public final class NichirinEffects {
         final Location origin = player.getEyeLocation();
         final Vector facing = horizontalFacing(player);
         final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
-        final int count = 32;
-        final double reach = Math.max(2.0, radius) + 2.0;
-        final List<BlockDisplay> lava = new ArrayList<>();
+        final int count = 20;
+        final double speed = 0.5 + Math.max(0.0, radius) * 0.05;
+        final List<FallingBlock> lava = new ArrayList<>();
         for (int i = 0; i < count; i++) {
+            final double spread = (i / (double) (count - 1)) * 2.0 - 1.0;
             // Spawn just ahead of the caster so the volley is instantly in view.
-            final BlockDisplay display = player.getWorld().spawn(
-                    origin.clone().add(facing.clone().multiply(0.4)), BlockDisplay.class);
-            display.setBlock(Material.LAVA.createBlockData());
-            display.setBrightness(new Display.Brightness(15, 15));
-            display.setInterpolationDuration(1);
-            display.setInterpolationDelay(0);
-            setScale(display, 0.8f, 0.8f, 0.8f);
-            lava.add(display);
+            final Location spawn = origin.clone()
+                    .add(facing.clone().multiply(0.5))
+                    .add(side.clone().multiply(spread * 0.5));
+            // A real lava block entity (not a display/particle) that shoots
+            // forward and is removed once the burst ends.
+            final FallingBlock block = player.getWorld().spawnFallingBlock(
+                    spawn, Material.LAVA.createBlockData());
+            block.setDropItem(false);
+            block.setGravity(false);
+            block.setVelocity(facing.clone()
+                    .multiply(speed + Math.random() * 0.25)
+                    .add(side.clone().multiply(spread * 0.18))
+                    .add(new Vector(0.0, 0.12 + Math.random() * 0.18, 0.0)));
+            lava.add(block);
         }
 
-        final int duration = 24;
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick >= duration) {
-                    lava.forEach(BlockDisplay::remove);
+                if (tick++ >= 16) {
+                    lava.forEach(block -> {
+                        if (block.isValid()) {
+                            block.remove();
+                        }
+                    });
                     cancel();
-                    return;
                 }
-                final double progress = tick / (double) (duration - 1);
-                for (int i = 0; i < lava.size(); i++) {
-                    final double spread = (i / (double) (lava.size() - 1)) * 2.0 - 1.0;
-                    final double dist = 0.5 + progress * reach;
-                    final double height = Math.sin(progress * Math.PI) * 1.6;
-                    final double width = 0.6 + Math.abs(spread) * 2.0;
-                    final Location pos = origin.clone()
-                            .add(facing.clone().multiply(dist))
-                            .add(0.0, height, 0.0)
-                            .add(side.clone().multiply(spread * width));
-                    lava.get(i).teleport(pos);
-                    // Glowing lava trail so the volley reads clearly while it flies.
-                    if (i % 2 == 0) {
-                        pos.getWorld().spawnParticle(Particle.LAVA, pos, 2,
-                                0.15, 0.15, 0.15, 0.0);
-                        pos.getWorld().spawnParticle(Particle.FLAME, pos, 2,
-                                0.2, 0.2, 0.2, 0.01);
-                    }
-                }
-                tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
     }

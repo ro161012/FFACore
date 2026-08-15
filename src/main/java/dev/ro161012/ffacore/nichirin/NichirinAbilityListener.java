@@ -96,7 +96,7 @@ public final class NichirinAbilityListener implements Listener {
         comboHits = Math.max(1, config.getInt("nichirin.combo-hits", 4));
         strengthSeconds = Math.max(1, config.getInt("nichirin.combo-strength-duration-seconds", 6));
         clearSkyDamageHearts = config.getDouble("nichirin.clear-blue-sky.damage-hearts", 2.0);
-        clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 5.0);
+        clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 15.0);
         clearSkyBoost = config.getDouble("nichirin.clear-blue-sky.boost-power", 1.4);
         clearSkyFireSeconds = Math.max(1, config.getInt(
                 "nichirin.clear-blue-sky.fire-seconds", 3));

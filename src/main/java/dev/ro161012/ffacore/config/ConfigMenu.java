@@ -537,7 +537,7 @@ public final class ConfigMenu {
                         ConfigOption.decimal("nichirin.clear-blue-sky.radius",
                                 "Clear Blue Sky radius",
                                 "Full-circle reach in blocks.",
-                                1f, 15f, 0.5f, 5.0).withColor(NICHIRIN),
+                                1f, 30f, 0.5f, 15.0).withColor(NICHIRIN),
                         ConfigOption.decimal("nichirin.clear-blue-sky.boost-power",
                                 "Clear Blue Sky boost",
                                 "Upward launch velocity on cast.",

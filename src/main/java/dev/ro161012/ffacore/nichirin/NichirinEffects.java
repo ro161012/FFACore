@@ -51,9 +51,12 @@ public final class NichirinEffects {
     public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
                                         final int ticks, final double radius) {
         final Location waist = player.getEyeLocation().add(0.0, -1.0, 0.0);
-        final int core = 28;
-        final int rim = 28;
-        final int afterimage = 24;
+        // Ring density scales with the radius so a big disc still reads as one
+        // solid band of fire rather than sparse dots.
+        final int perRing = Math.max(24, (int) Math.round(Math.PI * 2.0 * radius / 1.8));
+        final int core = perRing;
+        final int rim = perRing;
+        final int afterimage = Math.max(12, perRing / 2);
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < core; i++) {

@@ -231,7 +231,7 @@ nichirin:
   clear-blue-sky:
     cooldown-seconds: 50
     damage-hearts: 2.0
-    radius: 5.0          # full-circle reach
+    radius: 15.0         # full-circle reach
     boost-power: 1.4     # upward launch on cast
     fire-seconds: 3      # searing fire (ignores Fire Resistance)
     sear-hearts: 1.0     # searing damage per second

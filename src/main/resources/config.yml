@@ -131,7 +131,7 @@ nichirin:
     # True damage in hearts (ignores armour), 1 heart = 2 HP.
     damage-hearts: 2.0
     # Full-circle reach in blocks.
-    radius: 5.0
+    radius: 15.0
     # Upward velocity applied on cast (launches you into the air).
     boost-power: 1.4
     # Seconds targets burn with searing fire that bypasses Fire Resistance.

@@ -6,7 +6,7 @@
 
     <groupId>dev.ro161012</groupId>
     <artifactId>ffacore</artifactId>
-    <version>1.21.3</version>
+    <version>1.21.4</version>
     <packaging>jar</packaging>
 
     <name>FFACore</name>

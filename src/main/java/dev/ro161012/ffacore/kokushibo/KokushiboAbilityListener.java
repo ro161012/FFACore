@@ -250,7 +250,7 @@ public final class KokushiboAbilityListener implements Listener {
         moonbowCooldown.apply(id);
         bossBars.start(player, "moonbow",
                 "§dSixteenth Form §8» §d§lMoonbow, Half Moon",
-                BarColor.PINK, moonbowCooldown.getCooldownMillis());
+                BarColor.PURPLE, moonbowCooldown.getCooldownMillis());
 
         final Location eye = player.getEyeLocation();
         final Vector facing = eye.getDirection();

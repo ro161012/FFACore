@@ -22,6 +22,7 @@ permissions:
       ffacore.killtoken.admin: true
       ffacore.afk.admin: true
       ffacore.nichirin.admin: true
+      ffacore.kokushibo.admin: true
       ffacore.config: true
 
   ffacore.config:
@@ -107,6 +108,11 @@ permissions:
   # ---- Nichirin Blade ----
   ffacore.nichirin.admin:
     description: Hand out the Nichirin Blade.
+    default: op
+
+  # ---- Kokoshibos Sword ----
+  ffacore.kokushibo.admin:
+    description: Hand out the Kokoshibos Sword.
     default: op
 
   # ---- AFK ----

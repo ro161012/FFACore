@@ -17,9 +17,15 @@ their display names.
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/nichirin_sword_*.png` | Fiery orange/red tooltip (Nichirin Blade) |
-| `assets/minecraft/items/netherite_sword.json` | Maps custom model data `1603` to the Nichirin Blade model |
+| `assets/altarsmp/textures/gui/sprites/tooltip/kokoshibo_sword_*.png` | Animated purple tooltip (Kokoshibos Sword, 20 frames) |
+| `assets/minecraft/items/netherite_sword.json` | Maps custom model data `1603`/`1605`/`2514` to the blade models |
+| `assets/minecraft/items/nether_star.json` | Maps custom model data `2` to the crescent and `1001` to the Kill Token |
 | `assets/nino/models/weapons/nichirin_blade.json` | The Nichirin Blade 3D model |
 | `assets/nino/textures/item/nichirin_blade.png` | The animated blade texture |
+| `assets/nino/models/weapons/kokushibo.json` | The Kokoshibos Sword 3D model |
+| `assets/nino/models/weapons/kokushibo2.json` | The animated empowered blade model (custom model data `2514`) |
+| `assets/nino/models/weapons/kokushibo_crescent.json` | The moon crescent projectile model |
+| `assets/nino/textures/item/kokushibo*.png`, `crescent.png` | Kokushibo blade and crescent textures |
 | `assets/minecraft/shaders/core/rendertype_entity_alpha.fsh` | Core shader: applies display-entity tint so ability VFX glow |
 
 ## Installation
@@ -70,6 +76,19 @@ The ability visuals (Clear Blue Sky fan, Enbu flame ring) are drawn with
 block display entities using translucent stained glass. A core shader
 override (`rendertype_entity_alpha.fsh`) applies the display tint so the
 glass renders in its full colour instead of unlit grey.
+
+## Kokoshibos Sword
+
+The Kokoshibos Sword is a `netherite_sword` with custom model data `1605`
+(`nino:weapons/kokushibo`), and its animated empowered variant is registered
+at `2514` (`kokushibo2`). The tooltip style (`altarsmp:kokoshibo_sword`) gives
+it the animated purple gradient border.
+
+The crescent projectile and moonbow strikes are drawn with item display
+entities carrying the `nino:weapons/kokushibo_crescent` model (a `nether_star`
+with custom model data `2`), while the Lunar Eclipse window spins a ring of
+block display purple glass. All three effects are full-bright and reuse the
+same core shader override.
 
 ## Regenerating the art
 

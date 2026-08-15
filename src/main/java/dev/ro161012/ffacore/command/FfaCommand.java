@@ -3,6 +3,7 @@ package dev.ro161012.ffacore.command;
 import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.afk.AfkCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
+import dev.ro161012.ffacore.kokushibo.KokushiboCommand;
 import dev.ro161012.ffacore.nichirin.NichirinCommand;
 import dev.ro161012.ffacore.util.Messages;
 import org.bukkit.command.Command;
@@ -24,6 +25,7 @@ import java.util.Locale;
  *   <li>{@code /ffa killtoken ...} &mdash; the Kill Token currency.</li>
  *   <li>{@code /ffa afk ...} &mdash; AFK zones and AFK Shards.</li>
  *   <li>{@code /ffa nichirin ...} &mdash; the Nichirin Blade weapon.</li>
+ *   <li>{@code /ffa kokushibo ...} &mdash; the Kokoshibos Sword weapon.</li>
  *   <li>{@code /ffa config} &mdash; the in-game config menu.</li>
  *   <li>{@code /ffa reload} &mdash; reload config.yml from disk.</li>
  * </ul>
@@ -37,6 +39,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     private final KillTokenCommand killTokenCommand;
     private final AfkCommand afkCommand;
     private final NichirinCommand nichirinCommand;
+    private final KokushiboCommand kokushiboCommand;
 
     /**
      * Creates the command handler.
@@ -46,16 +49,19 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
      * @param killTokenCommand the kill token sub-command executor
      * @param afkCommand       the afk sub-command executor
      * @param nichirinCommand  the nichirin blade sub-command executor
+     * @param kokushiboCommand the kokushibo sword sub-command executor
      */
     public FfaCommand(final FFACore plugin, final ArenaCommand arenaCommand,
                       final KillTokenCommand killTokenCommand,
                       final AfkCommand afkCommand,
-                      final NichirinCommand nichirinCommand) {
+                      final NichirinCommand nichirinCommand,
+                      final KokushiboCommand kokushiboCommand) {
         this.plugin = plugin;
         this.arenaCommand = arenaCommand;
         this.killTokenCommand = killTokenCommand;
         this.afkCommand = afkCommand;
         this.nichirinCommand = nichirinCommand;
+        this.kokushiboCommand = kokushiboCommand;
     }
 
     @Override
@@ -76,6 +82,9 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 }
                 case "nichirin", "blade" -> {
                     return nichirinCommand.onCommand(sender, command, "ffa nichirin", rest);
+                }
+                case "kokushibo", "koku" -> {
+                    return kokushiboCommand.onCommand(sender, command, "ffa kokushibo", rest);
                 }
                 case "config" -> {
                     return openConfig(sender);
@@ -99,6 +108,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/ffa afk&8)");
         messages.raw(sender, "&6Nichirin Blade &8- &7Demon Slayer FFA weapon &8(&f/ffa nichirin&8)");
+        messages.raw(sender, "&5Kokoshibos Sword &8- &7Upper Moon One FFA weapon &8(&f/ffa kokushibo&8)");
         messages.raw(sender, "&8&m--------------------------------");
         messages.raw(sender, "&7Use &f/ffa config &7to open the in-game config menu.");
         messages.raw(sender, "&7Use &f/ffa reload &7to reload config.yml from disk.");
@@ -134,8 +144,8 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                                       final String alias, final String[] args) {
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
-            return List.of("arena", "killtoken", "afk", "nichirin", "config", "reload")
-                    .stream().filter(s -> s.startsWith(prefix)).toList();
+            return List.of("arena", "killtoken", "afk", "nichirin", "kokushibo", "config",
+                    "reload").stream().filter(s -> s.startsWith(prefix)).toList();
         }
         if (args.length >= 2) {
             final String sub = args[0].toLowerCase(Locale.ROOT);
@@ -147,6 +157,8 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 case "afk" -> afkCommand.onTabComplete(sender, command, "ffa afk", rest);
                 case "nichirin", "blade" ->
                         nichirinCommand.onTabComplete(sender, command, "ffa nichirin", rest);
+                case "kokushibo", "koku" ->
+                        kokushiboCommand.onTabComplete(sender, command, "ffa kokushibo", rest);
                 default -> List.of();
             };
         }

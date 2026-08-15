@@ -9,6 +9,20 @@
           "type": "minecraft:model",
           "model": "nino:weapons/nichirin_blade"
         }
+      },
+      {
+        "threshold": 1605,
+        "model": {
+          "type": "minecraft:model",
+          "model": "nino:weapons/kokushibo"
+        }
+      },
+      {
+        "threshold": 2514,
+        "model": {
+          "type": "minecraft:model",
+          "model": "nino:weapons/kokushibo2"
+        }
       }
     ],
     "fallback": {

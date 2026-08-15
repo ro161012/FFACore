@@ -1,17 +1,26 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "minecraft:item/nether_star"
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "custom_model_data": 1001
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "nino:weapons/kokushibo_crescent"
+        }
       },
-      "model": {
-        "type": "minecraft:model",
-        "model": "ffacore:item/kill_token"
+      {
+        "threshold": 1001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ffacore:item/kill_token"
+        }
       }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/nether_star"
     }
-  ]
+  }
 }

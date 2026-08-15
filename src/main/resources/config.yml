@@ -141,6 +141,32 @@ nichirin:
     absorption-lock-seconds: 15
 
 # ------------------------------------------------------------
+#  Kokoshibos Sword (Upper Moon One FFA weapon)
+# ------------------------------------------------------------
+kokushibo:
+  upper-moon-one:
+    # Seconds between passive empowerment pulses while holding the sword.
+    interval-seconds: 10
+    buff-duration-seconds: 6
+    strength-amplifier: 0
+    speed-amplifier: 0
+  crescent-throw:
+    cooldown-seconds: 70
+    # Seconds the Lunar Eclipse window stays open.
+    window-seconds: 10
+    # Minimum delay between slowing-star shots during the window.
+    fire-interval-ms: 1000
+    slow-seconds: 4
+    slow-amplifier: 1
+  moonbow:
+    cooldown-seconds: 80
+    crescents: 6
+    spacing: 1.6
+    strike-radius: 1.2
+    # True damage per crescent in hearts, 1 heart = 2 HP.
+    damage-hearts: 3.0
+
+# ------------------------------------------------------------
 #  Compressed Kill Token block
 # ------------------------------------------------------------
 compressed-blocks:

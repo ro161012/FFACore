@@ -14,6 +14,7 @@ single Paper plugin:
 | **Kill Token currency** | Players earn an ember-themed Kill Token for PvP kills, with pair anti-farming and killstreak multipliers. |
 | **AFK zones** | Designate regions where idle players earn ocean-themed **AFK Shards**. |
 | **Nichirin Blade** | A Demon Slayer FFA weapon with a passive combo and two offhand abilities. |
+| **Kokoshibos Sword** | The Upper Moon One weapon with a passive, a slowing crescent throw, and a six-crescent moonbow. |
 
 Both currencies ship with a custom resource pack: unique item textures plus
 gradient tooltip backgrounds.
@@ -107,6 +108,22 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 |---|---|---|
 | `/ffa nichirin give [player] [amount]` | `ffacore.nichirin.admin` | Hand out the Nichirin Blade |
 
+### `/ffa kokushibo`
+
+| Command | Permission | Description |
+|---|---|---|
+| `/ffa kokushibo give [player] [amount]` | `ffacore.kokushibo.admin` | Hand out the Kokoshibos Sword |
+
+#### Kokoshibos Sword abilities
+
+* **Upper Moon One** (passive) — while holding the sword, periodically gain
+  Strength and Speed.
+* **Crescent Throw** (offhand, 70s) — press the swap-hands key (F) with the
+  sword in your offhand to open a 10s Lunar Eclipse window; each left-click
+  during the window fires a slowing crescent star (one per second).
+* **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press F: six moon
+  crescents strike in a line ahead, dealing up to 3 hearts true damage each.
+
 #### Nichirin Blade abilities
 
 * **Flame Combo** (passive) — land 4 hits without taking damage to gain
@@ -129,6 +146,7 @@ Every FFACore command lives under `/ffa`:
 | `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
 | `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
 | `/ffa nichirin ...` | `ffacore.nichirin.admin` | The Nichirin Blade weapon |
+| `/ffa kokushibo ...` | `ffacore.kokushibo.admin` | The Kokoshibos Sword weapon |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
@@ -199,6 +217,15 @@ nichirin:
   enbu:
     cooldown-seconds: 70
     damage-hearts: 2.0
+
+kokushibo:
+  crescent-throw:
+    cooldown-seconds: 70
+    window-seconds: 10
+  moonbow:
+    cooldown-seconds: 80
+    crescents: 6
+    damage-hearts: 3.0
 
 afk:
   reward-interval-seconds: 30

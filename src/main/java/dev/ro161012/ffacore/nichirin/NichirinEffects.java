@@ -27,12 +27,6 @@ import java.util.function.IntConsumer;
  */
 public final class NichirinEffects {
 
-    /** Ticks the Clear Blue Sky ring is visible. */
-    private static final int FAN_TICKS = 12;
-
-    /** Ticks the Enbu spiral is visible. */
-    private static final int RING_TICKS = 20;
-
     private NichirinEffects() {
         // Utility class.
     }
@@ -44,8 +38,10 @@ public final class NichirinEffects {
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
+     * @param ticks  how long the ring plays (shorter = snappier)
      */
-    public static void playClearBlueSky(final JavaPlugin plugin, final Player player) {
+    public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
+                                        final int ticks) {
         final Location eye = player.getEyeLocation();
         final int ring = 36;
         final int inner = 18;
@@ -65,7 +61,7 @@ public final class NichirinEffects {
         player.getWorld().spawnParticle(Particle.FLAME, eye, 80, 0.8, 0.5, 0.8, 0.06);
         player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 40, 0.6, 0.4, 0.6, 0.04);
 
-        animate(plugin, displays, FAN_TICKS, tick -> {
+        animate(plugin, displays, ticks, tick -> {
             final double radius = startRadius + tick * 0.24;
             final double spin = Math.toRadians(tick * 24);
             for (int i = 0; i < ring; i++) {
@@ -94,8 +90,10 @@ public final class NichirinEffects {
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
+     * @param ticks  how long the spiral plays (shorter = snappier)
      */
-    public static void playEnbu(final JavaPlugin plugin, final Player player) {
+    public static void playEnbu(final JavaPlugin plugin, final Player player,
+                                final int ticks) {
         final Location eye = player.getEyeLocation();
         final int rings = 3;
         final int perRing = 16;
@@ -119,7 +117,7 @@ public final class NichirinEffects {
         player.getWorld().spawnParticle(Particle.FLAME, eye, 100, 1.0, 0.6, 1.0, 0.06);
         player.getWorld().spawnParticle(Particle.LAVA, eye, 40, 0.8, 0.5, 0.8, 0.03);
 
-        animate(plugin, displays, RING_TICKS, tick -> {
+        animate(plugin, displays, ticks, tick -> {
             final double spin = Math.toRadians(tick * 28);
             final double rise = tick * 0.12;
             final double radius = 1.7 + Math.sin(tick * 0.5) * 0.25;

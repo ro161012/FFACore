@@ -64,6 +64,8 @@ public final class NichirinAbilityListener implements Listener {
     private double enbuDamageHearts;
     private double enbuRadius;
     private long absorptionLockMillis;
+    private int clearSkyVfxTicks;
+    private int enbuVfxTicks;
 
     /**
      * Creates the listener and loads configuration.
@@ -90,6 +92,9 @@ public final class NichirinAbilityListener implements Listener {
         enbuRadius = config.getDouble("nichirin.enbu.radius", 3.0);
         absorptionLockMillis = Math.max(0, config.getInt(
                 "nichirin.enbu.absorption-lock-seconds", 15)) * 1000L;
+        clearSkyVfxTicks = Math.max(4, config.getInt(
+                "nichirin.clear-blue-sky.vfx-ticks", 12));
+        enbuVfxTicks = Math.max(4, config.getInt("nichirin.enbu.vfx-ticks", 20));
 
         if (clearSkyCooldown == null) {
             clearSkyCooldown = new NichirinCooldown(
@@ -240,7 +245,7 @@ public final class NichirinAbilityListener implements Listener {
         bossBars.start(player, "clear-blue-sky",
                 "§bHinokami Kagura §8» §b§lClear Blue Sky",
                 BarColor.BLUE, clearSkyCooldown.getCooldownMillis());
-        NichirinEffects.playClearBlueSky(plugin, player);
+        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks);
 
         final Vector facing = horizontalDirection(player);
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(
@@ -265,7 +270,7 @@ public final class NichirinAbilityListener implements Listener {
         bossBars.start(player, "enbu",
                 "§6Hinokami Kagura §8» §6§lEnbu",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
-        NichirinEffects.playEnbu(plugin, player);
+        NichirinEffects.playEnbu(plugin, player, enbuVfxTicks);
 
         final long lockUntil = System.currentTimeMillis() + absorptionLockMillis;
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(

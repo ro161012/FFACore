@@ -542,6 +542,10 @@ public final class ConfigMenu {
                                 "Fan arc width",
                                 "Width of the fan in degrees.",
                                 30, 360, 160).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.clear-blue-sky.vfx-ticks",
+                                "Clear Blue Sky animation",
+                                "Ticks the ring animation plays (lower = snappier).",
+                                5, 60, 12).withColor(NICHIRIN),
                         ConfigOption.integer("nichirin.enbu.cooldown-seconds",
                                 "Enbu cooldown",
                                 "Cooldown in seconds for the flame spin.",
@@ -555,7 +559,11 @@ public final class ConfigMenu {
                         ConfigOption.integer("nichirin.enbu.absorption-lock-seconds",
                                 "Absorption lock",
                                 "Seconds targets cannot gain absorption.",
-                                1, 60, 15).withColor(NICHIRIN)
+                                1, 60, 15).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.enbu.vfx-ticks",
+                                "Enbu animation",
+                                "Ticks the flame vortex animation plays.",
+                                5, 60, 20).withColor(NICHIRIN)
                 ), NICHIRIN);
     }
 
@@ -579,6 +587,10 @@ public final class ConfigMenu {
                                 "Crescent damage",
                                 "True damage per crescent in hearts.",
                                 0.5f, 20f, 0.5f, 1.0).withColor(KOKUSHIBO),
+                        ConfigOption.decimal("kokushibo.upper-moon-one.crescent-speed",
+                                "Crescent speed",
+                                "Flight speed multiplier for passive crescents.",
+                                0.5f, 3f, 0.1f, 1.0).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.catastrophe.cooldown-seconds",
                                 "Catastrophe cooldown",
                                 "Cooldown in seconds for the expanding vortex.",
@@ -595,6 +607,10 @@ public final class ConfigMenu {
                                 "Crescents",
                                 "Number of crescent blades in the vortex.",
                                 4, 32, 12).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.catastrophe.vfx-ticks",
+                                "Vortex duration",
+                                "Ticks the vortex expands for (higher = slower).",
+                                5, 60, 24).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.moonbow.cooldown-seconds",
                                 "Moonbow cooldown",
                                 "Cooldown in seconds for the six-crescent strike.",
@@ -613,7 +629,11 @@ public final class ConfigMenu {
                         ConfigOption.integer("kokushibo.moonbow.damage-hearts",
                                 "Moonbow damage",
                                 "True damage per crescent in hearts.",
-                                1, 20, 3).withColor(KOKUSHIBO)
+                                1, 20, 3).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.moonbow.vfx-ticks",
+                                "Moonbow animation",
+                                "Ticks each strike crescent grows for.",
+                                5, 40, 10).withColor(KOKUSHIBO)
                 ), KOKUSHIBO);
     }
 

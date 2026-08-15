@@ -54,12 +54,14 @@ public final class KokushiboEffects {
      * @param maxRadius the radius the vortex expands out to, in blocks
      * @param crescents number of crescent blades in the vortex
      * @param onStrike  called once per target as the vortex reaches it
+     * @param ticks     how long the vortex plays (shorter = snappier)
      */
     public static void playCatastrophe(final JavaPlugin plugin, final Player player,
                                        final double maxRadius, final int crescents,
-                                       final Consumer<LivingEntity> onStrike) {
+                                       final Consumer<LivingEntity> onStrike,
+                                       final int ticks) {
         final Location eye = player.getEyeLocation();
-        final int totalTicks = 30;
+        final int totalTicks = Math.max(1, ticks);
         final double startRadius = 1.6;
         final int bladeCount = Math.max(8, crescents);
 
@@ -128,9 +130,10 @@ public final class KokushiboEffects {
      * @param plugin      owning plugin (for the scheduler)
      * @param location    the strike point
      * @param delayTicks  ticks to wait before the strike appears
+     * @param ticks       how long the crescent grows before fading
      */
     public static void strikeCrescent(final JavaPlugin plugin, final Location location,
-                                      final long delayTicks) {
+                                      final long delayTicks, final int ticks) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -154,7 +157,7 @@ public final class KokushiboEffects {
 
                     @Override
                     public void run() {
-                        if (tick >= 10) {
+                        if (tick >= ticks) {
                             display.remove();
                             cancel();
                             return;
@@ -178,10 +181,12 @@ public final class KokushiboEffects {
      * @param origin    spawn location of the crescent
      * @param direction travel direction (normalised)
      * @param onHit     called once with the target when the blade connects
+     * @param speed     flight speed multiplier (1.0 = default)
      */
     public static void fireCrescent(final JavaPlugin plugin, final Player player,
                                     final Location origin, final Vector direction,
-                                    final Consumer<LivingEntity> onHit) {
+                                    final Consumer<LivingEntity> onHit,
+                                    final double speed) {
         final ItemDisplay display = player.getWorld().spawn(origin, ItemDisplay.class);
         display.setItemStack(KokushiboSword.crescentItem());
         display.setBillboard(Display.Billboard.CENTER);
@@ -189,7 +194,8 @@ public final class KokushiboEffects {
         display.setInterpolationDuration(1);
         display.setInterpolationDelay(0);
 
-        final Vector velocity = direction.clone().normalize().multiply(0.55);
+        final double baseSpeed = 0.55 * Math.max(0.1, speed);
+        final Vector velocity = direction.clone().normalize().multiply(baseSpeed);
         final Set<UUID> hit = new HashSet<>();
 
         new BukkitRunnable() {
@@ -207,7 +213,7 @@ public final class KokushiboEffects {
                         (Math.random() - 0.5) * 0.06,
                         (Math.random() - 0.5) * 0.05,
                         (Math.random() - 0.5) * 0.06));
-                velocity.normalize().multiply(0.55);
+                velocity.normalize().multiply(baseSpeed);
                 pos.add(velocity);
 
                 if (pos.getBlock().getType().isSolid()) {

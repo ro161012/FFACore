@@ -230,20 +230,26 @@ nichirin:
   clear-blue-sky:
     cooldown-seconds: 50
     damage-hearts: 2.0
+    vfx-ticks: 12        # animation length (lower = snappier)
   enbu:
     cooldown-seconds: 70
     damage-hearts: 2.0
+    vfx-ticks: 20
 
 kokushibo:
+  upper-moon-one:
+    crescent-speed: 1.0  # passive crescent flight speed
   catastrophe:
     cooldown-seconds: 70
     damage-hearts: 3.0
     max-radius: 9.0
     crescents: 12
+    vfx-ticks: 24        # vortex expansion speed
   moonbow:
     cooldown-seconds: 80
     crescents: 6
     damage-hearts: 3.0
+    vfx-ticks: 10
 
 afk:
   reward-interval-seconds: 30

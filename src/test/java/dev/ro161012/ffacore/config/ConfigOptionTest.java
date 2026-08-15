@@ -157,9 +157,12 @@ class ConfigOptionTest {
                 "nichirin.clear-blue-sky.cooldown-seconds",
                 "nichirin.clear-blue-sky.damage-hearts",
                 "nichirin.clear-blue-sky.arc-degrees",
+                "nichirin.clear-blue-sky.vfx-ticks",
                 "nichirin.enbu.absorption-lock-seconds",
-                "kokushibo.upper-moon-one.interval-seconds",
-                "kokushibo.crescent-throw.fire-interval-ms",
+                "nichirin.enbu.vfx-ticks",
+                "kokushibo.upper-moon-one.crescent-speed",
+                "kokushibo.catastrophe.vfx-ticks",
+                "kokushibo.moonbow.vfx-ticks",
                 "kokushibo.moonbow.damage-hearts")) {
             final ConfigOption option = ConfigOption.integer(path, "x", "y", 1, 100, 1);
             assertTrue(valid.matcher(option.key()).matches(),

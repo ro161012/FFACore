@@ -133,12 +133,16 @@ nichirin:
     radius: 3.5
     # Width of the fan arc in degrees, centred on the player's facing.
     arc-degrees: 160.0
+    # Ticks the ring animation plays. Lower = snappier, higher = slower.
+    vfx-ticks: 12
   enbu:
     cooldown-seconds: 70
     damage-hearts: 2.0
     radius: 3.0
     # Seconds hit targets cannot gain absorption.
     absorption-lock-seconds: 15
+    # Ticks the flame vortex animation plays.
+    vfx-ticks: 20
 
 # ------------------------------------------------------------
 #  Kokoshibos Sword (Upper Moon One FFA weapon)
@@ -153,6 +157,8 @@ kokushibo:
     crescent-count: 3
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 1.0
+    # Flight speed multiplier for the passive crescents.
+    crescent-speed: 1.0
   catastrophe:
     cooldown-seconds: 70
     # True damage per target in hearts, 1 heart = 2 HP.
@@ -161,6 +167,8 @@ kokushibo:
     max-radius: 9.0
     # Number of crescent blades in the vortex.
     crescents: 12
+    # Ticks the vortex expands for. Higher = slower expansion.
+    vfx-ticks: 24
   moonbow:
     cooldown-seconds: 80
     crescents: 6
@@ -168,6 +176,8 @@ kokushibo:
     strike-radius: 1.2
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
+    # Ticks each strike crescent grows for before fading.
+    vfx-ticks: 10
 
 # ------------------------------------------------------------
 #  Compressed Kill Token block

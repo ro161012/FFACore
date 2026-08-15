@@ -59,6 +59,9 @@ public final class KokushiboAbilityListener implements Listener {
     private double moonbowSpacing;
     private double strikeRadius;
     private double moonbowDamageHearts;
+    private int catastropheVfxTicks;
+    private int moonbowVfxTicks;
+    private double crescentSpeed;
 
     /**
      * Creates the listener and loads configuration.
@@ -96,6 +99,11 @@ public final class KokushiboAbilityListener implements Listener {
         moonbowSpacing = Math.max(0.5, config.getDouble("kokushibo.moonbow.spacing", 1.6));
         strikeRadius = Math.max(0.5, config.getDouble("kokushibo.moonbow.strike-radius", 1.2));
         moonbowDamageHearts = config.getDouble("kokushibo.moonbow.damage-hearts", 3.0);
+        catastropheVfxTicks = Math.max(4, config.getInt(
+                "kokushibo.catastrophe.vfx-ticks", 24));
+        moonbowVfxTicks = Math.max(4, config.getInt("kokushibo.moonbow.vfx-ticks", 10));
+        crescentSpeed = Math.max(0.1, config.getDouble(
+                "kokushibo.upper-moon-one.crescent-speed", 1.0));
 
         catastropheCooldown.setCooldownSeconds(
                 config.getInt("kokushibo.catastrophe.cooldown-seconds", 70));
@@ -153,7 +161,8 @@ public final class KokushiboAbilityListener implements Listener {
                     .add(new Vector(rand(-0.5, 0.5), rand(-0.25, 0.35), rand(-0.5, 0.5)))
                     .normalize();
             KokushiboEffects.fireCrescent(plugin, player, eye, direction,
-                    living -> applyTrueDamage(living, player, crescentDamageHearts));
+                    living -> applyTrueDamage(living, player, crescentDamageHearts),
+                    crescentSpeed);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1.4f);
     }
@@ -228,7 +237,8 @@ public final class KokushiboAbilityListener implements Listener {
                 BarColor.PURPLE, catastropheCooldown.getCooldownMillis());
         KokushiboEffects.playCatastrophe(plugin, player, catastropheMaxRadius,
                 catastropheCrescents,
-                living -> applyTrueDamage(living, player, catastropheDamageHearts));
+                living -> applyTrueDamage(living, player, catastropheDamageHearts),
+                catastropheVfxTicks);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.7f);
     }
 
@@ -247,7 +257,7 @@ public final class KokushiboAbilityListener implements Listener {
         for (int i = 0; i < moonbowCrescents; i++) {
             final Location strike = eye.clone().add(
                     facing.clone().multiply(1.2 + i * moonbowSpacing)).add(0, -0.5, 0);
-            KokushiboEffects.strikeCrescent(plugin, strike, i * 3L);
+            KokushiboEffects.strikeCrescent(plugin, strike, i * 3L, moonbowVfxTicks);
             strikeMoonbowAt(player, strike, i * 3L);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.7f);

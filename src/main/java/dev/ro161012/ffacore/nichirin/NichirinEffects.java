@@ -103,6 +103,7 @@ public final class NichirinEffects {
         final Location eye = player.getEyeLocation();
         final int ground = 28;
         final int upperRing = 16;
+        final int columnBlocks = 7;
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < ground; i++) {
@@ -111,9 +112,10 @@ public final class NichirinEffects {
         for (int i = 0; i < upperRing; i++) {
             displays.add(spawnBlock(player, eye, Material.GLOWSTONE, 0.4f));
         }
-        final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, -0.4, 0),
-                Material.SHROOMLIGHT, 0.6f);
-        displays.add(pillar);
+        for (int i = 0; i < columnBlocks; i++) {
+            displays.add(spawnBlock(player, eye.clone().add(0, -1.0, 0),
+                    i % 2 == 0 ? Material.MAGMA_BLOCK : Material.SHROOMLIGHT, 0.5f));
+        }
 
         player.getWorld().spawnParticle(Particle.LAVA, eye, 50, 0.9, 0.5, 0.9, 0.02);
         player.getWorld().spawnParticle(Particle.FLAME, eye, 80, 1.0, 0.6, 1.0, 0.06);
@@ -136,9 +138,14 @@ public final class NichirinEffects {
                         Math.sin(angle) * 1.4, -0.2, Math.cos(angle) * 1.4));
                 setScale(block, 0.4f, 0.4f, 0.4f);
             }
-            // Lava column swells upward, then falls back as the cast ends.
-            final float pillarHeight = 0.6f + (float) Math.sin(tick * Math.PI / Math.max(1, ticks - 1)) * 2.2f;
-            setScale(pillar, 0.6f, pillarHeight, 0.6f);
+            // Lava geyser: a stack of uniform cubes rises, then falls back.
+            final double columnProgress = (double) tick / Math.max(1, ticks - 1);
+            final double columnRise = Math.sin(columnProgress * Math.PI) * 2.4;
+            for (int i = 0; i < columnBlocks; i++) {
+                final BlockDisplay block = displays.get(ground + upperRing + i);
+                block.teleport(eye.clone().add(0, -1.0 + columnRise + i * 0.45, 0));
+                setScale(block, 0.5f, 0.5f, 0.5f);
+            }
         });
     }
 

@@ -3,8 +3,8 @@
   "credit": "FFACore",
   "texture_size": [64, 64],
   "textures": {
-    "0": "ffacore:vfx/flame_orb",
-    "particle": "ffacore:vfx/flame_orb"
+    "0": "ffacore:item/vfx/flame_orb",
+    "particle": "ffacore:item/vfx/flame_orb"
   },
   "elements": [
     {

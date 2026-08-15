@@ -3,8 +3,8 @@
   "credit": "FFACore",
   "texture_size": [64, 64],
   "textures": {
-    "0": "ffacore:vfx/flame_blade",
-    "particle": "ffacore:vfx/flame_blade"
+    "0": "ffacore:item/vfx/flame_blade",
+    "particle": "ffacore:item/vfx/flame_blade"
   },
   "elements": [
     {

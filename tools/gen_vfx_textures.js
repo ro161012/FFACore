@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SIZE = 64;
-const OUT_DIR = path.join(__dirname, '..', 'resourcepack', 'assets', 'ffacore', 'textures', 'vfx');
+const OUT_DIR = path.join(__dirname, '..', 'resourcepack', 'assets', 'ffacore', 'textures', 'item', 'vfx');
 
 // --- Minimal PNG writer -----------------------------------------------------
 

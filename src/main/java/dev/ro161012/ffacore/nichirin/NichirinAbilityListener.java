@@ -97,7 +97,7 @@ public final class NichirinAbilityListener implements Listener {
         strengthSeconds = Math.max(1, config.getInt("nichirin.combo-strength-duration-seconds", 6));
         clearSkyDamageHearts = config.getDouble("nichirin.clear-blue-sky.damage-hearts", 2.0);
         clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 5.0);
-        clearSkyBoost = config.getDouble("nichirin.clear-blue-sky.boost-power", 0.8);
+        clearSkyBoost = config.getDouble("nichirin.clear-blue-sky.boost-power", 1.4);
         clearSkyFireSeconds = Math.max(1, config.getInt(
                 "nichirin.clear-blue-sky.fire-seconds", 3));
         clearSkySearHearts = config.getDouble("nichirin.clear-blue-sky.sear-hearts", 1.0);
@@ -259,8 +259,13 @@ public final class NichirinAbilityListener implements Listener {
                 "§6Hinokami Kagura §8» §6§lClear Blue Sky",
                 BarColor.RED, clearSkyCooldown.getCooldownMillis());
 
-        // Aerial cast: boost the caster upward so the ring sweeps mid-air.
-        player.setVelocity(player.getVelocity().setY(clearSkyBoost));
+        // Launch the caster upward so the ring sweeps mid-air. The boost
+        // always at least reaches the configured upward speed and stacks on
+        // top of any existing upward motion, so it works on the ground or in
+        // the air.
+        final double upward = Math.max(clearSkyBoost,
+                clearSkyBoost + player.getVelocity().getY());
+        player.setVelocity(player.getVelocity().setY(upward));
         NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyRadius);
         scorchGround(player);
 

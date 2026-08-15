@@ -132,8 +132,8 @@ nichirin:
     damage-hearts: 2.0
     # Full-circle reach in blocks.
     radius: 5.0
-    # Upward boost applied to the caster on cast (lets it sweep mid-air).
-    boost-power: 0.8
+    # Upward velocity applied on cast (launches you into the air).
+    boost-power: 1.4
     # Seconds targets burn with searing fire that bypasses Fire Resistance.
     fire-seconds: 3
     # Hearts of searing damage per second while burning.

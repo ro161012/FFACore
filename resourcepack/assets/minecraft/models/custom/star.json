@@ -1,0 +1,14 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:item/handheld",
+	"textures": {
+		"layer0": "item/ability/star"
+	},
+	"display": {
+		"ground": {
+			"translation": [0, 2.75, 0],
+			"scale": [0.65, 0.65, 0.65]
+		}
+	}
+}

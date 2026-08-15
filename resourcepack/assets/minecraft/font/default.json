@@ -1,0 +1,25 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "minecraft:icons/negative_space.png",
+            "ascent": -32768,
+            "height": -3,
+            "chars": [""]
+        },
+        {
+            "type": "bitmap",
+            "file": "minecraft:icons/mouse_click.png",
+            "ascent": 7,
+            "height": 7.5,
+            "chars": [""]
+        },
+        {
+            "type": "bitmap",
+            "file": "minecraft:icons/clock.png",
+            "ascent": 7,
+            "height": 7.5,
+            "chars": [""]
+        }
+    ]
+}

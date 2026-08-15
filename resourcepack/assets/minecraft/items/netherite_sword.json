@@ -4,6 +4,212 @@
     "property": "minecraft:custom_model_data",
     "entries": [
       {
+        "threshold": 1,
+        "model": {
+          "type": "model",
+          "model": "weapons/boneblade"
+        }
+      },
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:condition",
+          "model": "weapons/illusionwand",
+          "property": "minecraft:using_item",
+          "cases": [
+            {
+              "when": "right",
+              "model": {
+                "type": "minecraft:model",
+                "model": "weapons/illusionwand_2"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "weapons/illusionwand"
+          },
+          "on_true": {
+            "type": "minecraft:model",
+            "model": "weapons/illusionwand_2"
+          },
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "weapons/illusionwand"
+          }
+        }
+      },
+      {
+        "threshold": 3,
+        "model": {
+          "type": "model",
+          "model": "weapons/bloodlust"
+        }
+      },
+      {
+        "threshold": 4,
+        "model": {
+          "type": "minecraft:condition",
+          "model": "weapons/frostscythe",
+          "property": "minecraft:using_item",
+          "cases": [
+            {
+              "when": "right",
+              "model": {
+                "type": "minecraft:model",
+                "model": "weapons/frostscythe_2"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "weapons/frostscythe"
+          },
+          "on_true": {
+            "type": "minecraft:model",
+            "model": "weapons/frostscythe_2"
+          },
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "weapons/frostscythe"
+          }
+        }
+      },
+      {
+        "threshold": 5,
+        "model": {
+          "type": "model",
+          "model": "weapons/nightpiercer"
+        }
+      },
+      {
+        "threshold": 6,
+        "model": {
+          "type": "model",
+          "model": "weapons/hyperion"
+        }
+      },
+      {
+        "threshold": 7,
+        "model": {
+          "type": "model",
+          "model": "weapons/pureblade"
+        }
+      },
+      {
+        "threshold": 8,
+        "model": {
+          "type": "model",
+          "model": "weapons/earthgauntlet"
+        }
+      },
+      {
+        "threshold": 9,
+        "model": {
+          "type": "model",
+          "model": "weapons/witheredbone"
+        }
+      },
+      {
+        "threshold": 10,
+        "model": {
+          "type": "model",
+          "model": "weapons/shadowblade"
+        }
+      },
+      {
+        "threshold": 11,
+        "model": {
+          "type": "model",
+          "model": "weapons/cutlass"
+        }
+      },
+      {
+        "threshold": 12,
+        "model": {
+          "type": "model",
+          "model": "weapons/windweaver"
+        }
+      },
+      {
+        "threshold": 13,
+        "model": {
+          "type": "model",
+          "model": "weapons/echo"
+        }
+      },
+      {
+        "threshold": 14,
+        "model": {
+          "type": "model",
+          "model": "weapons/eclipse"
+        }
+      },
+      {
+        "threshold": 15,
+        "model": {
+          "type": "model",
+          "model": "weapons/tidebreaker"
+        }
+      },
+      {
+        "threshold": 16,
+        "model": {
+          "type": "model",
+          "model": "weapons/dragonrend"
+        }
+      },
+      {
+        "threshold": 17,
+        "model": {
+          "type": "model",
+          "model": "weapons/ancientblade"
+        }
+      },
+      {
+        "threshold": 18,
+        "model": {
+          "type": "minecraft:select",
+          "model": "weapons/withersymbiote",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": "gui",
+              "model": {
+                "type": "minecraft:model",
+                "model": "weapons/symbiote"
+              }
+            },
+            {
+              "when": "ground",
+              "model": {
+                "type": "minecraft:model",
+                "model": "weapons/symbiote"
+              }
+            },
+            {
+              "when": "fixed",
+              "model": {
+                "type": "minecraft:model",
+                "model": "weapons/symbiote"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "weapons/withersymbiote"
+          },
+          "on_true": {
+            "type": "minecraft:model",
+            "model": "weapons/symbiote"
+          },
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "weapons/withersymbiote"
+          }
+        }
+      },
+      {
         "threshold": 1603,
         "model": {
           "type": "minecraft:model",
@@ -26,7 +232,7 @@
       }
     ],
     "fallback": {
-      "type": "minecraft:model",
+      "type": "model",
       "model": "minecraft:item/netherite_sword"
     }
   }

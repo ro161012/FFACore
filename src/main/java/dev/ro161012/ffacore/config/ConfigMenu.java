@@ -50,7 +50,7 @@ public final class ConfigMenu {
 
     // Weapon section themes.
     private static final TextColor NICHIRIN = TextColor.color(0xFF8C42);
-    private static final TextColor KOKUSHIBO = TextColor.color(0xA78BC8);
+    private static final TextColor KOKUSHIBO = TextColor.color(0xB06BE8);
 
     private final FFACore plugin;
     private final List<Section> sections;

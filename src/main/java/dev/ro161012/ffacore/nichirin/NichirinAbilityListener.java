@@ -258,7 +258,7 @@ public final class NichirinAbilityListener implements Listener {
             }
             applyTrueDamage(living, player, clearSkyDamageHearts);
         }
-        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.6f);
+        player.playSound(player.getLocation(), "ffacore:sword_slash", 1.0f, 1.4f);
     }
 
     private void castEnbu(final Player player) {
@@ -286,7 +286,7 @@ public final class NichirinAbilityListener implements Listener {
             absorptionLockedUntil.put(living.getUniqueId(), lockUntil);
             living.setAbsorptionAmount(0);
         }
-        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.8f);
+        player.playSound(player.getLocation(), "ffacore:slash", 1.0f, 1.0f);
     }
 
     /**

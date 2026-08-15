@@ -21,10 +21,11 @@ import java.util.List;
  *
  * <p>Every effect is layered — a sweeping fan, a shockwave ring, a light
  * pillar, and a particle burst for Clear Blue Sky; a rising flame vortex, two
- * counter-rotating rings, a scorch disc and a fire pillar for Enbu. All glass
- * is full-bright and short-lived, so the companion core shader
- * ({@code rendertype_entity_alpha.fsh}) applies the display tint and makes the
- * glass glow. Everything is removed automatically when the animation ends.
+ * counter-rotating rings, a scorch disc and a fire pillar for Enbu. The
+ * effects are built from glowing emissive blocks (sea lantern, cyan concrete,
+ * shroomlight, glowstone and magma) rendered full-bright and short-lived, so
+ * they read as energy rather than glass panes. Everything is removed
+ * automatically when the animation ends.
  */
 public final class NichirinEffects {
 
@@ -39,9 +40,9 @@ public final class NichirinEffects {
     }
 
     /**
-     * Plays Clear Blue Sky: a two-layer horizontal fan of glowing blue glass
-     * that sweeps outward from the player, an expanding cyan shockwave ring
-     * and a rising light pillar, all wrapped in a soul-fire burst.
+     * Plays Clear Blue Sky: a two-layer horizontal fan of glowing blue
+     * shards that sweeps outward from the player, an expanding cyan shockwave
+     * ring and a rising light pillar, all wrapped in a soul-fire burst.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
@@ -56,23 +57,23 @@ public final class NichirinEffects {
 
         // Outer fan: tall light-blue blades.
         for (int i = 0; i < segments; i++) {
-            displays.add(spawnGlass(player, eye, Material.LIGHT_BLUE_STAINED_GLASS,
+            displays.add(spawnGlass(player, eye, Material.SEA_LANTERN,
                     0.35f, 2.2f, 0.9f, arcAngle(yaw, segments, i), startRadius));
         }
         // Inner fan: thinner white blades for a bright core.
         for (int i = 0; i < segments; i++) {
-            displays.add(spawnGlass(player, eye, Material.WHITE_STAINED_GLASS,
+            displays.add(spawnGlass(player, eye, Material.CYAN_CONCRETE,
                     0.18f, 1.6f, 0.5f, arcAngle(yaw, segments, i), startRadius));
         }
 
         // Expanding cyan shockwave ring at chest height.
         final BlockDisplay ring = spawnBlock(player, eye.clone().add(0, -0.6, 0),
-                Material.CYAN_STAINED_GLASS);
+                Material.SEA_LANTERN);
         displays.add(ring);
 
         // Rising light pillar through the caster.
         final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, -0.3, 0),
-                Material.LIGHT_BLUE_STAINED_GLASS);
+                Material.SEA_LANTERN);
         displays.add(pillar);
 
         player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 120,
@@ -110,9 +111,9 @@ public final class NichirinEffects {
     }
 
     /**
-     * Plays Enbu: a rising flame vortex of orange glass with a yellow
-     * counter-rotating inner ring, an expanding red scorch disc on the floor
-     * and a central fire pillar.
+     * Plays Enbu: a rising flame vortex of glowing shroomlight with a
+     * glowstone counter-rotating inner ring, an expanding magma scorch disc
+     * on the floor and a central fire pillar.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
@@ -127,24 +128,24 @@ public final class NichirinEffects {
 
         // Outer flame vortex.
         for (int i = 0; i < segments; i++) {
-            displays.add(spawnGlass(player, eye, Material.ORANGE_STAINED_GLASS,
+            displays.add(spawnGlass(player, eye, Material.SHROOMLIGHT,
                     0.45f, 1.9f, 1.1f, Math.toRadians(i * (360.0 / segments)), radius));
         }
         // Inner counter-rotating ring.
         for (int i = 0; i < innerSegments; i++) {
-            displays.add(spawnGlass(player, eye, Material.YELLOW_STAINED_GLASS,
+            displays.add(spawnGlass(player, eye, Material.GLOWSTONE,
                     0.3f, 1.3f, 0.7f, Math.toRadians(i * (360.0 / innerSegments)),
                     radius * 0.7));
         }
 
         // Red scorch disc on the ground.
         final BlockDisplay disc = spawnBlock(player, eye.clone().add(0, -1.0, 0),
-                Material.RED_STAINED_GLASS);
+                Material.MAGMA_BLOCK);
         displays.add(disc);
 
         // Central fire pillar.
         final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, 0.4, 0),
-                Material.ORANGE_STAINED_GLASS);
+                Material.SHROOMLIGHT);
         displays.add(pillar);
 
         player.getWorld().spawnParticle(Particle.FLAME, eye, 130,
@@ -192,7 +193,7 @@ public final class NichirinEffects {
     }
 
     /**
-     * Spawns one full-bright glass blade at the given angle and radius around
+     * Spawns one full-bright block blade at the given angle and radius around
      * the player's eye location.
      */
     private static BlockDisplay spawnGlass(final Player player, final Location origin,
@@ -211,7 +212,7 @@ public final class NichirinEffects {
     }
 
     /**
-     * Spawns a single full-bright glass block display.
+     * Spawns a single full-bright block display.
      */
     private static BlockDisplay spawnBlock(final Player player, final Location location,
                                            final Material material) {

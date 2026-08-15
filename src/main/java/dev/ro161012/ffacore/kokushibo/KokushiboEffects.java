@@ -3,6 +3,8 @@ package dev.ro161012.ffacore.kokushibo;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
@@ -28,11 +30,12 @@ import java.util.function.IntConsumer;
  * Renders the Kokoshibos Sword ability visuals as crescent displays and
  * glowing purple geometry.
  *
- * <p>Catastrophe whirls a ring of crescent blades (billboard item displays)
- * outward alongside a spinning ring of purple glass cubes, Moonbow stamps a
- * growing crescent at each strike point, and the passive fires a single
- * drifting crescent. The glass is full-bright translucent rendered through
- * the companion core shader, and every display entity is removed when its
+ * <p>Catastrophe whirls a multitude of crescent blades outward in two
+ * counter-rotating rings that incrementally grow in size, Moonbow brings six
+ * curved slashes crashing down in front of the caster — each leaving a crater
+ * ring and scattered crescent blades — and the passive fires a single drifting
+ * crescent. The glass is full-bright translucent rendered through the
+ * companion core shader, and every display entity is removed when its
  * animation ends — nothing lingers.
  */
 public final class KokushiboEffects {
@@ -42,9 +45,10 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — an
-     * omni-directional vortex of crescent blades that whirls outward while
-     * expanding.
+     * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — a
+     * multitude of curved circular slashes expanding outward in every
+     * direction, incrementally growing into an omni-directional vortex of
+     * crescent moon blades.
      *
      * <p>The {@code onStrike} callback receives each living target exactly once
      * as the expanding front reaches it.
@@ -64,44 +68,64 @@ public final class KokushiboEffects {
         final int totalTicks = Math.max(1, ticks);
         final double startRadius = 1.6;
         final int bladeCount = Math.max(8, crescents);
+        final int innerCount = bladeCount / 2;
+        final int outerCount = bladeCount - innerCount;
+        final int blockRing = 24;
 
         final List<Display> displays = new ArrayList<>();
-        for (int i = 0; i < bladeCount; i++) {
+        for (int i = 0; i < innerCount; i++) {
             displays.add(spawnCrescent(player, eye));
         }
-        final int blockRing = 24;
+        for (int i = 0; i < outerCount; i++) {
+            displays.add(spawnCrescent(player, eye));
+        }
         for (int i = 0; i < blockRing; i++) {
             displays.add(spawnBlock(player, eye, Material.PURPLE_STAINED_GLASS, 0.4f));
         }
 
         final Set<UUID> struck = new HashSet<>();
-        player.getWorld().spawnParticle(Particle.WITCH, eye, 60, 1.5, 0.8, 1.5, 0.02);
+        player.getWorld().spawnParticle(Particle.WITCH, eye, 70, 1.5, 1.0, 1.5, 0.02);
 
         animate(plugin, displays, totalTicks, tick -> {
             final double progress = tick / (double) totalTicks;
             final double radius = startRadius + (maxRadius - startRadius) * progress;
-            final double spin = Math.toRadians(tick * 28);
+            final double spin = Math.toRadians(tick * 30);
 
-            for (int i = 0; i < bladeCount; i++) {
-                final double angle = Math.toRadians(i * (360.0 / bladeCount)) + spin;
-                final Display blade = displays.get(i);
-                blade.teleport(eye.clone().add(
-                        Math.sin(angle) * radius, -0.4 + tick * 0.05, Math.cos(angle) * radius));
-                final float scale = 1.4f + (float) Math.sin(tick * 0.5 + i) * 0.3f;
-                setScale(blade, scale, scale, scale);
+            // Inner crescent ring: tight, fast orbit, growing as it whirls.
+            for (int i = 0; i < innerCount; i++) {
+                final double angle = Math.toRadians(i * (360.0 / innerCount)) + spin;
+                final double orbit = radius * 0.68;
+                final double bob = Math.sin(tick * 0.4 + i) * 0.5;
+                displays.get(i).teleport(eye.clone().add(
+                        Math.sin(angle) * orbit, -0.3 + bob, Math.cos(angle) * orbit));
+                final float scale = 1.2f + (float) (progress * 1.2)
+                        + (float) Math.sin(tick * 0.5 + i) * 0.2f;
+                setScale(displays.get(i), scale, scale, scale);
             }
 
+            // Outer crescent ring: wider, counter-rotating, incrementally
+            // growing as the vortex expands.
+            for (int i = 0; i < outerCount; i++) {
+                final double angle = -spin + Math.toRadians(i * (360.0 / outerCount));
+                final double bob = Math.sin(tick * 0.3 + i) * 0.6;
+                displays.get(innerCount + i).teleport(eye.clone().add(
+                        Math.sin(angle) * radius, -0.5 + bob, Math.cos(angle) * radius));
+                final float scale = 1.6f + (float) (progress * 1.6)
+                        + (float) Math.sin(tick * 0.5 + i) * 0.25f;
+                setScale(displays.get(innerCount + i), scale, scale, scale);
+            }
+
+            // Counter-rotating purple glass ring woven through the crescents.
             for (int i = 0; i < blockRing; i++) {
                 final double angle = Math.toRadians(i * (360.0 / blockRing)) + spin * 1.2;
-                final Display block = displays.get(bladeCount + i);
-                block.teleport(eye.clone().add(
-                        Math.sin(angle) * radius * 0.85, -0.3, Math.cos(angle) * radius * 0.85));
-                setScale(block, 0.4f, 0.4f, 0.4f);
+                displays.get(innerCount + outerCount + i).teleport(eye.clone().add(
+                        Math.sin(angle) * radius * 0.8, -0.3, Math.cos(angle) * radius * 0.8));
+                setScale(displays.get(innerCount + outerCount + i), 0.4f, 0.4f, 0.4f);
             }
 
             if (tick % 2 == 0) {
                 eye.getWorld().spawnParticle(Particle.END_ROD,
-                        eye.clone().add(0, -0.3, 0), 2, radius, 0.3, radius, 0.01);
+                        eye.clone().add(0, -0.3, 0), 3, radius, 0.3, radius, 0.01);
             }
 
             for (final Entity entity : eye.getWorld().getNearbyEntities(
@@ -124,13 +148,14 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Stamps a crescent at the given location after a tick delay, growing it
-     * briefly before it disappears.
+     * Brings one curved slash of the Sixteenth Form crashing down onto the
+     * given location: a crescent falls from above, then detonates into a
+     * crater ring and a scatter of crescent moon blades.
      *
-     * @param plugin      owning plugin (for the scheduler)
-     * @param location    the strike point
-     * @param delayTicks  ticks to wait before the strike appears
-     * @param ticks       how long the crescent grows before fading
+     * @param plugin     owning plugin (for the scheduler)
+     * @param location   the impact point
+     * @param delayTicks ticks to wait before the slash begins to fall
+     * @param ticks      how long the crescent falls before impact
      */
     public static void strikeCrescent(final JavaPlugin plugin, final Location location,
                                       final long delayTicks, final int ticks) {
@@ -140,17 +165,14 @@ public final class KokushiboEffects {
                 if (location.getWorld() == null) {
                     return;
                 }
-                final ItemDisplay display = location.getWorld().spawn(location, ItemDisplay.class);
+                final World world = location.getWorld();
+                final Location start = location.clone().add(0.0, 3.5, 0.0);
+                final ItemDisplay display = world.spawn(start, ItemDisplay.class);
                 display.setItemStack(KokushiboSword.crescentItem());
                 display.setBillboard(Display.Billboard.CENTER);
                 display.setBrightness(new Display.Brightness(15, 15));
                 display.setInterpolationDuration(1);
                 display.setInterpolationDelay(0);
-
-                location.getWorld().spawnParticle(Particle.WITCH, location, 20,
-                        0.4, 0.4, 0.4, 0.02);
-                location.getWorld().spawnParticle(Particle.END_ROD, location, 10,
-                        0.3, 0.3, 0.3, 0.02);
 
                 new BukkitRunnable() {
                     private int tick;
@@ -159,16 +181,113 @@ public final class KokushiboEffects {
                     public void run() {
                         if (tick >= ticks) {
                             display.remove();
+                            crashImpact(plugin, location);
                             cancel();
                             return;
                         }
-                        final float scale = 0.6f + tick * 0.25f;
+                        final double progress = tick / (double) Math.max(1, ticks - 1);
+                        final double fall = (1.0 - progress) * 3.5;
+                        display.teleport(location.clone().add(0.0, fall, 0.0));
+                        final float scale = 0.9f + (float) progress * 1.5f;
                         setScale(display, scale, scale, scale);
+                        world.spawnParticle(Particle.WITCH, display.getLocation(),
+                                2, 0.2, 0.2, 0.2, 0.02);
                         tick++;
                     }
                 }.runTaskTimer(plugin, 0L, 1L);
             }
         }.runTaskLater(plugin, delayTicks);
+    }
+
+    /**
+     * Detonates a crashing slash: a debris burst, a crater rim, and a scatter
+     * of smaller crescent moon blades.
+     */
+    private static void crashImpact(final JavaPlugin plugin, final Location location) {
+        final World world = location.getWorld();
+        if (world == null) {
+            return;
+        }
+        world.spawnParticle(Particle.WITCH, location, 30, 0.5, 0.3, 0.5, 0.05);
+        world.spawnParticle(Particle.END_ROD, location, 12, 0.4, 0.4, 0.4, 0.03);
+        world.spawnParticle(Particle.POOF, location, 20, 0.5, 0.2, 0.5, 0.04);
+        world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 8, 0.4, 0.2, 0.4, 0.01);
+        world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.6f, 0.9f);
+
+        for (int i = 0; i < 3; i++) {
+            scatterCrescent(plugin, world, location);
+        }
+        craterRing(plugin, location);
+    }
+
+    /**
+     * Fires one small crescent blade outward from an impact point, shrinking
+     * as it travels.
+     */
+    private static void scatterCrescent(final JavaPlugin plugin, final World world,
+                                        final Location location) {
+        final ItemDisplay display = world.spawn(
+                location.clone().add(0.0, 0.3, 0.0), ItemDisplay.class);
+        display.setItemStack(KokushiboSword.crescentItem());
+        display.setBillboard(Display.Billboard.CENTER);
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+
+        final Vector velocity = new Vector(rand(-1.0, 1.0), rand(0.2, 0.9), rand(-1.0, 1.0))
+                .normalize().multiply(0.35);
+
+        new BukkitRunnable() {
+            private int tick;
+            private final Location pos = location.clone().add(0.0, 0.3, 0.0);
+
+            @Override
+            public void run() {
+                if (tick++ >= 12 || !display.isValid()) {
+                    display.remove();
+                    cancel();
+                    return;
+                }
+                pos.add(velocity);
+                velocity.multiply(0.9);
+                display.teleport(pos);
+                final float scale = 1.0f - tick * 0.06f;
+                setScale(display, scale, scale, scale);
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Draws a brief glowing crater rim at an impact point: a flat purple ring
+     * that expands and fades.
+     */
+    private static void craterRing(final JavaPlugin plugin, final Location location) {
+        final List<BlockDisplay> rim = new ArrayList<>();
+        final int blocks = 12;
+        for (int i = 0; i < blocks; i++) {
+            rim.add(spawnBlockAt(location, Material.PURPLE_STAINED_GLASS));
+        }
+
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= 10) {
+                    rim.forEach(BlockDisplay::remove);
+                    cancel();
+                    return;
+                }
+                final double radius = 0.3 + tick * 0.16;
+                for (int i = 0; i < rim.size(); i++) {
+                    final double angle = i * (Math.PI * 2.0 / rim.size());
+                    rim.get(i).teleport(location.clone().add(
+                            Math.sin(angle) * radius, 0.03, Math.cos(angle) * radius));
+                    setScale(rim.get(i), 0.35f, 0.06f, 0.35f);
+                }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 
     /**
@@ -281,6 +400,20 @@ public final class KokushiboEffects {
     }
 
     /**
+     * Spawns a full-bright glowing purple glass block display at a world
+     * location (used for the crater rim, which has no player reference).
+     */
+    private static BlockDisplay spawnBlockAt(final Location location, final Material material) {
+        final BlockDisplay display = location.getWorld().spawn(location, BlockDisplay.class);
+        display.setBlock(material.createBlockData());
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+        setScale(display, 0.35f, 0.06f, 0.35f);
+        return display;
+    }
+
+    /**
      * Applies a scale-only transform to a display (no rotation, so it never
      * flickers).
      */
@@ -312,5 +445,12 @@ public final class KokushiboEffects {
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Returns a random double in the inclusive range [min, max].
+     */
+    private static double rand(final double min, final double max) {
+        return min + Math.random() * (max - min);
     }
 }

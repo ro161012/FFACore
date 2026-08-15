@@ -93,8 +93,8 @@ public final class KokushiboSword {
                 header("SIXTEENTH FORM | MOONBOW, HALF MOON"),
                 tag("[Offhand + Crouch]"),
                 Component.empty(),
-                body("Face a direction, then call down six moon crescents."),
-                body("They strike in a straight line from near to far."),
+                body("Face a direction, then bring six curved slashes crashing down."),
+                body("Each leaves a crater of crescent blades in its wake."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("80s cooldown.")));
         stack.setItemMeta(meta);

@@ -180,7 +180,7 @@ kokushibo:
     crescents: 6
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
-    # Ticks each launched crescent gleams upward for.
+    # Ticks each launched crescent flies for.
     vfx-ticks: 16
 
 # ------------------------------------------------------------

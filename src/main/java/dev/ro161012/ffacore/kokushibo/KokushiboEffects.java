@@ -46,16 +46,18 @@ public final class KokushiboEffects {
     /**
      * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — an
      * omni-directional ring of purple energy expanding outward in every
-     * direction, growing as it sweeps.
+     * direction.
      *
-     * <p>The {@code onStrike} callback receives each living target exactly once
-     * as the expanding front reaches it.
+     * <p>Damage is applied immediately to every living target inside
+     * {@code maxRadius} (the strike hits in all directions at once), then the
+     * expanding ring sweeps outward as the visual. The {@code onStrike}
+     * callback receives each target exactly once.
      *
      * @param plugin    owning plugin (for the scheduler)
      * @param player    the caster
      * @param maxRadius the radius the ring expands out to, in blocks
      * @param crescents number of glass blocks in the expanding ring
-     * @param onStrike  called once per target as the ring reaches it
+     * @param onStrike  called once per target struck
      * @param ticks     how long the ring plays (shorter = snappier)
      */
     public static void playCatastrophe(final JavaPlugin plugin, final Player player,
@@ -63,18 +65,33 @@ public final class KokushiboEffects {
                                        final Consumer<LivingEntity> onStrike,
                                        final int ticks) {
         final Location center = player.getEyeLocation().add(0.0, -0.5, 0.0);
+
+        // Strike everything around the caster immediately so the damage always
+        // lands, then the expanding ring plays as the visual sweep.
+        final Set<UUID> struck = new HashSet<>();
+        for (final Entity entity : center.getWorld().getNearbyEntities(
+                center, maxRadius, 4.0, maxRadius)) {
+            if (!(entity instanceof LivingEntity living) || living.equals(player)) {
+                continue;
+            }
+            final double dx = living.getLocation().getX() - center.getX();
+            final double dz = living.getLocation().getZ() - center.getZ();
+            if (dx * dx + dz * dz <= maxRadius * maxRadius
+                    && struck.add(living.getUniqueId())) {
+                onStrike.accept(living);
+                // A purple ring erupts off each target as it is struck.
+                purpleBurst(living.getLocation().add(0.0, 1.0, 0.0));
+            }
+        }
+
         final int totalTicks = Math.max(1, ticks);
         final double startRadius = 1.6;
         final int blocks = Math.max(16, crescents);
-        final int outerCount = blocks * 2 / 3;
-        final int innerCount = blocks - outerCount;
-
         final List<Display> ring = new ArrayList<>();
         for (int i = 0; i < blocks; i++) {
             ring.add(spawnBlockAt(center, Material.PURPLE_STAINED_GLASS));
         }
 
-        final Set<UUID> struck = new HashSet<>();
         center.getWorld().spawnParticle(Particle.WITCH, center, 60, 1.5, 0.8, 1.5, 0.02);
         center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 20, 1.2, 0.6, 1.2, 0.01);
         center.getWorld().spawnParticle(Particle.END_ROD, center, 20, 1.5, 0.8, 1.5, 0.01);
@@ -83,23 +100,13 @@ public final class KokushiboEffects {
             final double progress = tick / (double) totalTicks;
             final double radius = startRadius + (maxRadius - startRadius) * progress;
 
-            // Outer ring: a clean expanding band of purple glass.
-            for (int i = 0; i < outerCount; i++) {
-                final double angle = i * (TAU / outerCount);
+            // A single clean band of purple glass expanding outward.
+            for (int i = 0; i < blocks; i++) {
+                final double angle = i * (TAU / blocks);
                 ring.get(i).teleport(center.clone().add(
                         Math.sin(angle) * radius, 0.0, Math.cos(angle) * radius));
-                final float scale = 0.4f + (float) progress * 0.5f;
-                setScale(ring.get(i), scale, 0.22f, scale);
-            }
-
-            // Inner halo: a tighter, slightly offset band inside it.
-            for (int i = 0; i < innerCount; i++) {
-                final double angle = i * (TAU / innerCount) + TAU * 0.5;
-                ring.get(outerCount + i).teleport(center.clone().add(
-                        Math.sin(angle) * radius * 0.62, 0.0,
-                        Math.cos(angle) * radius * 0.62));
-                final float scale = 0.3f + (float) progress * 0.4f;
-                setScale(ring.get(outerCount + i), scale, 0.18f, scale);
+                final float scale = 0.5f + (float) progress * 0.6f;
+                setScale(ring.get(i), scale, 0.28f, scale);
             }
 
             // Purple energy sparkles drifting outward with the ring.
@@ -110,25 +117,6 @@ public final class KokushiboEffects {
                         radius, 0.25, radius, 0.005);
                 center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 2,
                         radius, 0.2, radius, 0.01);
-            }
-
-            for (final Entity entity : center.getWorld().getNearbyEntities(
-                    center, radius, radius, radius)) {
-                if (!(entity instanceof LivingEntity living) || living.equals(player)) {
-                    continue;
-                }
-                final double dx = living.getLocation().getX() - center.getX();
-                final double dz = living.getLocation().getZ() - center.getZ();
-                final double dy = living.getLocation().getY() - center.getY();
-                if (Math.abs(dy) > 4) {
-                    continue;
-                }
-                if (dx * dx + dz * dz <= radius * radius
-                        && struck.add(living.getUniqueId())) {
-                    onStrike.accept(living);
-                    // A purple ring erupts off each target as it is struck.
-                    purpleBurst(living.getLocation().add(0.0, 1.0, 0.0));
-                }
             }
         });
     }

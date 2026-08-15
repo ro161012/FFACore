@@ -632,7 +632,7 @@ public final class ConfigMenu {
                                 1, 20, 3).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.moonbow.vfx-ticks",
                                 "Moonbow animation",
-                                "Ticks each launched crescent gleams upward.",
+                                "Ticks each launched crescent flies for.",
                                 5, 40, 16).withColor(KOKUSHIBO)
                 ), KOKUSHIBO);
     }

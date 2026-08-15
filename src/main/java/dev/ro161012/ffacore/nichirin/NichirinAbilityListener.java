@@ -245,7 +245,7 @@ public final class NichirinAbilityListener implements Listener {
         bossBars.start(player, "clear-blue-sky",
                 "§bHinokami Kagura §8» §b§lClear Blue Sky",
                 BarColor.BLUE, clearSkyCooldown.getCooldownMillis());
-        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks);
+        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyArcDegrees);
 
         final Vector facing = horizontalDirection(player);
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(

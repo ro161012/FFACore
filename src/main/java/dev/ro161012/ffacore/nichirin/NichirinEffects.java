@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -17,13 +18,15 @@ import java.util.List;
 import java.util.function.IntConsumer;
 
 /**
- * Renders the Nichirin Blade ability visuals as structured fire geometry.
+ * Renders the Nichirin Blade ability visuals as two distinct lava scenes.
  *
- * <p>Clear Blue Sky spins an expanding horizontal ring of glowing flame cubes
- * around the caster, and Enbu whirls a rising stack of flame rings above a
- * spreading ground ring. The cubes are full-bright translucent glass rendered
- * through the companion core shader ({@code rendertype_entity_alpha.fsh}), so
- * they glow like embers, and every display is removed when the animation ends.
+ * <p><b>Clear Blue Sky</b> is a directional fan: a widening arc of glowing
+ * magma blocks slashes outward in the direction the player faces. <b>Enbu</b>
+ * is an omni-directional eruption: a ring of magma spreads across the ground
+ * while a shroomlight lava column erupts upward beneath a counter-rotating
+ * glowstone ring. Both use full-bright lava-adjacent blocks (magma, shroomlight,
+ * glowstone) so they read as molten rock, and every display is removed when
+ * the animation ends.
  */
 public final class NichirinEffects {
 
@@ -32,115 +35,110 @@ public final class NichirinEffects {
     }
 
     /**
-     * Plays Clear Blue Sky: a spinning ring of flame that expands outward
-     * around the caster, with a counter-rotating inner ring and a rising
-     * pillar of fire.
+     * Plays Clear Blue Sky: a fan of lava blocks slashing outward in the
+     * player's facing direction.
      *
-     * @param plugin owning plugin (for the scheduler)
-     * @param player the caster
-     * @param ticks  how long the ring plays (shorter = snappier)
+     * @param plugin     owning plugin (for the scheduler)
+     * @param player     the caster
+     * @param ticks      how long the fan sweeps (shorter = snappier)
+     * @param arcDegrees width of the fan arc in degrees, centred on facing
      */
     public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
-                                        final int ticks) {
+                                        final int ticks, final double arcDegrees) {
         final Location eye = player.getEyeLocation();
-        final int ring = 36;
-        final int inner = 18;
-        final double startRadius = 0.6;
+        final Vector facing = horizontalFacing(player);
+        final double halfArc = Math.toRadians(Math.max(10.0, arcDegrees) / 2.0);
+        final double startRadius = 0.5;
+
+        final int blades = 28;
+        final int inner = 14;
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        for (int i = 0; i < ring; i++) {
-            displays.add(spawnBlock(player, eye, Material.ORANGE_STAINED_GLASS, 0.4f));
+        for (int i = 0; i < blades; i++) {
+            displays.add(spawnBlock(player, eye, Material.MAGMA_BLOCK, 0.5f));
         }
         for (int i = 0; i < inner; i++) {
-            displays.add(spawnBlock(player, eye, Material.RED_STAINED_GLASS, 0.35f));
+            displays.add(spawnBlock(player, eye, Material.SHROOMLIGHT, 0.4f));
         }
-        final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, -0.3, 0),
-                Material.ORANGE_STAINED_GLASS, 0.5f);
-        displays.add(pillar);
-
-        player.getWorld().spawnParticle(Particle.FLAME, eye, 80, 0.8, 0.5, 0.8, 0.06);
-        player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 40, 0.6, 0.4, 0.6, 0.04);
 
         animate(plugin, displays, ticks, tick -> {
-            final double radius = startRadius + tick * 0.24;
-            final double spin = Math.toRadians(tick * 24);
-            for (int i = 0; i < ring; i++) {
-                final double angle = Math.toRadians(i * (360.0 / ring)) + spin;
+            final double radius = startRadius + tick * 0.26;
+            for (int i = 0; i < blades; i++) {
+                final double t = i / (double) (blades - 1);
+                final double angle = -halfArc + t * (2.0 * halfArc);
                 final BlockDisplay block = displays.get(i);
-                block.teleport(eye.clone().add(
-                        Math.sin(angle) * radius, -0.5, Math.cos(angle) * radius));
+                block.teleport(eye.clone()
+                        .add(facing.clone().rotateAroundY(angle).multiply(radius))
+                        .add(0, -0.5, 0));
+                setScale(block, 0.5f, 0.5f, 0.5f);
+            }
+            for (int i = 0; i < inner; i++) {
+                final double t = i / (double) (inner - 1);
+                final double angle = -halfArc * 0.8 + t * (1.6 * halfArc);
+                final BlockDisplay block = displays.get(blades + i);
+                block.teleport(eye.clone()
+                        .add(facing.clone().rotateAroundY(angle).multiply(radius * 0.7))
+                        .add(0, -0.3, 0));
                 setScale(block, 0.4f, 0.4f, 0.4f);
             }
-            final double innerSpin = -Math.toRadians(tick * 30);
-            for (int i = 0; i < inner; i++) {
-                final double angle = Math.toRadians(i * (360.0 / inner)) + innerSpin;
-                final BlockDisplay block = displays.get(ring + i);
-                block.teleport(eye.clone().add(
-                        Math.sin(angle) * radius * 0.7, -0.35, Math.cos(angle) * radius * 0.7));
-                setScale(block, 0.35f, 0.35f, 0.35f);
-            }
-            final float pillarHeight = tick < 6 ? 1.0f + tick * 0.5f : 4.0f - (tick - 6) * 0.45f;
-            setScale(pillar, 0.5f, pillarHeight, 0.5f);
+            // Molten droplets along the leading edge of the slash.
+            final Location edge = eye.clone()
+                    .add(facing.clone().multiply(radius)).add(0, -0.4, 0);
+            edge.getWorld().spawnParticle(Particle.LAVA, edge, 6, 0.5, 0.3, 0.5, 0.02);
+            edge.getWorld().spawnParticle(Particle.FLAME, edge, 4, 0.6, 0.4, 0.6, 0.05);
         });
     }
 
     /**
-     * Plays Enbu: a rising whirl of flame rings around the caster with a
-     * spreading ground ring and a central fire pillar.
+     * Plays Enbu: a full-circle lava eruption around the caster — a magma
+     * ring spreads across the ground, a shroomlight column erupts upward, and
+     * a glowstone ring counter-rotates overhead.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
-     * @param ticks  how long the spiral plays (shorter = snappier)
+     * @param ticks  how long the eruption plays (shorter = snappier)
      */
     public static void playEnbu(final JavaPlugin plugin, final Player player,
                                 final int ticks) {
         final Location eye = player.getEyeLocation();
-        final int rings = 3;
-        final int perRing = 16;
-        final int ground = 20;
+        final int ground = 28;
+        final int upperRing = 16;
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        for (int r = 0; r < rings; r++) {
-            final Material material = r == 0
-                    ? Material.ORANGE_STAINED_GLASS : Material.RED_STAINED_GLASS;
-            for (int i = 0; i < perRing; i++) {
-                displays.add(spawnBlock(player, eye, material, 0.45f));
-            }
-        }
         for (int i = 0; i < ground; i++) {
-            displays.add(spawnBlock(player, eye, Material.RED_STAINED_GLASS, 0.4f));
+            displays.add(spawnBlock(player, eye, Material.MAGMA_BLOCK, 0.5f));
         }
-        final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, 0.3, 0),
-                Material.ORANGE_STAINED_GLASS, 0.55f);
+        for (int i = 0; i < upperRing; i++) {
+            displays.add(spawnBlock(player, eye, Material.GLOWSTONE, 0.4f));
+        }
+        final BlockDisplay pillar = spawnBlock(player, eye.clone().add(0, -0.4, 0),
+                Material.SHROOMLIGHT, 0.6f);
         displays.add(pillar);
 
-        player.getWorld().spawnParticle(Particle.FLAME, eye, 100, 1.0, 0.6, 1.0, 0.06);
-        player.getWorld().spawnParticle(Particle.LAVA, eye, 40, 0.8, 0.5, 0.8, 0.03);
+        player.getWorld().spawnParticle(Particle.LAVA, eye, 50, 0.9, 0.5, 0.9, 0.02);
+        player.getWorld().spawnParticle(Particle.FLAME, eye, 80, 1.0, 0.6, 1.0, 0.06);
 
         animate(plugin, displays, ticks, tick -> {
-            final double spin = Math.toRadians(tick * 28);
-            final double rise = tick * 0.12;
-            final double radius = 1.7 + Math.sin(tick * 0.5) * 0.25;
-            for (int r = 0; r < rings; r++) {
-                final double ringPhase = spin + r * Math.toRadians(40);
-                for (int i = 0; i < perRing; i++) {
-                    final double angle = Math.toRadians(i * (360.0 / perRing)) + ringPhase;
-                    final double y = -0.6 + rise + r * 0.55;
-                    final BlockDisplay block = displays.get(r * perRing + i);
-                    block.teleport(eye.clone().add(
-                            Math.sin(angle) * radius, y, Math.cos(angle) * radius));
-                    setScale(block, 0.45f, 0.45f, 0.45f);
-                }
-            }
-            final double groundRadius = 0.6 + tick * 0.18;
+            final double spin = Math.toRadians(tick * 22);
+            final double groundRadius = 0.6 + tick * 0.22;
             for (int i = 0; i < ground; i++) {
                 final double angle = Math.toRadians(i * (360.0 / ground)) + spin * 0.5;
-                final BlockDisplay block = displays.get(rings * perRing + i);
+                final BlockDisplay block = displays.get(i);
                 block.teleport(eye.clone().add(
                         Math.sin(angle) * groundRadius, -0.95, Math.cos(angle) * groundRadius));
+                setScale(block, 0.5f, 0.5f, 0.5f);
+            }
+            final double innerSpin = -Math.toRadians(tick * 30);
+            for (int i = 0; i < upperRing; i++) {
+                final double angle = Math.toRadians(i * (360.0 / upperRing)) + innerSpin;
+                final BlockDisplay block = displays.get(ground + i);
+                block.teleport(eye.clone().add(
+                        Math.sin(angle) * 1.4, -0.2, Math.cos(angle) * 1.4));
                 setScale(block, 0.4f, 0.4f, 0.4f);
             }
-            setScale(pillar, 0.55f, 1.0f + tick * 0.22f, 0.55f);
+            // Lava column swells upward, then falls back as the cast ends.
+            final float pillarHeight = 0.6f + (float) Math.sin(tick * Math.PI / Math.max(1, ticks - 1)) * 2.2f;
+            setScale(pillar, 0.6f, pillarHeight, 0.6f);
         });
     }
 
@@ -156,6 +154,15 @@ public final class NichirinEffects {
         display.setInterpolationDelay(0);
         setScale(display, scale, scale, scale);
         return display;
+    }
+
+    /**
+     * Returns the player's horizontal facing direction (pitch flattened), or
+     * north when they are looking straight up or down.
+     */
+    private static Vector horizontalFacing(final Player player) {
+        final Vector direction = player.getLocation().getDirection().setY(0);
+        return direction.lengthSquared() == 0 ? new Vector(0, 0, 1) : direction.normalize();
     }
 
     /**

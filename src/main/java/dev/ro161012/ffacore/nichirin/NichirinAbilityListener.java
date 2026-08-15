@@ -243,8 +243,8 @@ public final class NichirinAbilityListener implements Listener {
         }
         clearSkyCooldown.apply(id);
         bossBars.start(player, "clear-blue-sky",
-                "§bHinokami Kagura §8» §b§lClear Blue Sky",
-                BarColor.BLUE, clearSkyCooldown.getCooldownMillis());
+                "§6Hinokami Kagura §8» §6§lClear Blue Sky",
+                BarColor.RED, clearSkyCooldown.getCooldownMillis());
         NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyArcDegrees);
 
         final Vector facing = horizontalDirection(player);

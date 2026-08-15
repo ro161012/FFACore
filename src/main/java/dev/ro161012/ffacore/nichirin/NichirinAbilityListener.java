@@ -97,7 +97,7 @@ public final class NichirinAbilityListener implements Listener {
                 "nichirin.clear-blue-sky.fire-seconds", 3));
         clearSkySearHearts = config.getDouble("nichirin.clear-blue-sky.sear-hearts", 1.0);
         enbuDamageHearts = config.getDouble("nichirin.enbu.damage-hearts", 2.0);
-        enbuRadius = config.getDouble("nichirin.enbu.radius", 8.0);
+        enbuRadius = config.getDouble("nichirin.enbu.radius", 4.0);
         absorptionLockMillis = Math.max(0, config.getInt(
                 "nichirin.enbu.absorption-lock-seconds", 15)) * 1000L;
         clearSkyVfxTicks = Math.max(4, config.getInt(
@@ -293,7 +293,7 @@ public final class NichirinAbilityListener implements Listener {
                 "§6Hinokami Kagura §8» §6§lDancing Flash",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player, enbuVfxTicks, enbuRadius);
-        NichirinEffects.lavaBurstForward(plugin, player);
+        NichirinEffects.lavaBurstForward(plugin, player, enbuRadius);
 
         final long lockUntil = System.currentTimeMillis() + absorptionLockMillis;
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(

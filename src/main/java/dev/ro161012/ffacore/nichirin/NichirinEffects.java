@@ -271,8 +271,10 @@ public final class NichirinEffects {
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
+     * @param radius how far the lava shoots forward, in blocks
      */
-    public static void lavaBurstForward(final JavaPlugin plugin, final Player player) {
+    public static void lavaBurstForward(final JavaPlugin plugin, final Player player,
+                                        final double radius) {
         final Location origin = player.getEyeLocation();
         final Vector facing = horizontalFacing(player);
         final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
@@ -302,7 +304,7 @@ public final class NichirinEffects {
                 final double progress = tick / (double) (duration - 1);
                 for (int i = 0; i < lava.size(); i++) {
                     final double spread = (i / (double) (lava.size() - 1)) * 2.0 - 1.0;
-                    final double dist = 0.5 + progress * 7.0;
+                    final double dist = 0.5 + progress * Math.max(1.0, radius);
                     final double height = Math.sin(progress * Math.PI) * 1.1;
                     final double width = 0.4 + Math.abs(spread) * 1.6;
                     lava.get(i).teleport(origin.clone()

@@ -16,9 +16,8 @@ import dev.ro161012.ffacore.killtoken.KillTokenCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenGuiListener;
 import dev.ro161012.ffacore.killtoken.KillTokenManager;
 import dev.ro161012.ffacore.kokushibo.KokushiboAbilityListener;
-import dev.ro161012.ffacore.kokushibo.KokushiboCommand;
 import dev.ro161012.ffacore.nichirin.NichirinAbilityListener;
-import dev.ro161012.ffacore.nichirin.NichirinCommand;
+import dev.ro161012.ffacore.weapon.CustomWeaponsCommand;
 import dev.ro161012.ffacore.perf.PerformanceTracker;
 import dev.ro161012.ffacore.placeholder.AfkExpansion;
 import dev.ro161012.ffacore.placeholder.ArenaExpansion;
@@ -98,8 +97,7 @@ public final class FFACore extends JavaPlugin {
         final ArenaCommand arenaCommand = new ArenaCommand(this);
         final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
         final AfkCommand afkCommand = new AfkCommand(this);
-        final NichirinCommand nichirinCommand = new NichirinCommand();
-        final KokushiboCommand kokushiboCommand = new KokushiboCommand();
+        final CustomWeaponsCommand customWeaponsCommand = new CustomWeaponsCommand();
 
         registerArena();
         registerKillToken();
@@ -110,7 +108,7 @@ public final class FFACore extends JavaPlugin {
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
             final FfaCommand executor = new FfaCommand(this, arenaCommand,
-                    killTokenCommand, afkCommand, nichirinCommand, kokushiboCommand);
+                    killTokenCommand, afkCommand, customWeaponsCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }

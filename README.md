@@ -102,17 +102,15 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | `/ffa afk give [player] [amount]` | `ffacore.afk.give` | Hand out AFK Shards |
 | `/ffa afk reload` | `ffacore.afk.reload` | Reload configuration |
 
-### `/ffa nichirin`
+### `/ffa customweapons`
 
 | Command | Permission | Description |
 |---|---|---|
-| `/ffa nichirin give [player] [amount]` | `ffacore.nichirin.admin` | Hand out the Nichirin Blade |
+| `/ffa customweapons give <nichirin\|kokushibo> [player] [amount]` | `ffacore.customweapons.admin` | Hand out a custom weapon |
+| `/ffa customweapons list` | `ffacore.customweapons.admin` | List available weapons |
 
-### `/ffa kokushibo`
-
-| Command | Permission | Description |
-|---|---|---|
-| `/ffa kokushibo give [player] [amount]` | `ffacore.kokushibo.admin` | Hand out the Kokoshibos Sword |
+This is the only command that hands out weapons. Available weapons:
+`nichirin` (Nichirin Blade) and `kokushibo` (Kokoshibos Sword).
 
 #### Kokoshibos Sword abilities
 
@@ -145,8 +143,7 @@ Every FFACore command lives under `/ffa`:
 | `/ffa arena ...` | `ffacore.arena.*` | Arena regeneration management |
 | `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
 | `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
-| `/ffa nichirin ...` | `ffacore.nichirin.admin` | The Nichirin Blade weapon |
-| `/ffa kokushibo ...` | `ffacore.kokushibo.admin` | The Kokoshibos Sword weapon |
+| `/ffa customweapons ...` | `ffacore.customweapons.admin` | Hand out custom weapons |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
@@ -171,6 +168,7 @@ Each subsystem also exposes fine-grained permissions:
 * Arena: `ffacore.arena.*` (all default to `op`)
 * Kill Token: `ffacore.killtoken.*` (all default to `op`)
 * AFK: `ffacore.afk.use` defaults to `true`; the rest default to `op`
+* Custom Weapons: `ffacore.customweapons.admin` (defaults to `op`)
 
 See `plugin.yml` for the full list.
 

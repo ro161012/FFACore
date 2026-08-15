@@ -21,8 +21,7 @@ permissions:
       ffacore.arena.admin: true
       ffacore.killtoken.admin: true
       ffacore.afk.admin: true
-      ffacore.nichirin.admin: true
-      ffacore.kokushibo.admin: true
+      ffacore.customweapons.admin: true
       ffacore.config: true
 
   ffacore.config:
@@ -105,14 +104,9 @@ permissions:
     description: View other players' kill stats.
     default: op
 
-  # ---- Nichirin Blade ----
-  ffacore.nichirin.admin:
-    description: Hand out the Nichirin Blade.
-    default: op
-
-  # ---- Kokoshibos Sword ----
-  ffacore.kokushibo.admin:
-    description: Hand out the Kokoshibos Sword.
+  # ---- Custom Weapons ----
+  ffacore.customweapons.admin:
+    description: Hand out the custom weapons (Nichirin Blade, Kokoshibos Sword).
     default: op
 
   # ---- AFK ----

@@ -248,14 +248,14 @@ kokushibo:
   catastrophe:
     cooldown-seconds: 70
     damage-hearts: 3.0
-    max-radius: 9.0
-    crescents: 12
+    max-radius: 20.0
+    crescents: 24
     vfx-ticks: 24        # vortex expansion speed
   moonbow:
     cooldown-seconds: 80
     crescents: 6
     damage-hearts: 3.0
-    vfx-ticks: 10
+    vfx-ticks: 16        # crescent fall time
 
 afk:
   reward-interval-seconds: 30

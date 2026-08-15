@@ -169,9 +169,9 @@ kokushibo:
     # True damage per target in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
     # Maximum radius the vortex expands to, in blocks.
-    max-radius: 9.0
+    max-radius: 20.0
     # Number of crescent blades in the vortex.
-    crescents: 12
+    crescents: 24
     # Ticks the vortex expands for. Higher = slower expansion.
     vfx-ticks: 24
   moonbow:
@@ -181,8 +181,8 @@ kokushibo:
     strike-radius: 1.2
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
-    # Ticks each strike crescent grows for before fading.
-    vfx-ticks: 10
+    # Ticks each strike crescent falls for before impact.
+    vfx-ticks: 16
 
 # ------------------------------------------------------------
 #  Compressed Kill Token block

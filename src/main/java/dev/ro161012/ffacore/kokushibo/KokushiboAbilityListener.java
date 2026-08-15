@@ -92,16 +92,16 @@ public final class KokushiboAbilityListener implements Listener {
         catastropheDamageHearts = config.getDouble(
                 "kokushibo.catastrophe.damage-hearts", 3.0);
         catastropheMaxRadius = Math.max(2.0, config.getDouble(
-                "kokushibo.catastrophe.max-radius", 9.0));
+                "kokushibo.catastrophe.max-radius", 20.0));
         catastropheCrescents = Math.max(4, config.getInt(
-                "kokushibo.catastrophe.crescents", 12));
+                "kokushibo.catastrophe.crescents", 24));
         moonbowCrescents = Math.max(1, config.getInt("kokushibo.moonbow.crescents", 6));
         moonbowSpacing = Math.max(0.5, config.getDouble("kokushibo.moonbow.spacing", 1.6));
         strikeRadius = Math.max(0.5, config.getDouble("kokushibo.moonbow.strike-radius", 1.2));
         moonbowDamageHearts = config.getDouble("kokushibo.moonbow.damage-hearts", 3.0);
         catastropheVfxTicks = Math.max(4, config.getInt(
                 "kokushibo.catastrophe.vfx-ticks", 24));
-        moonbowVfxTicks = Math.max(4, config.getInt("kokushibo.moonbow.vfx-ticks", 10));
+        moonbowVfxTicks = Math.max(4, config.getInt("kokushibo.moonbow.vfx-ticks", 16));
         crescentSpeed = Math.max(0.1, config.getDouble(
                 "kokushibo.upper-moon-one.crescent-speed", 1.0));
 
@@ -258,7 +258,7 @@ public final class KokushiboAbilityListener implements Listener {
             final Location strike = eye.clone().add(
                     facing.clone().multiply(1.2 + i * moonbowSpacing)).add(0, -0.5, 0);
             KokushiboEffects.strikeCrescent(plugin, strike, i * 3L, moonbowVfxTicks);
-            strikeMoonbowAt(player, strike, i * 3L);
+            strikeMoonbowAt(player, strike, i * 3L + moonbowVfxTicks);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.7f);
     }

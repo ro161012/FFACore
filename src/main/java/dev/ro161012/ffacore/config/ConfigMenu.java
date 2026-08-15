@@ -610,11 +610,11 @@ public final class ConfigMenu {
                         ConfigOption.decimal("kokushibo.catastrophe.max-radius",
                                 "Vortex reach",
                                 "Maximum radius the vortex expands to, in blocks.",
-                                2f, 20f, 0.5f, 9.0).withColor(KOKUSHIBO),
+                                2f, 40f, 0.5f, 20.0).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.catastrophe.crescents",
                                 "Crescents",
                                 "Number of crescent blades in the vortex.",
-                                4, 32, 12).withColor(KOKUSHIBO),
+                                4, 48, 24).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.catastrophe.vfx-ticks",
                                 "Vortex duration",
                                 "Ticks the vortex expands for (higher = slower).",
@@ -640,8 +640,8 @@ public final class ConfigMenu {
                                 1, 20, 3).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.moonbow.vfx-ticks",
                                 "Moonbow animation",
-                                "Ticks each strike crescent grows for.",
-                                5, 40, 10).withColor(KOKUSHIBO)
+                                "Ticks each crescent falls for before impact.",
+                                5, 40, 16).withColor(KOKUSHIBO)
                 ), KOKUSHIBO);
     }
 

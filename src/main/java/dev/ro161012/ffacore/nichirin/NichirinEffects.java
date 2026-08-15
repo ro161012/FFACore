@@ -25,8 +25,7 @@ import java.util.function.IntConsumer;
  *
  * <p><b>Clear Blue Sky</b> is a continuous 360&deg; disc of solar fire that
  * spins around the caster's waist: an orange-red core ring inside a
- * yellow-white outer ring, with a lingering afterimage and a trail of
- * sparkling embers. <b>Enbu</b> opens with an electric launch (yellow sparks
+ * yellow-white outer ring, with a lingering afterimage and a trail of     * sparkling embers. <b>Dancing Flash</b> opens with an electric launch (yellow sparks
  * crackling at the feet), sweeps a massive vertical crescent of fire forward,
  * and detonates into an expanding yellow/orange shockwave. Every display is
  * removed when the animation ends.
@@ -42,51 +41,53 @@ public final class NichirinEffects {
     /**
      * Plays Clear Blue Sky: a spinning 360&deg; horizontal solar disc around
      * the caster's waist — orange-red core, yellow-white rim, a lagging
-     * afterimage, and heat-haze embers.
+     * afterimage, and lava that shoots outward before fading.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
      * @param ticks  how long the disc spins (shorter = snappier)
+     * @param radius final reach of the ring in blocks
      */
     public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
-                                        final int ticks) {
+                                        final int ticks, final double radius) {
         final Location waist = player.getEyeLocation().add(0.0, -1.0, 0.0);
-        final int core = 20;
-        final int rim = 20;
-        final int afterimage = 20;
+        final int core = 28;
+        final int rim = 28;
+        final int afterimage = 24;
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < core; i++) {
-            displays.add(spawnBlock(player, waist, Material.ORANGE_STAINED_GLASS, 0.5f));
+            displays.add(spawnBlock(player, waist, Material.ORANGE_STAINED_GLASS, 0.6f));
         }
         for (int i = 0; i < rim; i++) {
-            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.55f));
+            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.65f));
         }
         for (int i = 0; i < afterimage; i++) {
-            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.4f));
+            displays.add(spawnBlock(player, waist, Material.YELLOW_STAINED_GLASS, 0.45f));
         }
 
         animate(plugin, displays, ticks, tick -> {
             final double progress = tick / (double) Math.max(1, ticks - 1);
-            final double radius = 0.6 + progress * 3.4;
+            final double ringRadius = 0.8 + progress * radius;
             final double spin = progress * TAU;
 
             for (int i = 0; i < core; i++) {
                 final double angle = spin + i * (TAU / core);
                 displays.get(i).teleport(waist.clone().add(
-                        Math.sin(angle) * radius * 0.72, 0.0, Math.cos(angle) * radius * 0.72));
-                setScale(displays.get(i), 0.5f, 0.4f, 0.5f);
+                        Math.sin(angle) * ringRadius * 0.72, 0.0,
+                        Math.cos(angle) * ringRadius * 0.72));
+                setScale(displays.get(i), 0.6f, 0.45f, 0.6f);
             }
             for (int i = 0; i < rim; i++) {
                 final double angle = -spin + i * (TAU / rim);
                 displays.get(core + i).teleport(waist.clone().add(
-                        Math.sin(angle) * radius, 0.15 * Math.sin(progress * TAU),
-                        Math.cos(angle) * radius));
-                setScale(displays.get(core + i), 0.55f, 0.35f, 0.55f);
+                        Math.sin(angle) * ringRadius, 0.15 * Math.sin(progress * TAU),
+                        Math.cos(angle) * ringRadius));
+                setScale(displays.get(core + i), 0.65f, 0.4f, 0.65f);
             }
             // Afterimage: trails the rim, spins slower, and shrinks as it fades.
-            final double ghostRadius = radius * 0.82;
-            final float ghostScale = (float) (0.4 * (1.0 - progress * 0.6));
+            final double ghostRadius = ringRadius * 0.82;
+            final float ghostScale = (float) (0.45 * (1.0 - progress * 0.6));
             for (int i = 0; i < afterimage; i++) {
                 final double angle = -spin * 0.7 + i * (TAU / afterimage);
                 displays.get(core + rim + i).teleport(waist.clone().add(
@@ -94,17 +95,18 @@ public final class NichirinEffects {
                 setScale(displays.get(core + rim + i), ghostScale, ghostScale * 0.7f, ghostScale);
             }
 
-            // Sparkling embers that fade like heat haze along the ring.
+            // Lava shoots outward from the rim, then fades like heat haze.
             final Location edge = waist.clone().add(0.0, 0.15, 0.0);
-            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 10, radius, 0.4, radius, 0.01);
-            edge.getWorld().spawnParticle(Particle.FLAME, edge, 6, radius * 0.6, 0.3, radius * 0.6, 0.02);
-            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 3, radius * 0.5, 0.3, radius * 0.5, 0.0);
-            edge.getWorld().spawnParticle(Particle.LAVA, waist, 4, radius * 0.4, 0.1, radius * 0.4, 0.01);
+            edge.getWorld().spawnParticle(Particle.LAVA, edge, 14, ringRadius, 0.3, ringRadius, 0.08);
+            edge.getWorld().spawnParticle(Particle.FALLING_LAVA, waist, 6, ringRadius, 0.2, ringRadius, 0.02);
+            edge.getWorld().spawnParticle(Particle.FLAME, edge, 8, ringRadius * 0.6, 0.3, ringRadius * 0.6, 0.03);
+            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 10, ringRadius, 0.4, ringRadius, 0.01);
+            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 4, ringRadius * 0.5, 0.3, ringRadius * 0.5, 0.0);
         });
     }
 
     /**
-     * Plays Enbu: an electric launch at the feet, then a massive vertical
+     * Plays Dancing Flash: an electric launch at the feet, then a massive vertical
      * crescent of solar fire sweeping forward, detonating into an expanding
      * yellow/orange shockwave.
      *

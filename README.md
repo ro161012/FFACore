@@ -131,10 +131,11 @@ This is the only command that hands out weapons. Available weapons:
 * **Flame Combo** (passive) — land 4 hits without taking damage to gain
   Strength II. Taking damage resets the combo.
 * **Clear Blue Sky** (offhand, 50s) — hold the blade and press the swap-hands
-  key: a full 360° circle of true damage around you.
-* **Enbu** (offhand + crouch, 70s) — crouch and press the swap-hands key while
-  holding the blade: true damage in a radius and a 15s absorption lock on
-  every hit.
+  key: a full 360° circle of true damage that boosts you up and sears targets
+  with fire that ignores Fire Resistance.
+* **Dancing Flash** (offhand + crouch, 70s) — crouch and press the swap-hands
+  key while holding the blade: true damage in a radius and a 15s absorption
+  lock on every hit.
 
 The active abilities render their visuals with block display entities, and the
 resource pack ships a core shader override so the effect glass glows.
@@ -230,6 +231,10 @@ nichirin:
   clear-blue-sky:
     cooldown-seconds: 50
     damage-hearts: 2.0
+    radius: 5.0          # full-circle reach
+    boost-power: 0.8     # upward boost on cast
+    fire-seconds: 3      # searing fire (ignores Fire Resistance)
+    sear-hearts: 1.0     # searing damage per second
     vfx-ticks: 12        # animation length (lower = snappier)
   enbu:
     cooldown-seconds: 70

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Per-player cooldown tracker for the Nichirin Blade active abilities.
  *
- * <p>Each ability (Clear Blue Sky and Enbu) keeps its own tracker so the two
+ * <p>Each ability (Clear Blue Sky and Dancing Flash) keeps its own tracker so the two
  * cooldowns never interfere. Entries are expired lazily on read and can be
  * purged in bulk. This class is thread-safe.
  */

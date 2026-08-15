@@ -86,12 +86,14 @@ public final class NichirinBlade {
                 Component.empty(),
                 body("A full 360° circle of flame dealing 2\u2764 true damage"),
                 body("to every entity caught in the ring."),
+                body("Boosts you upward and sears targets with fire"),
+                body("that ignores Fire Resistance."),
                 body("50s cooldown."),
                 Component.empty(),
-                header("HINOKAHI KAGURA ENBU"),
+                header("HINOKAMI KAGURA: DANCING FLASH"),
                 tag("[Offhand + Crouch]"),
                 Component.empty(),
-                body("A spinning dance of flame dealing 2\u2764 true damage."),
+                body("A lightning-fast dash slash dealing 2\u2764 true damage."),
                 body("Locks targets from gaining absorption for 15s."),
                 body("70s cooldown.")));
         stack.setItemMeta(meta);

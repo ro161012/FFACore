@@ -2,7 +2,12 @@ package dev.ro161012.ffacore.nichirin;
 
 import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.weapon.AbilityBossBars;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -18,6 +23,10 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,9 +39,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li><b>Flame Combo</b> (passive): land N hits without taking damage to
  *       gain Strength II; taking damage resets the combo.</li>
  *   <li><b>Clear Blue Sky</b> (offhand): a full-circle burst of true damage
- *       around the caster.</li>
- *   <li><b>Enbu</b> (offhand + crouch): true damage in a radius and an
- *       absorption lock on every target hit.</li>
+ *       around the caster, boosted into the air, that sears every target in
+ *       the ring with fire that ignores Fire Resistance.</li>
+ *   <li><b>Dancing Flash</b> (offhand + crouch): true damage in a radius and
+ *       an absorption lock on every target hit.</li>
  * </ul>
  *
  * <p>Both actives are triggered by pressing the swap-hands key while the
@@ -58,6 +68,9 @@ public final class NichirinAbilityListener implements Listener {
     private int strengthSeconds;
     private double clearSkyDamageHearts;
     private double clearSkyRadius;
+    private double clearSkyBoost;
+    private int clearSkyFireSeconds;
+    private double clearSkySearHearts;
     private double enbuDamageHearts;
     private double enbuRadius;
     private long absorptionLockMillis;
@@ -83,7 +96,11 @@ public final class NichirinAbilityListener implements Listener {
         comboHits = Math.max(1, config.getInt("nichirin.combo-hits", 4));
         strengthSeconds = Math.max(1, config.getInt("nichirin.combo-strength-duration-seconds", 6));
         clearSkyDamageHearts = config.getDouble("nichirin.clear-blue-sky.damage-hearts", 2.0);
-        clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 3.5);
+        clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 5.0);
+        clearSkyBoost = config.getDouble("nichirin.clear-blue-sky.boost-power", 0.8);
+        clearSkyFireSeconds = Math.max(1, config.getInt(
+                "nichirin.clear-blue-sky.fire-seconds", 3));
+        clearSkySearHearts = config.getDouble("nichirin.clear-blue-sky.sear-hearts", 1.0);
         enbuDamageHearts = config.getDouble("nichirin.enbu.damage-hearts", 2.0);
         enbuRadius = config.getDouble("nichirin.enbu.radius", 3.0);
         absorptionLockMillis = Math.max(0, config.getInt(
@@ -158,8 +175,8 @@ public final class NichirinAbilityListener implements Listener {
     /**
      * Triggers an active ability when the player presses the swap-hands key
      * while holding the blade in either hand. The swap is cancelled so the
-     * blade never moves between hands; crouching casts Enbu, otherwise
-     * Clear Blue Sky.
+     * blade never moves between hands; crouching casts Dancing Flash,
+     * otherwise Clear Blue Sky.
      */
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
@@ -241,16 +258,28 @@ public final class NichirinAbilityListener implements Listener {
         bossBars.start(player, "clear-blue-sky",
                 "§6Hinokami Kagura §8» §6§lClear Blue Sky",
                 BarColor.RED, clearSkyCooldown.getCooldownMillis());
-        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks);
 
+        // Aerial cast: boost the caster upward so the ring sweeps mid-air.
+        player.setVelocity(player.getVelocity().setY(clearSkyBoost));
+        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyRadius);
+        scorchGround(player);
+
+        // Horizontal cylinder: hits everyone around and below, whatever height
+        // they are at relative to the caster.
+        final Location center = player.getLocation();
+        final double radiusSq = clearSkyRadius * clearSkyRadius;
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(
-                clearSkyRadius, clearSkyRadius, clearSkyRadius)) {
+                clearSkyRadius, 128.0, clearSkyRadius)) {
             if (!(entity instanceof LivingEntity living) || living.equals(player)) {
                 continue;
             }
+            if (horizontalDistanceSq(center, living.getLocation()) > radiusSq) {
+                continue;
+            }
             applyTrueDamage(living, player, clearSkyDamageHearts);
+            ignite(living, player);
         }
-        player.playSound(player.getLocation(), "ffacore:sword_slash", 1.0f, 1.4f);
+        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.2f);
     }
 
     private void castEnbu(final Player player) {
@@ -260,7 +289,7 @@ public final class NichirinAbilityListener implements Listener {
         }
         enbuCooldown.apply(id);
         bossBars.start(player, "enbu",
-                "§6Hinokami Kagura §8» §6§lEnbu",
+                "§6Hinokami Kagura §8» §6§lDancing Flash",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player, enbuVfxTicks);
 
@@ -278,7 +307,7 @@ public final class NichirinAbilityListener implements Listener {
             absorptionLockedUntil.put(living.getUniqueId(), lockUntil);
             living.setAbsorptionAmount(0);
         }
-        player.playSound(player.getLocation(), "ffacore:slash", 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
     }
 
     /**
@@ -295,4 +324,78 @@ public final class NichirinAbilityListener implements Listener {
         }
     }
 
+    /**
+     * Lights a target on fire with searing ticks that ignore Fire Resistance.
+     * The visible burn fades naturally; the searing damage is applied directly
+     * as true damage over the configured duration.
+     */
+    private void ignite(final LivingEntity target, final Player source) {
+        target.setFireTicks(Math.max(target.getFireTicks(), clearSkyFireSeconds * 20));
+        final UUID targetId = target.getUniqueId();
+        new BukkitRunnable() {
+            private int remaining = clearSkyFireSeconds;
+
+            @Override
+            public void run() {
+                if (!source.isOnline()) {
+                    cancel();
+                    return;
+                }
+                final org.bukkit.entity.Entity current = Bukkit.getEntity(targetId);
+                if (!(current instanceof LivingEntity living) || living.isDead()) {
+                    cancel();
+                    return;
+                }
+                applyTrueDamage(living, source, clearSkySearHearts);
+                if (--remaining <= 0) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 20L);
+    }
+
+    /**
+     * Scorches the ground in a ring around the caster with temporary fire,
+     * removed again once the searing window closes.
+     */
+    private void scorchGround(final Player player) {
+        final World world = player.getWorld();
+        final Location origin = player.getLocation();
+        final List<Block> fires = new ArrayList<>();
+        final int ring = 16;
+        for (int i = 0; i < ring; i++) {
+            final double angle = i * (Math.PI * 2.0 / ring);
+            final double radius = clearSkyRadius * 0.85;
+            final int x = origin.getBlockX() + (int) Math.round(Math.sin(angle) * radius);
+            final int z = origin.getBlockZ() + (int) Math.round(Math.cos(angle) * radius);
+            final Block top = world.getHighestBlockAt(x, z);
+            final Block above = top.getRelative(0, 1, 0);
+            if (above.getType() == Material.AIR && top.getType().isSolid()) {
+                above.setType(Material.FIRE);
+                fires.add(above);
+            }
+        }
+        if (fires.isEmpty()) {
+            return;
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (final Block block : fires) {
+                    if (block.getType() == Material.FIRE) {
+                        block.setType(Material.AIR);
+                    }
+                }
+            }
+        }.runTaskLater(plugin, clearSkyFireSeconds * 20L);
+    }
+
+    /**
+     * Returns the squared horizontal distance between two locations (Y ignored).
+     */
+    private static double horizontalDistanceSq(final Location a, final Location b) {
+        final double dx = a.getX() - b.getX();
+        final double dz = a.getZ() - b.getZ();
+        return dx * dx + dz * dz;
+    }
 }

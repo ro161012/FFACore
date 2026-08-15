@@ -98,6 +98,7 @@ public final class NichirinBlade {
 
         tagBlade(stack);
         ItemUtils.applyTooltipStyle(stack, TOOLTIP_STYLE);
+        ItemUtils.hideEnchantmentGlint(stack);
         return stack;
     }
 

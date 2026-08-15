@@ -1,10 +1,12 @@
 package dev.ro161012.ffacore.config;
 
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -122,5 +124,46 @@ class ConfigOptionTest {
 
         assertTrue(option.choices().contains("WAVE"));
         assertFalse(option.choices().contains("NOPE"));
+    }
+
+    @Test
+    void readsDecimalFromConfig() {
+        final YamlConfiguration config = new YamlConfiguration();
+        config.set("nichirin.clear-blue-sky.radius", 3.5);
+        final ConfigOption option = ConfigOption.decimal(
+                "nichirin.clear-blue-sky.radius", "Radius", "Reach in blocks.",
+                1f, 10f, 0.1f, 3.5);
+
+        assertEquals(3.5, option.currentValue(config));
+    }
+
+    @Test
+    void withColorAppliesLabelTint() {
+        final ConfigOption option = ConfigOption.integer(
+                "nichirin.combo-hits", "Combo hits", "Hits to complete the combo.",
+                1, 10, 4);
+        final TextColor orange = TextColor.color(0xFF8C42);
+
+        assertNull(option.color(), "options are untinted by default");
+        assertEquals(orange, option.withColor(orange).color());
+    }
+
+    @Test
+    void weaponConfigPathsSanitiseToValidDialogKeys() {
+        final java.util.regex.Pattern valid =
+                java.util.regex.Pattern.compile("^[a-z0-9_]+$");
+        for (final String path : java.util.List.of(
+                "nichirin.combo-hits",
+                "nichirin.clear-blue-sky.cooldown-seconds",
+                "nichirin.clear-blue-sky.damage-hearts",
+                "nichirin.clear-blue-sky.arc-degrees",
+                "nichirin.enbu.absorption-lock-seconds",
+                "kokushibo.upper-moon-one.interval-seconds",
+                "kokushibo.crescent-throw.fire-interval-ms",
+                "kokushibo.moonbow.damage-hearts")) {
+            final ConfigOption option = ConfigOption.integer(path, "x", "y", 1, 100, 1);
+            assertTrue(valid.matcher(option.key()).matches(),
+                    "invalid dialog key: " + option.key());
+        }
     }
 }

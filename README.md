@@ -154,11 +154,13 @@ are the only commands the plugin registers - there are no standalone
 #### In-game config menu (`/ffa config`)
 
 Opens a native Paper dialog (1.21.6+ client) with a section menu:
-General, Regeneration, Kill Token, AFK Zones, and Storage & Performance.
-Each section opens its own screen where you toggle booleans, drag sliders,
-pick enum options or type values, then hit **Save & Apply** — the change is
-written to `config.yml` and pushed to every subsystem immediately, no
-restart or reload required. **Back** returns to the section list.
+General, Regeneration, Kill Token, AFK Zones, Custom Weapons, and Storage &
+Performance. The two weapon sections are colour-themed (Nichirin orange,
+Kokushibo purple). Each section opens its own screen where you toggle
+booleans, drag sliders, pick enum options or type values, then hit **Save &
+Apply** — the change is written to `config.yml` and pushed to every
+subsystem (including both weapons' abilities) immediately, no restart or
+reload required. **Back** returns to the section list.
 
 ## Permissions
 

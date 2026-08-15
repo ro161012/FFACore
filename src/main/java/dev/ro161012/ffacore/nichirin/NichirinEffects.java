@@ -2,6 +2,7 @@ package dev.ro161012.ffacore.nichirin;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -55,6 +56,9 @@ public final class NichirinEffects {
             displays.add(spawnSegment(plugin, player, angle, startRadius, false));
         }
 
+        player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 30,
+                0.6, 0.4, 0.6, 0.02);
+
         animate(plugin, displays, FAN_TICKS, tick -> {
             final double radius = startRadius + (tick * 0.35);
             for (int i = 0; i < displays.size(); i++) {
@@ -81,6 +85,9 @@ public final class NichirinEffects {
             final double angle = Math.toRadians(i * (360.0 / segments));
             displays.add(spawnSegment(plugin, player, angle, radius, true));
         }
+
+        player.getWorld().spawnParticle(Particle.FLAME, eye, 40,
+                0.9, 0.6, 0.9, 0.03);
 
         animate(plugin, displays, RING_TICKS, tick -> {
             final double spin = Math.toRadians(tick * 24);

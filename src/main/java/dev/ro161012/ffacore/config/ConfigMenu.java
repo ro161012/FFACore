@@ -16,6 +16,7 @@ import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickCallback;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -46,6 +47,10 @@ public final class ConfigMenu {
     private static final int BUTTON_WIDTH = 200;
     private static final int BODY_WIDTH = 400;
     private static final int MAX_STRING_LENGTH = 256;
+
+    // Weapon section themes.
+    private static final TextColor NICHIRIN = TextColor.color(0xFF8C42);
+    private static final TextColor KOKUSHIBO = TextColor.color(0xB06BE8);
 
     private final FFACore plugin;
     private final List<Section> sections;
@@ -94,7 +99,7 @@ public final class ConfigMenu {
                         if (audience instanceof Player target) {
                             onMainThread(() -> openSectionSafely(target, section));
                         }
-                    })));
+                    }), section.color()));
         }
         final ActionButton close = closeButton();
 
@@ -150,7 +155,8 @@ public final class ConfigMenu {
 
         final Dialog dialog = Dialog.create(builder -> builder.empty()
                 .base(DialogBase.builder(Component.text(section.title(),
-                        NamedTextColor.WHITE, TextDecoration.BOLD))
+                        section.color() == null ? NamedTextColor.WHITE : section.color(),
+                        TextDecoration.BOLD))
                         .body(List.of(DialogBody.plainMessage(
                                 Component.text(section.description(), NamedTextColor.GRAY),
                                 BODY_WIDTH)))
@@ -179,6 +185,12 @@ public final class ConfigMenu {
                     option.min(), option.max())
                     .initial(clamp(((Number) current).floatValue(), option.min(), option.max()))
                     .step(stepFor(option))
+                    .width(BODY_WIDTH)
+                    .build();
+            case DECIMAL -> DialogInput.numberRange(option.key(), label(option),
+                    option.min(), option.max())
+                    .initial(clamp(((Number) current).floatValue(), option.min(), option.max()))
+                    .step(option.step())
                     .width(BODY_WIDTH)
                     .build();
             case STRING -> {
@@ -289,6 +301,10 @@ public final class ConfigMenu {
             case INTEGER -> {
                 final Float value = view.getFloat(option.key());
                 yield value == null ? null : Math.round(value);
+            }
+            case DECIMAL -> {
+                final Float value = view.getFloat(option.key());
+                yield value == null ? null : Math.round(value * 10.0f) / 10.0d;
             }
             case STRING -> view.getText(option.key());
             case ENUM -> {
@@ -412,6 +428,106 @@ public final class ConfigMenu {
                                         "Message sent when the player earns shards.",
                                         "&b+1 &3AFK Shard &7(the deep rewards patience)")
                         )),
+                new Section("customweapons-nichirin", "Custom Weapons \u00b7 Nichirin",
+                        "The Nichirin Blade: Flame Combo passive and the two flame abilities.",
+                        List.of(
+                                ConfigOption.integer("nichirin.combo-hits", "Combo hits",
+                                        "Hits landed without taking damage to trigger Flame Combo.",
+                                        1, 10, 4).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.combo-strength-duration-seconds",
+                                        "Strength duration",
+                                        "Seconds of Strength II granted when the combo completes.",
+                                        1, 60, 6).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.clear-blue-sky.cooldown-seconds",
+                                        "Clear Blue Sky cooldown",
+                                        "Cooldown in seconds for the fan slash.",
+                                        1, 600, 50).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.clear-blue-sky.damage-hearts",
+                                        "Clear Blue Sky damage",
+                                        "True damage in hearts (1 heart = 2 HP).",
+                                        1, 20, 2).withColor(NICHIRIN),
+                                ConfigOption.decimal("nichirin.clear-blue-sky.radius",
+                                        "Clear Blue Sky radius",
+                                        "Reach of the fan slash in blocks.",
+                                        1f, 10f, 0.1f, 3.5).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.clear-blue-sky.arc-degrees",
+                                        "Fan arc width",
+                                        "Width of the fan in degrees.",
+                                        30, 360, 160).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.enbu.cooldown-seconds",
+                                        "Enbu cooldown",
+                                        "Cooldown in seconds for the flame spin.",
+                                        1, 600, 70).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.enbu.damage-hearts", "Enbu damage",
+                                        "True damage in hearts.",
+                                        1, 20, 2).withColor(NICHIRIN),
+                                ConfigOption.decimal("nichirin.enbu.radius", "Enbu radius",
+                                        "Radius of the flame spin in blocks.",
+                                        1f, 10f, 0.1f, 3.0).withColor(NICHIRIN),
+                                ConfigOption.integer("nichirin.enbu.absorption-lock-seconds",
+                                        "Absorption lock",
+                                        "Seconds targets cannot gain absorption.",
+                                        1, 60, 15).withColor(NICHIRIN)
+                        ), NICHIRIN),
+                new Section("customweapons-kokushibo", "Custom Weapons \u00b7 Kokushibo",
+                        "The Kokoshibos Sword: Upper Moon One passive and the moon abilities.",
+                        List.of(
+                                ConfigOption.integer("kokushibo.upper-moon-one.interval-seconds",
+                                        "Passive interval",
+                                        "Seconds between Upper Moon One empowerment pulses.",
+                                        1, 120, 10).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.upper-moon-one.buff-duration-seconds",
+                                        "Buff duration",
+                                        "Seconds the Strength/Speed buff lasts.",
+                                        1, 120, 6).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.upper-moon-one.strength-amplifier",
+                                        "Strength level",
+                                        "Strength amplifier (0 = Strength I).",
+                                        0, 4, 0).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.upper-moon-one.speed-amplifier",
+                                        "Speed level",
+                                        "Speed amplifier (0 = Speed I).",
+                                        0, 4, 0).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.crescent-throw.cooldown-seconds",
+                                        "Crescent Throw cooldown",
+                                        "Cooldown in seconds for the Lunar Eclipse window.",
+                                        1, 600, 70).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.crescent-throw.window-seconds",
+                                        "Eclipse window",
+                                        "Seconds the Lunar Eclipse window stays open.",
+                                        1, 60, 10).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.crescent-throw.fire-interval-ms",
+                                        "Fire interval",
+                                        "Minimum milliseconds between slowing stars.",
+                                        100, 5000, 1000).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.crescent-throw.slow-seconds",
+                                        "Slow duration",
+                                        "Seconds the slowing star slows its target.",
+                                        1, 60, 4).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.crescent-throw.slow-amplifier",
+                                        "Slow level",
+                                        "Slowness amplifier (1 = Slowness II).",
+                                        0, 4, 1).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.moonbow.cooldown-seconds",
+                                        "Moonbow cooldown",
+                                        "Cooldown in seconds for the six-crescent strike.",
+                                        1, 600, 80).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.moonbow.crescents", "Crescents",
+                                        "Number of crescents striking in a line.",
+                                        1, 12, 6).withColor(KOKUSHIBO),
+                                ConfigOption.decimal("kokushibo.moonbow.spacing",
+                                        "Crescent spacing",
+                                        "Distance between each crescent in blocks.",
+                                        0.5f, 5f, 0.1f, 1.6).withColor(KOKUSHIBO),
+                                ConfigOption.decimal("kokushibo.moonbow.strike-radius",
+                                        "Strike radius",
+                                        "Hit radius around each crescent in blocks.",
+                                        0.5f, 5f, 0.1f, 1.2).withColor(KOKUSHIBO),
+                                ConfigOption.integer("kokushibo.moonbow.damage-hearts",
+                                        "Moonbow damage",
+                                        "True damage per crescent in hearts.",
+                                        1, 20, 3).withColor(KOKUSHIBO)
+                        ), KOKUSHIBO),
                 new Section("performance", "Storage & Performance",
                         "Snapshot compression, caching and async I/O.",
                         List.of(
@@ -434,7 +550,12 @@ public final class ConfigMenu {
     }
 
     private record Section(String id, String title, String description,
-                           List<ConfigOption> options) {
+                           List<ConfigOption> options, TextColor color) {
+
+        private Section(final String id, final String title, final String description,
+                        final List<ConfigOption> options) {
+            this(id, title, description, options, null);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -443,7 +564,13 @@ public final class ConfigMenu {
 
     private ActionButton button(final String text, final Component tooltip,
                                 final DialogAction action) {
-        return ActionButton.builder(Component.text(text, NamedTextColor.WHITE))
+        return button(text, tooltip, action, null);
+    }
+
+    private ActionButton button(final String text, final Component tooltip,
+                                final DialogAction action, final TextColor color) {
+        return ActionButton.builder(Component.text(text,
+                        color == null ? NamedTextColor.WHITE : color))
                 .tooltip(tooltip)
                 .width(BUTTON_WIDTH)
                 .action(action)
@@ -455,7 +582,8 @@ public final class ConfigMenu {
     }
 
     private Component label(final ConfigOption option) {
-        return Component.text(option.label(), NamedTextColor.WHITE);
+        return Component.text(option.label(),
+                option.color() == null ? NamedTextColor.WHITE : option.color());
     }
 
     private Component label(final String text) {

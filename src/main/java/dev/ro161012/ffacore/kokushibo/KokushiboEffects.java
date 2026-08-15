@@ -2,6 +2,7 @@ package dev.ro161012.ffacore.kokushibo;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
@@ -52,6 +53,9 @@ public final class KokushiboEffects {
         display.setBrightness(new Display.Brightness(15, 15));
         snowball.addPassenger(display);
 
+        snowball.getWorld().spawnParticle(Particle.WITCH,
+                snowball.getLocation(), 12, 0.2, 0.2, 0.2, 0.02);
+
         // Safety net: drop the crescent if the snowball despawns without a hit.
         plugin.getServer().getScheduler().runTaskLater(plugin, display::remove, 120L);
         return snowball.getUniqueId();
@@ -78,6 +82,9 @@ public final class KokushiboEffects {
             display.setInterpolationDelay(0);
             displays.add(display);
         }
+
+        player.getWorld().spawnParticle(Particle.WITCH, eye, 30,
+                0.7, 0.5, 0.7, 0.03);
 
         new BukkitRunnable() {
             private int tick;
@@ -131,6 +138,9 @@ public final class KokushiboEffects {
                 display.setBrightness(new Display.Brightness(15, 15));
                 display.setInterpolationDuration(1);
                 display.setInterpolationDelay(0);
+
+                location.getWorld().spawnParticle(Particle.END_ROD, location, 8,
+                        0.25, 0.25, 0.25, 0.01);
 
                 new BukkitRunnable() {
                     private int tick;

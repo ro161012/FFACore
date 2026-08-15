@@ -1,5 +1,6 @@
 package dev.ro161012.ffacore.config;
 
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public final class ConfigOption {
      * widget and the read-back from the response view.
      */
     public enum Kind {
-        BOOLEAN, INTEGER, STRING, ENUM
+        BOOLEAN, INTEGER, DECIMAL, STRING, ENUM
     }
 
     private final String path;
@@ -28,8 +29,10 @@ public final class ConfigOption {
     private final String description;
     private final float min;
     private final float max;
+    private final float step;
     private final List<String> choices;
     private final Object defaultValue;
+    private final TextColor color;
 
     /**
      * Creates a numeric option.
@@ -44,15 +47,18 @@ public final class ConfigOption {
      */
     private ConfigOption(final String path, final Kind kind, final String label,
                          final String description, final float min, final float max,
-                         final List<String> choices, final Object defaultValue) {
+                         final float step, final List<String> choices,
+                         final Object defaultValue, final TextColor color) {
         this.path = path;
         this.kind = kind;
         this.label = label;
         this.description = description;
         this.min = min;
         this.max = max;
+        this.step = step;
         this.choices = choices;
         this.defaultValue = defaultValue;
+        this.color = color;
     }
 
     /**
@@ -67,7 +73,7 @@ public final class ConfigOption {
     public static ConfigOption bool(final String path, final String label,
                                     final String description, final boolean defaultValue) {
         return new ConfigOption(path, Kind.BOOLEAN, label, description, 0f, 0f,
-                List.of(), defaultValue);
+                0f, List.of(), defaultValue, null);
     }
 
     /**
@@ -85,7 +91,27 @@ public final class ConfigOption {
                                        final String description, final int min,
                                        final int max, final int defaultValue) {
         return new ConfigOption(path, Kind.INTEGER, label, description, min, max,
-                List.of(), defaultValue);
+                0f, List.of(), defaultValue, null);
+    }
+
+    /**
+     * Creates a decimal (fractional) option rendered as a stepped slider.
+     *
+     * @param path        config.yml path
+     * @param label       dialog label
+     * @param description tooltip text
+     * @param min         minimum value
+     * @param max         maximum value
+     * @param step        slider step
+     * @param defaultValue fallback when the key is missing
+     * @return the option
+     */
+    public static ConfigOption decimal(final String path, final String label,
+                                       final String description, final float min,
+                                       final float max, final float step,
+                                       final double defaultValue) {
+        return new ConfigOption(path, Kind.DECIMAL, label, description, min, max,
+                step, List.of(), defaultValue, null);
     }
 
     /**
@@ -100,7 +126,7 @@ public final class ConfigOption {
     public static ConfigOption string(final String path, final String label,
                                       final String description, final String defaultValue) {
         return new ConfigOption(path, Kind.STRING, label, description, 0f, 0f,
-                List.of(), defaultValue);
+                0f, List.of(), defaultValue, null);
     }
 
     /**
@@ -118,7 +144,20 @@ public final class ConfigOption {
                                           final List<String> choices,
                                           final String defaultValue) {
         return new ConfigOption(path, Kind.ENUM, label, description, 0f, 0f,
-                List.copyOf(choices), defaultValue);
+                0f, List.copyOf(choices), defaultValue, null);
+    }
+
+    /**
+     * Returns a copy of this option with the given label colour applied, so a
+     * config section can theme its options (e.g. the Nichirin section orange
+     * and the Kokushibo section purple).
+     *
+     * @param tint the label colour
+     * @return a tinted copy
+     */
+    public ConfigOption withColor(final TextColor tint) {
+        return new ConfigOption(path, kind, label, description, min, max, step,
+                choices, defaultValue, tint);
     }
 
     /**
@@ -143,6 +182,7 @@ public final class ConfigOption {
         return switch (kind) {
             case BOOLEAN -> config.getBoolean(path, (Boolean) defaultValue);
             case INTEGER -> config.getInt(path, ((Number) defaultValue).intValue());
+            case DECIMAL -> config.getDouble(path, ((Number) defaultValue).doubleValue());
             case STRING, ENUM -> config.getString(path, (String) defaultValue);
         };
     }
@@ -169,6 +209,14 @@ public final class ConfigOption {
 
     public float max() {
         return max;
+    }
+
+    public float step() {
+        return step;
+    }
+
+    public TextColor color() {
+        return color;
     }
 
     public List<String> choices() {

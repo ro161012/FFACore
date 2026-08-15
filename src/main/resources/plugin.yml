@@ -21,6 +21,7 @@ permissions:
       ffacore.arena.admin: true
       ffacore.killtoken.admin: true
       ffacore.afk.admin: true
+      ffacore.nichirin.admin: true
       ffacore.config: true
 
   ffacore.config:
@@ -101,6 +102,11 @@ permissions:
     default: op
   ffacore.killtoken.stats:
     description: View other players' kill stats.
+    default: op
+
+  # ---- Nichirin Blade ----
+  ffacore.nichirin.admin:
+    description: Hand out the Nichirin Blade.
     default: op
 
   # ---- AFK ----

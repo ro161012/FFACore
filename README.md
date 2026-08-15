@@ -13,6 +13,7 @@ single Paper plugin:
 | **Arena regeneration** | Snapshot an arena once, restore it instantly after every match. |
 | **Kill Token currency** | Players earn an ember-themed Kill Token for PvP kills, with pair anti-farming and killstreak multipliers. |
 | **AFK zones** | Designate regions where idle players earn ocean-themed **AFK Shards**. |
+| **Nichirin Blade** | A Demon Slayer FFA weapon with a passive combo and two offhand abilities. |
 
 Both currencies ship with a custom resource pack: unique item textures plus
 gradient tooltip backgrounds.
@@ -100,6 +101,24 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | `/ffa afk give [player] [amount]` | `ffacore.afk.give` | Hand out AFK Shards |
 | `/ffa afk reload` | `ffacore.afk.reload` | Reload configuration |
 
+### `/ffa nichirin`
+
+| Command | Permission | Description |
+|---|---|---|
+| `/ffa nichirin give [player] [amount]` | `ffacore.nichirin.admin` | Hand out the Nichirin Blade |
+
+#### Nichirin Blade abilities
+
+* **Flame Combo** (passive) — land 4 hits without taking damage to gain
+  Strength II. Taking damage resets the combo.
+* **Clear Blue Sky** (offhand, 50s) — hold the blade in your offhand and press
+  the swap-hands key (F): a fan of true damage in an arc ahead of you.
+* **Enbu** (offhand + crouch, 70s) — crouch and press F with the blade in your
+  offhand: true damage in a radius and a 15s absorption lock on every hit.
+
+The active abilities render their visuals with block display entities, and the
+resource pack ships a core shader override so the effect glass glows.
+
 ### `/ffa`
 
 Every FFACore command lives under `/ffa`:
@@ -109,6 +128,7 @@ Every FFACore command lives under `/ffa`:
 | `/ffa arena ...` | `ffacore.arena.*` | Arena regeneration management |
 | `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
 | `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
+| `/ffa nichirin ...` | `ffacore.nichirin.admin` | The Nichirin Blade weapon |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
@@ -170,6 +190,15 @@ regeneration:
 killstreak:
   enabled: true
   max-token-multiplier: 5
+
+nichirin:
+  combo-hits: 4
+  clear-blue-sky:
+    cooldown-seconds: 50
+    damage-hearts: 2.0
+  enbu:
+    cooldown-seconds: 70
+    damage-hearts: 2.0
 
 afk:
   reward-interval-seconds: 30

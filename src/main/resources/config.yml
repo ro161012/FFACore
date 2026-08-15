@@ -119,6 +119,28 @@ killstreak:
 # currency-item: ""
 
 # ------------------------------------------------------------
+#  Nichirin Blade (Demon Slayer FFA weapon)
+# ------------------------------------------------------------
+nichirin:
+  # Consecutive hits (without taking damage) needed to trigger Flame Combo.
+  combo-hits: 4
+  # Seconds of Strength II granted when the combo completes.
+  combo-strength-duration-seconds: 6
+  clear-blue-sky:
+    cooldown-seconds: 50
+    # True damage in hearts (ignores armour), 1 heart = 2 HP.
+    damage-hearts: 2.0
+    radius: 3.5
+    # Width of the fan arc in degrees, centred on the player's facing.
+    arc-degrees: 160.0
+  enbu:
+    cooldown-seconds: 70
+    damage-hearts: 2.0
+    radius: 3.0
+    # Seconds hit targets cannot gain absorption.
+    absorption-lock-seconds: 15
+
+# ------------------------------------------------------------
 #  Compressed Kill Token block
 # ------------------------------------------------------------
 compressed-blocks:

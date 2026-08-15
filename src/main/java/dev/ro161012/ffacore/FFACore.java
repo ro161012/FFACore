@@ -15,6 +15,8 @@ import dev.ro161012.ffacore.killtoken.KillListener;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenGuiListener;
 import dev.ro161012.ffacore.killtoken.KillTokenManager;
+import dev.ro161012.ffacore.nichirin.NichirinAbilityListener;
+import dev.ro161012.ffacore.nichirin.NichirinCommand;
 import dev.ro161012.ffacore.perf.PerformanceTracker;
 import dev.ro161012.ffacore.placeholder.AfkExpansion;
 import dev.ro161012.ffacore.placeholder.ArenaExpansion;
@@ -55,6 +57,9 @@ public final class FFACore extends JavaPlugin {
     private KillTokenManager killTokenManager;
     private AfkManager afkManager;
 
+    // Nichirin Blade ability subsystem.
+    private NichirinAbilityListener nichirinListener;
+
     private ConfigMenu configMenu;
     private Messages messages;
 
@@ -83,20 +88,23 @@ public final class FFACore extends JavaPlugin {
 
         killTokenManager = new KillTokenManager(this);
         afkManager = new AfkManager(this);
+        nichirinListener = new NichirinAbilityListener(this);
         configMenu = new ConfigMenu(this);
 
         final ArenaCommand arenaCommand = new ArenaCommand(this);
         final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
         final AfkCommand afkCommand = new AfkCommand(this);
+        final NichirinCommand nichirinCommand = new NichirinCommand();
 
         registerArena();
         registerKillToken();
         registerAfk();
+        registerNichirin();
 
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
             final FfaCommand executor = new FfaCommand(this, arenaCommand,
-                    killTokenCommand, afkCommand);
+                    killTokenCommand, afkCommand, nichirinCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }
@@ -126,6 +134,10 @@ public final class FFACore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AfkListener(this), this);
     }
 
+    private void registerNichirin() {
+        getServer().getPluginManager().registerEvents(nichirinListener, this);
+    }
+
     /**
      * Pushes the current in-memory configuration to every subsystem so edits
      * made through the dialog config menu (or a reload) take effect without
@@ -135,6 +147,7 @@ public final class FFACore extends JavaPlugin {
         messages.reload();
         killTokenManager.applyConfig();
         afkManager.applyConfig();
+        nichirinListener.applyConfig();
         regenerationManager.applyConfig();
         scheduleManager.applyConfig();
         arenaStorage.applyConfig();

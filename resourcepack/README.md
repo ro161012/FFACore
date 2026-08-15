@@ -16,6 +16,11 @@ their display names.
 | `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Legacy ember gradient tooltip (kept for old items) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
+| `assets/altarsmp/textures/gui/sprites/tooltip/nichirin_sword_*.png` | Fiery orange/red tooltip (Nichirin Blade) |
+| `assets/minecraft/items/netherite_sword.json` | Maps custom model data `1603` to the Nichirin Blade model |
+| `assets/nino/models/weapons/nichirin_blade.json` | The Nichirin Blade 3D model |
+| `assets/nino/textures/item/nichirin_blade.png` | The animated blade texture |
+| `assets/minecraft/shaders/core/rendertype_entity_alpha.fsh` | Core shader: applies display-entity tint so ability VFX glow |
 
 ## Installation
 
@@ -51,6 +56,20 @@ pack (custom tooltip styles, added in 1.21.2) and shipped inside this pack so
 players see them even without the Altar pack installed. The legacy
 `ffacore:ocean`/`ffacore:ember` styles are kept for items handed out before
 the switch.
+
+## Nichirin Blade
+
+The Nichirin Blade is a `netherite_sword` with custom model data `1603`,
+routed through `assets/minecraft/items/netherite_sword.json` to the
+`nino:weapons/nichirin_blade` model. Its tooltip style
+(`altarsmp:nichirin_sword`) supplies the fiery gradient border. The model,
+texture and tooltip sprites are sourced 1-1 from the Altar SMP pack and
+shipped here so the blade renders standalone.
+
+The ability visuals (Clear Blue Sky fan, Enbu flame ring) are drawn with
+block display entities using translucent stained glass. A core shader
+override (`rendertype_entity_alpha.fsh`) applies the display tint so the
+glass renders in its full colour instead of unlit grey.
 
 ## Regenerating the art
 

@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -333,7 +334,8 @@ public final class NichirinEffects {
         final int minZ = center.getBlockZ() - (int) Math.ceil(radius);
         final int maxZ = center.getBlockZ() + (int) Math.ceil(radius);
 
-        final List<BlockDisplay> displays = new ArrayList<>();
+        final List<Location> spots = new ArrayList<>();
+        final List<BlockData> datas = new ArrayList<>();
         final List<Double> phases = new ArrayList<>();
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
@@ -354,16 +356,13 @@ public final class NichirinEffects {
                 if (ground == null) {
                     continue;
                 }
-                final BlockDisplay display = world.spawn(ground.getLocation(), BlockDisplay.class);
-                display.setBlock(ground.getBlockData());
-                display.setInterpolationDuration(1);
-                display.setInterpolationDelay(0);
-                displays.add(display);
+                spots.add(ground.getLocation());
+                datas.add(ground.getBlockData());
                 phases.add(dist / radius);
             }
         }
 
-        if (displays.isEmpty()) {
+        if (spots.isEmpty()) {
             return;
         }
 
@@ -371,27 +370,50 @@ public final class NichirinEffects {
         world.spawnParticle(Particle.CLOUD, center, 30, radius, 0.3, radius, 0.02);
         world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 12, radius, 0.4, radius, 0.0);
 
+        // Each block pops up only when the ripple reaches it, so a copied
+        // block never sits overlapping (and thus shadowed/dark inside) the
+        // real ground block.
         final int duration = 22;
         final double waveWindow = 0.45;
+        for (int i = 0; i < spots.size(); i++) {
+            final Location spot = spots.get(i);
+            final BlockData data = datas.get(i);
+            final long delay = Math.round(phases.get(i) * waveWindow * duration);
+            plugin.getServer().getScheduler().runTaskLater(
+                    plugin, () -> bounceBlock(plugin, spot, data), delay);
+        }
+    }
+
+    /**
+     * Spawns a full-bright copy of a ground block at {@code spot} and bounces
+     * it up once before removing it — the slamming block of the landing
+     * shockwave ripple.
+     */
+    private static void bounceBlock(final JavaPlugin plugin, final Location spot,
+                                    final BlockData data) {
+        final World world = spot.getWorld();
+        if (world == null) {
+            return;
+        }
+        final BlockDisplay display = world.spawn(spot, BlockDisplay.class);
+        display.setBlock(data);
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+
+        final int bounceTicks = 10;
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick >= duration) {
-                    displays.forEach(BlockDisplay::remove);
+                if (tick >= bounceTicks || !display.isValid()) {
+                    display.remove();
                     cancel();
                     return;
                 }
-                final double progress = tick / (double) (duration - 1);
-                for (int i = 0; i < displays.size(); i++) {
-                    final double local = (progress - phases.get(i) * waveWindow) / waveWindow;
-                    double bounce = 0.0;
-                    if (local >= 0.0 && local <= 1.0) {
-                        bounce = Math.sin(local * Math.PI) * 0.65;
-                    }
-                    setTranslationY(displays.get(i), (float) bounce);
-                }
+                final double local = tick / (double) (bounceTicks - 1);
+                setTranslationY(display, (float) (Math.sin(local * Math.PI) * 0.65));
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);

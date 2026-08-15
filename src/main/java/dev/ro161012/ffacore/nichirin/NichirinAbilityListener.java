@@ -293,6 +293,7 @@ public final class NichirinAbilityListener implements Listener {
                 "§6Hinokami Kagura §8» §6§lDancing Flash",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player, enbuVfxTicks, enbuRadius);
+        NichirinEffects.lavaBurstForward(plugin, player);
 
         final long lockUntil = System.currentTimeMillis() + absorptionLockMillis;
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(
@@ -307,6 +308,8 @@ public final class NichirinAbilityListener implements Listener {
             applyTrueDamage(living, player, enbuDamageHearts);
             absorptionLockedUntil.put(living.getUniqueId(), lockUntil);
             living.setAbsorptionAmount(0);
+            // The lava sears targets with fire that ignores Fire Resistance.
+            ignite(living, player);
         }
         player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
     }

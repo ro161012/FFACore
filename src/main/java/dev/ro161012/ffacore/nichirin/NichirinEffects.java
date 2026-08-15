@@ -303,6 +303,56 @@ public final class NichirinEffects {
     }
 
     /**
+     * Shoots actual lava blocks forward in the player's facing direction,
+     * arcing up and spreading sideways before disappearing.
+     *
+     * @param plugin owning plugin (for the scheduler)
+     * @param player the caster
+     */
+    public static void lavaBurstForward(final JavaPlugin plugin, final Player player) {
+        final Location origin = player.getEyeLocation();
+        final Vector facing = horizontalFacing(player);
+        final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
+        final int count = 22;
+        final List<BlockDisplay> lava = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            final BlockDisplay display = player.getWorld().spawn(origin, BlockDisplay.class);
+            display.setBlock(Material.LAVA.createBlockData());
+            display.setBrightness(new Display.Brightness(15, 15));
+            display.setInterpolationDuration(1);
+            display.setInterpolationDelay(0);
+            setScale(display, 0.5f, 0.5f, 0.5f);
+            lava.add(display);
+        }
+
+        final int duration = 18;
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= duration) {
+                    lava.forEach(BlockDisplay::remove);
+                    cancel();
+                    return;
+                }
+                final double progress = tick / (double) (duration - 1);
+                for (int i = 0; i < lava.size(); i++) {
+                    final double spread = (i / (double) (lava.size() - 1)) * 2.0 - 1.0;
+                    final double dist = 0.5 + progress * 7.0;
+                    final double height = Math.sin(progress * Math.PI) * 1.1;
+                    final double width = 0.4 + Math.abs(spread) * 1.6;
+                    lava.get(i).teleport(origin.clone()
+                            .add(facing.clone().multiply(dist))
+                            .add(0.0, height, 0.0)
+                            .add(side.clone().multiply(spread * width)));
+                }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
      * Detonates an earthquake shockwave under the caster as they land: the
      * actual ground blocks lift up and slam back down in an outward ripple,
      * like the terrain is being shaken.

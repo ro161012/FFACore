@@ -3,6 +3,7 @@ package dev.ro161012.ffacore.kokushibo;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
@@ -74,7 +75,9 @@ public final class KokushiboEffects {
         }
 
         final Set<UUID> struck = new HashSet<>();
-        center.getWorld().spawnParticle(Particle.WITCH, center, 40, 1.0, 0.6, 1.0, 0.02);
+        center.getWorld().spawnParticle(Particle.WITCH, center, 60, 1.5, 0.8, 1.5, 0.02);
+        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 20, 1.2, 0.6, 1.2, 0.01);
+        center.getWorld().spawnParticle(Particle.END_ROD, center, 20, 1.5, 0.8, 1.5, 0.01);
 
         animate(plugin, ring, totalTicks, tick -> {
             final double progress = tick / (double) totalTicks;
@@ -99,10 +102,14 @@ public final class KokushiboEffects {
                 setScale(ring.get(outerCount + i), scale, 0.18f, scale);
             }
 
-            // Sparse sparkle drifting outward with the ring.
-            if (tick % 3 == 0) {
-                center.getWorld().spawnParticle(Particle.END_ROD, center, 2,
-                        radius, 0.2, radius, 0.005);
+            // Purple energy sparkles drifting outward with the ring.
+            if (tick % 2 == 0) {
+                center.getWorld().spawnParticle(Particle.WITCH, center, 4,
+                        radius, 0.3, radius, 0.01);
+                center.getWorld().spawnParticle(Particle.END_ROD, center, 3,
+                        radius, 0.25, radius, 0.005);
+                center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 2,
+                        radius, 0.2, radius, 0.01);
             }
 
             for (final Entity entity : center.getWorld().getNearbyEntities(
@@ -119,26 +126,29 @@ public final class KokushiboEffects {
                 if (dx * dx + dz * dz <= radius * radius
                         && struck.add(living.getUniqueId())) {
                     onStrike.accept(living);
+                    // A purple ring erupts off each target as it is struck.
+                    purpleBurst(living.getLocation().add(0.0, 1.0, 0.0));
                 }
             }
         });
     }
 
     /**
-     * Fires one white crescent gleam straight up from the caster, dealing
-     * true damage (through the {@code onHit} callback) to every living target
-     * it passes on the way up. Used by the Sixteenth Form, Moonbow, Half
+     * Fires one white crescent gleam in the direction the caster is looking,
+     * dealing true damage (through the {@code onHit} callback) to the first
+     * living target it strikes. Used by the Sixteenth Form, Moonbow, Half
      * Moon.
      *
-     * @param plugin    owning plugin (for the scheduler)
-     * @param player    the caster (excluded from hits)
-     * @param riseTicks how many ticks the crescent takes to rise
-     * @param onHit     called once per target the crescent touches
+     * @param plugin      owning plugin (for the scheduler)
+     * @param player      the caster (excluded from hits)
+     * @param travelTicks how many ticks the crescent flies before expiring
+     * @param onHit       called once per target the crescent touches
      */
     public static void fireMoonbowCrescent(final JavaPlugin plugin, final Player player,
-                                           final int riseTicks,
+                                           final int travelTicks,
                                            final Consumer<LivingEntity> onHit) {
-        final Location origin = player.getLocation().add(0.0, 0.6, 0.0);
+        final Location origin = player.getEyeLocation();
+        final Vector direction = player.getEyeLocation().getDirection().normalize();
         final ItemDisplay display = player.getWorld().spawn(origin, ItemDisplay.class);
         display.setItemStack(KokushiboSword.whiteCrescentItem());
         display.setBillboard(Display.Billboard.CENTER);
@@ -147,8 +157,8 @@ public final class KokushiboEffects {
         display.setInterpolationDelay(0);
         setScale(display, 1.6f, 1.6f, 1.6f);
 
-        final int duration = Math.max(4, riseTicks);
-        final double rise = 10.0 / duration;
+        final int duration = Math.max(6, travelTicks);
+        final double speed = 0.9;
         final Set<UUID> hit = new HashSet<>();
 
         new BukkitRunnable() {
@@ -162,16 +172,24 @@ public final class KokushiboEffects {
                     cancel();
                     return;
                 }
-                pos.add(0.0, rise, 0.0);
+                pos.add(direction.clone().multiply(speed));
                 display.teleport(pos);
                 final float scale = Math.max(0.6f, 1.6f - tick * 0.05f);
                 setScale(display, scale, scale, scale);
-                // White gleam trail behind the rising crescent.
-                pos.getWorld().spawnParticle(Particle.END_ROD, pos, 3,
+                // White gleam trail behind the flying crescent.
+                pos.getWorld().spawnParticle(Particle.END_ROD, pos, 4,
                         0.12, 0.12, 0.12, 0.0);
 
+                if (pos.getBlock().getType().isSolid()) {
+                    pos.getWorld().spawnParticle(Particle.END_ROD, pos, 8,
+                            0.2, 0.2, 0.2, 0.02);
+                    display.remove();
+                    cancel();
+                    return;
+                }
+
                 for (final Entity entity : pos.getWorld().getNearbyEntities(
-                        pos, 1.1, 1.1, 1.1)) {
+                        pos, 1.2, 1.2, 1.2)) {
                     if (!(entity instanceof LivingEntity living) || living.equals(player)) {
                         continue;
                     }
@@ -179,6 +197,11 @@ public final class KokushiboEffects {
                         continue;
                     }
                     onHit.accept(living);
+                    pos.getWorld().spawnParticle(Particle.END_ROD, pos, 10,
+                            0.3, 0.3, 0.3, 0.02);
+                    display.remove();
+                    cancel();
+                    return;
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);
@@ -262,6 +285,27 @@ public final class KokushiboEffects {
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Emits a ring of purple energy around a struck target — the impact flash
+     * of the Fourteenth Form.
+     *
+     * @param center the centre of the burst
+     */
+    private static void purpleBurst(final Location center) {
+        final World world = center.getWorld();
+        if (world == null) {
+            return;
+        }
+        for (int i = 0; i < 16; i++) {
+            final double angle = i * (TAU / 16);
+            final Location point = center.clone().add(
+                    Math.sin(angle) * 0.9, 0.15, Math.cos(angle) * 0.9);
+            world.spawnParticle(Particle.WITCH, point, 2, 0.1, 0.1, 0.1, 0.01);
+            world.spawnParticle(Particle.END_ROD, point, 1, 0.1, 0.1, 0.1, 0.01);
+        }
+        world.spawnParticle(Particle.DRAGON_BREATH, center, 8, 0.5, 0.4, 0.5, 0.01);
     }
 
     /**

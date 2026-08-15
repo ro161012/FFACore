@@ -105,11 +105,24 @@ public final class NichirinEffects {
 
             // Lava shoots outward from the rim, then fades like heat haze.
             final Location edge = waist.clone().add(0.0, 0.15, 0.0);
-            edge.getWorld().spawnParticle(Particle.LAVA, edge, 14, ringRadius, 0.3, ringRadius, 0.08);
-            edge.getWorld().spawnParticle(Particle.FALLING_LAVA, waist, 6, ringRadius, 0.2, ringRadius, 0.02);
-            edge.getWorld().spawnParticle(Particle.FLAME, edge, 8, ringRadius * 0.6, 0.3, ringRadius * 0.6, 0.03);
-            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 10, ringRadius, 0.4, ringRadius, 0.01);
-            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 4, ringRadius * 0.5, 0.3, ringRadius * 0.5, 0.0);
+            edge.getWorld().spawnParticle(Particle.LAVA, edge, 30, ringRadius, 0.35, ringRadius, 0.08);
+            edge.getWorld().spawnParticle(Particle.FALLING_LAVA, waist, 14, ringRadius, 0.25, ringRadius, 0.03);
+            edge.getWorld().spawnParticle(Particle.FLAME, edge, 22, ringRadius * 0.7, 0.35, ringRadius * 0.7, 0.04);
+            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 16, ringRadius, 0.45, ringRadius, 0.01);
+            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 8, ringRadius * 0.5, 0.3, ringRadius * 0.5, 0.0);
+            // A bright flame ring rides the disc edge so the whole circle
+            // reads as one band of solar fire, not sparse dots.
+            for (int p = 0; p < 12; p++) {
+                final double angle = p * (TAU / 12);
+                final Location point = edge.clone().add(
+                        Math.sin(angle) * ringRadius, 0.0, Math.cos(angle) * ringRadius);
+                point.getWorld().spawnParticle(Particle.FLAME, point, 4,
+                        0.25, 0.25, 0.25, 0.03);
+                point.getWorld().spawnParticle(Particle.LAVA, point, 2,
+                        0.2, 0.2, 0.2, 0.0);
+                point.getWorld().spawnParticle(Particle.END_ROD, point, 2,
+                        0.2, 0.2, 0.2, 0.01);
+            }
         });
     }
 
@@ -278,19 +291,22 @@ public final class NichirinEffects {
         final Location origin = player.getEyeLocation();
         final Vector facing = horizontalFacing(player);
         final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
-        final int count = 22;
+        final int count = 32;
+        final double reach = Math.max(2.0, radius) + 2.0;
         final List<BlockDisplay> lava = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final BlockDisplay display = player.getWorld().spawn(origin, BlockDisplay.class);
+            // Spawn just ahead of the caster so the volley is instantly in view.
+            final BlockDisplay display = player.getWorld().spawn(
+                    origin.clone().add(facing.clone().multiply(0.4)), BlockDisplay.class);
             display.setBlock(Material.LAVA.createBlockData());
             display.setBrightness(new Display.Brightness(15, 15));
             display.setInterpolationDuration(1);
             display.setInterpolationDelay(0);
-            setScale(display, 0.5f, 0.5f, 0.5f);
+            setScale(display, 0.8f, 0.8f, 0.8f);
             lava.add(display);
         }
 
-        final int duration = 18;
+        final int duration = 24;
         new BukkitRunnable() {
             private int tick;
 
@@ -304,13 +320,21 @@ public final class NichirinEffects {
                 final double progress = tick / (double) (duration - 1);
                 for (int i = 0; i < lava.size(); i++) {
                     final double spread = (i / (double) (lava.size() - 1)) * 2.0 - 1.0;
-                    final double dist = 0.5 + progress * Math.max(1.0, radius);
-                    final double height = Math.sin(progress * Math.PI) * 1.1;
-                    final double width = 0.4 + Math.abs(spread) * 1.6;
-                    lava.get(i).teleport(origin.clone()
+                    final double dist = 0.5 + progress * reach;
+                    final double height = Math.sin(progress * Math.PI) * 1.6;
+                    final double width = 0.6 + Math.abs(spread) * 2.0;
+                    final Location pos = origin.clone()
                             .add(facing.clone().multiply(dist))
                             .add(0.0, height, 0.0)
-                            .add(side.clone().multiply(spread * width)));
+                            .add(side.clone().multiply(spread * width));
+                    lava.get(i).teleport(pos);
+                    // Glowing lava trail so the volley reads clearly while it flies.
+                    if (i % 2 == 0) {
+                        pos.getWorld().spawnParticle(Particle.LAVA, pos, 2,
+                                0.15, 0.15, 0.15, 0.0);
+                        pos.getWorld().spawnParticle(Particle.FLAME, pos, 2,
+                                0.2, 0.2, 0.2, 0.01);
+                    }
                 }
                 tick++;
             }

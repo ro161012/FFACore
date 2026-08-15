@@ -35,8 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *       ring of moon energy expands outward around the caster, dealing true
  *       damage to everything it sweeps.</li>
  *   <li><b>Moonbow, Half Moon</b> (offhand + crouch): arms the moonbow, then
- *       each left-click launches a white crescent straight up, dealing true
- *       damage to what it passes.</li>
+ *       each left-click launches a white crescent where the player aims,
+ *       dealing true damage to what it passes.</li>
  * </ul>
  */
 public final class KokushiboAbilityListener implements Listener {
@@ -265,9 +265,10 @@ public final class KokushiboAbilityListener implements Listener {
     }
 
     /**
-     * Left-click while the Moonbow is armed launches one white crescent
-     * straight up. Arming is done with the swap key, so the left-click is
-     * consumed as the shot trigger and never breaks blocks or interacts.
+     * Left-click while the Moonbow is armed launches one white crescent where
+     * the player is aiming. Arming is done with the swap key, so the
+     * left-click is consumed as the shot trigger and never breaks blocks or
+     * interacts.
      */
     @EventHandler
     public void onMoonbowShot(final PlayerInteractEvent event) {
@@ -306,7 +307,8 @@ public final class KokushiboAbilityListener implements Listener {
     }
 
     /**
-     * Consumes one armed Moonbow shot and launches a white crescent upward.
+     * Consumes one armed Moonbow shot and launches a white crescent where the
+     * player is aiming.
      */
     private void spendMoonbowShot(final Player player) {
         final UUID id = player.getUniqueId();

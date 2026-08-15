@@ -97,7 +97,7 @@ public final class KokushiboSword {
                 tag("[Offhand + Crouch]"),
                 Component.empty(),
                 body("Arm the moonbow, then left-click to launch white crescents."),
-                body("Each crescent gleams upward, striking what it passes."),
+                body("Each crescent soars where you aim, striking what it passes."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("80s cooldown.")));
         stack.setItemMeta(meta);

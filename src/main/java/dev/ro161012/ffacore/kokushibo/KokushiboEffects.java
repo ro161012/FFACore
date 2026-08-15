@@ -1,31 +1,32 @@
 package dev.ro161012.ffacore.kokushibo;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
-import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Spawns the display-entity visuals for the Kokoshibos Sword abilities.
  *
- * <p>Crescent projectiles and moonbow strikes are drawn with {@link ItemDisplay}
- * entities carrying the kokushibo crescent model (custom model data 2), while
- * the Lunar Eclipse window draws a spinning ring of {@link BlockDisplay} purple
- * glass. Everything is full-bright and short-lived, and the shared core shader
- * applies the display tint so the glass and crescents glow.
+ * <p>The Catastrophe vortex and the moonbow strikes are drawn with
+ * {@link ItemDisplay} entities carrying the kokushibo crescent model (custom
+ * model data 2). Everything is full-bright and short-lived, and the shared
+ * core shader applies the display tint so the crescents glow.
  */
 public final class KokushiboEffects {
 
@@ -34,90 +35,79 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Fires a slowing-star crescent projectile in the player's facing
-     * direction. Returns the snowball id so the listener can track it.
+     * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — an
+     * omni-directional vortex of crescent blades that whirls around the
+     * player while expanding outward, growing as it spins.
      *
-     * @param plugin owning plugin (for the safety cleanup)
-     * @param player the caster
-     * @return the launched snowball's unique id
-     */
-    public static java.util.UUID fireCrescent(final JavaPlugin plugin, final Player player) {
-        final Vector direction = player.getLocation().getDirection();
-        final Snowball snowball = player.launchProjectile(Snowball.class, direction.multiply(2.4));
-        snowball.setGravity(false);
-
-        final ItemDisplay display = player.getWorld().spawn(
-                snowball.getLocation(), ItemDisplay.class);
-        display.setItemStack(KokushiboSword.crescentItem());
-        display.setBillboard(Display.Billboard.CENTER);
-        display.setBrightness(new Display.Brightness(15, 15));
-        display.setTransformation(new Transformation(
-                new Vector3f(0f, 0f, 0f),
-                new AxisAngle4f(0f, 0f, 0f, 1f),
-                new Vector3f(1.8f, 1.8f, 1.8f),
-                new AxisAngle4f(0f, 0f, 0f, 1f)));
-        snowball.addPassenger(display);
-
-        snowball.getWorld().spawnParticle(Particle.WITCH,
-                snowball.getLocation(), 30, 0.4, 0.4, 0.4, 0.03);
-        snowball.getWorld().spawnParticle(Particle.END_ROD,
-                snowball.getLocation(), 15, 0.3, 0.3, 0.3, 0.02);
-
-        // Safety net: drop the crescent if the snowball despawns without a hit.
-        plugin.getServer().getScheduler().runTaskLater(plugin, display::remove, 120L);
-        return snowball.getUniqueId();
-    }
-
-    /**
-     * Plays the Lunar Eclipse window burst: a spinning ring of purple glass
-     * around the player.
+     * <p>Each crescent sweeps entities in its path exactly once per cast; the
+     * {@code onStrike} callback receives every living target the moment the
+     * vortex touches it, so the listener can apply true damage.
      *
-     * @param plugin owning plugin (for the scheduler)
-     * @param player the caster
+     * @param plugin     owning plugin (for the scheduler)
+     * @param player     the caster
+     * @param maxRadius  the radius the vortex expands out to, in blocks
+     * @param crescents  number of crescent blades in the vortex
+     * @param onStrike   called once per target as the vortex reaches it
      */
-    public static void playEclipseBurst(final JavaPlugin plugin, final Player player) {
+    public static void playCatastrophe(final JavaPlugin plugin, final Player player,
+                                       final double maxRadius, final int crescents,
+                                       final Consumer<LivingEntity> onStrike) {
         final Location eye = player.getEyeLocation();
-        final int segments = 20;
-        final double radius = 2.2;
+        final int totalTicks = 40;
+        final double startRadius = 1.6;
 
-        final List<BlockDisplay> displays = new ArrayList<>();
-        for (int i = 0; i < segments; i++) {
-            final BlockDisplay display = player.getWorld().spawn(eye, BlockDisplay.class);
-            display.setBlock(Material.PURPLE_STAINED_GLASS.createBlockData());
+        final List<ItemDisplay> displays = new ArrayList<>();
+        for (int i = 0; i < crescents; i++) {
+            final ItemDisplay display = player.getWorld().spawn(eye, ItemDisplay.class);
+            display.setItemStack(KokushiboSword.crescentItem());
+            display.setBillboard(Display.Billboard.CENTER);
             display.setBrightness(new Display.Brightness(15, 15));
             display.setInterpolationDuration(1);
             display.setInterpolationDelay(0);
             displays.add(display);
         }
 
-        player.getWorld().spawnParticle(Particle.WITCH, eye, 60,
-                1.0, 0.7, 1.0, 0.04);
-        player.getWorld().spawnParticle(Particle.DRAGON_BREATH, eye, 25,
-                0.9, 0.6, 0.9, 0.01);
+        final Set<UUID> struck = new HashSet<>();
 
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick >= 16) {
-                    displays.forEach(BlockDisplay::remove);
+                if (tick >= totalTicks) {
+                    displays.forEach(ItemDisplay::remove);
                     cancel();
                     return;
                 }
-                final double spin = Math.toRadians(tick * 45);
-                final double rise = tick * 0.07;
+                final double progress = (double) tick / totalTicks;
+                final double radius = startRadius + (maxRadius - startRadius) * progress;
+                final double spin = Math.toRadians(tick * 30);
+                final double rise = tick * 0.04;
                 for (int i = 0; i < displays.size(); i++) {
-                    final double angle = Math.toRadians(i * (360.0 / segments)) + spin;
-                    final BlockDisplay display = displays.get(i);
-                    display.teleport(eye.clone().add(
-                            Math.sin(angle) * radius, -0.6 + rise, Math.cos(angle) * radius));
+                    final double angle = Math.toRadians(i * (360.0 / displays.size())) + spin;
+                    final ItemDisplay display = displays.get(i);
+                    final Location loc = eye.clone().add(
+                            Math.sin(angle) * radius, -0.4 + rise, Math.cos(angle) * radius);
+                    display.teleport(loc);
                     display.setTransformation(new Transformation(
                             new Vector3f(0f, 0f, 0f),
                             new AxisAngle4f((float) -angle, 0f, 1f, 0f),
-                            new Vector3f(0.3f, 1.4f, 0.9f),
-                            new AxisAngle4f(0f, 0f, 0f, 1f)));
+                            new Vector3f(1.5f, 1.5f, 1.5f),
+                            new AxisAngle4f((float) (tick * 0.6f), 0f, 0f, 1f)));
+                    for (final Entity entity : loc.getWorld().getNearbyEntities(
+                            loc, 1.8, 1.8, 1.8)) {
+                        if (!(entity instanceof LivingEntity living) || living.equals(player)) {
+                            continue;
+                        }
+                        if (struck.add(living.getUniqueId())) {
+                            onStrike.accept(living);
+                        }
+                    }
                 }
+                eye.getWorld().spawnParticle(Particle.WITCH, eye.clone().add(0, -0.4, 0),
+                        crescents, radius, 0.6, radius, 0.02);
+                eye.getWorld().spawnParticle(Particle.END_ROD, eye.clone().add(0, -0.4, 0),
+                        4, radius, 0.4, radius, 0.02);
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);

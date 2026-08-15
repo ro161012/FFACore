@@ -9,14 +9,11 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.potion.PotionEffect;
@@ -35,8 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <ul>
  *   <li><b>Upper Moon One</b> (passive): while holding the sword, periodically
  *       empower the wielder.</li>
- *   <li><b>Crescent Throw</b> (offhand): open a Lunar Eclipse window; left
- *       clicks during the window fire a slowing crescent star.</li>
+ *   <li><b>Catastrophe, Tenman Crescent Moon</b> (offhand): an omni-directional
+ *       vortex of crescent blades expands outward around the caster, dealing
+ *       true damage to everything it sweeps.</li>
  *   <li><b>Moonbow, Half Moon</b> (offhand + crouch): six crescents strike in
  *       a line ahead, dealing true damage.</li>
  * </ul>
@@ -47,12 +45,9 @@ public final class KokushiboAbilityListener implements Listener {
     private final AbilityBossBars bossBars;
 
     private final Set<UUID> trueDamageTargets = ConcurrentHashMap.newKeySet();
-    private final Set<UUID> crescentSnowballs = ConcurrentHashMap.newKeySet();
-    private final Map<UUID, Long> lunarEclipseUntil = new ConcurrentHashMap<>();
-    private final Map<UUID, Long> nextCrescentFire = new ConcurrentHashMap<>();
     private final Map<UUID, Long> nextUpperMoonGrant = new ConcurrentHashMap<>();
 
-    private final NichirinCooldown crescentCooldown;
+    private final NichirinCooldown catastropheCooldown;
     private final NichirinCooldown moonbowCooldown;
 
     // Cached configuration (refreshed by applyConfig()).
@@ -60,10 +55,9 @@ public final class KokushiboAbilityListener implements Listener {
     private int buffDurationSeconds;
     private int strengthAmplifier;
     private int speedAmplifier;
-    private long windowMillis;
-    private long fireIntervalMillis;
-    private int slowSeconds;
-    private int slowAmplifier;
+    private double catastropheDamageHearts;
+    private double catastropheMaxRadius;
+    private int catastropheCrescents;
     private int moonbowCrescents;
     private double moonbowSpacing;
     private double strikeRadius;
@@ -77,7 +71,7 @@ public final class KokushiboAbilityListener implements Listener {
     public KokushiboAbilityListener(final FFACore plugin) {
         this.plugin = plugin;
         this.bossBars = new AbilityBossBars(plugin);
-        this.crescentCooldown = new NichirinCooldown(70);
+        this.catastropheCooldown = new NichirinCooldown(70);
         this.moonbowCooldown = new NichirinCooldown(80);
         applyConfig();
         startPassiveTask();
@@ -96,21 +90,19 @@ public final class KokushiboAbilityListener implements Listener {
                 "kokushibo.upper-moon-one.strength-amplifier", 0));
         speedAmplifier = Math.max(0, config.getInt(
                 "kokushibo.upper-moon-one.speed-amplifier", 0));
-        windowMillis = Math.max(1, config.getInt(
-                "kokushibo.crescent-throw.window-seconds", 10)) * 1000L;
-        fireIntervalMillis = Math.max(100, config.getInt(
-                "kokushibo.crescent-throw.fire-interval-ms", 1000));
-        slowSeconds = Math.max(1, config.getInt(
-                "kokushibo.crescent-throw.slow-seconds", 4));
-        slowAmplifier = Math.max(0, config.getInt(
-                "kokushibo.crescent-throw.slow-amplifier", 1));
+        catastropheDamageHearts = config.getDouble(
+                "kokushibo.catastrophe.damage-hearts", 3.0);
+        catastropheMaxRadius = Math.max(2.0, config.getDouble(
+                "kokushibo.catastrophe.max-radius", 9.0));
+        catastropheCrescents = Math.max(4, config.getInt(
+                "kokushibo.catastrophe.crescents", 12));
         moonbowCrescents = Math.max(1, config.getInt("kokushibo.moonbow.crescents", 6));
         moonbowSpacing = Math.max(0.5, config.getDouble("kokushibo.moonbow.spacing", 1.6));
         strikeRadius = Math.max(0.5, config.getDouble("kokushibo.moonbow.strike-radius", 1.2));
         moonbowDamageHearts = config.getDouble("kokushibo.moonbow.damage-hearts", 3.0);
 
-        crescentCooldown.setCooldownSeconds(
-                config.getInt("kokushibo.crescent-throw.cooldown-seconds", 70));
+        catastropheCooldown.setCooldownSeconds(
+                config.getInt("kokushibo.catastrophe.cooldown-seconds", 70));
         moonbowCooldown.setCooldownSeconds(
                 config.getInt("kokushibo.moonbow.cooldown-seconds", 80));
     }
@@ -131,7 +123,7 @@ public final class KokushiboAbilityListener implements Listener {
 
     /**
      * Triggers an ability when the player swaps hands with the sword in the
-     * offhand. Crouching casts Moonbow; otherwise Crescent Throw.
+     * offhand. Crouching casts Moonbow; otherwise Catastrophe.
      */
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
@@ -152,48 +144,7 @@ public final class KokushiboAbilityListener implements Listener {
         if (player.isSneaking()) {
             castMoonbow(player);
         } else {
-            castCrescentThrow(player);
-        }
-    }
-
-    /**
-     * During the Lunar Eclipse window, each arm swing fires a slowing star
-     * (rate-limited to one per second).
-     */
-    @EventHandler
-    public void onArmSwing(final PlayerAnimationEvent event) {
-        final Player player = event.getPlayer();
-        final UUID id = player.getUniqueId();
-        final Long until = lunarEclipseUntil.get(id);
-        if (until == null) {
-            return;
-        }
-        if (until <= System.currentTimeMillis()) {
-            lunarEclipseUntil.remove(id, until);
-            return;
-        }
-        final long now = System.currentTimeMillis();
-        if (now < nextCrescentFire.getOrDefault(id, 0L)) {
-            return;
-        }
-        nextCrescentFire.put(id, now + fireIntervalMillis);
-        crescentSnowballs.add(KokushiboEffects.fireCrescent(plugin, player));
-        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.7f, 1.8f);
-    }
-
-    /**
-     * Slows any entity struck by a crescent star.
-     */
-    @EventHandler
-    public void onCrescentHit(final ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof Snowball snowball)
-                || !crescentSnowballs.remove(snowball.getUniqueId())) {
-            return;
-        }
-        snowball.getPassengers().forEach(org.bukkit.entity.Entity::remove);
-        if (event.getHitEntity() instanceof LivingEntity living) {
-            living.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS,
-                    slowSeconds * 20, slowAmplifier, false, true, true));
+            castCatastrophe(player);
         }
     }
 
@@ -203,10 +154,8 @@ public final class KokushiboAbilityListener implements Listener {
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
         final UUID id = event.getPlayer().getUniqueId();
-        crescentCooldown.clear(id);
+        catastropheCooldown.clear(id);
         moonbowCooldown.clear(id);
-        lunarEclipseUntil.remove(id);
-        nextCrescentFire.remove(id);
         nextUpperMoonGrant.remove(id);
         bossBars.clear(id);
     }
@@ -218,17 +167,18 @@ public final class KokushiboAbilityListener implements Listener {
         bossBars.close();
     }
 
-    private void castCrescentThrow(final Player player) {
+    private void castCatastrophe(final Player player) {
         final UUID id = player.getUniqueId();
-        if (crescentCooldown.isOnCooldown(id)) {
+        if (catastropheCooldown.isOnCooldown(id)) {
             return;
         }
-        crescentCooldown.apply(id);
-        bossBars.start(player, "crescent-throw", "Crescent Throw",
-                BarColor.PURPLE, crescentCooldown.getCooldownMillis());
-        lunarEclipseUntil.put(id, System.currentTimeMillis() + windowMillis);
-        KokushiboEffects.playEclipseBurst(plugin, player);
-        player.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0f, 1.2f);
+        catastropheCooldown.apply(id);
+        bossBars.start(player, "catastrophe", "Catastrophe",
+                BarColor.PURPLE, catastropheCooldown.getCooldownMillis());
+        KokushiboEffects.playCatastrophe(plugin, player, catastropheMaxRadius,
+                catastropheCrescents,
+                living -> applyTrueDamage(living, player, catastropheDamageHearts));
+        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.7f);
     }
 
     private void castMoonbow(final Player player) {

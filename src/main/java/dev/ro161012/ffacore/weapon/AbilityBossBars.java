@@ -106,7 +106,7 @@ public final class AbilityBossBars {
                         Math.min(1.0, (double) remaining / current.totalMillis));
                 current.bar.setProgress(progress);
                 final long seconds = (long) Math.ceil(remaining / 1000.0);
-                current.bar.setTitle(current.title + "  " + seconds + "s");
+                current.bar.setTitle(current.title + "  §r§7" + seconds + "s");
                 return false;
             });
             if (byAbility.isEmpty()) {

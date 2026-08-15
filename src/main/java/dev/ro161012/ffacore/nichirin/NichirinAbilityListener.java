@@ -237,8 +237,9 @@ public final class NichirinAbilityListener implements Listener {
             return;
         }
         clearSkyCooldown.apply(id);
-        bossBars.start(player, "clear-blue-sky", "Clear Blue Sky",
-                BarColor.RED, clearSkyCooldown.getCooldownMillis());
+        bossBars.start(player, "clear-blue-sky",
+                "§bHinokami Kagura §8» §b§lClear Blue Sky",
+                BarColor.BLUE, clearSkyCooldown.getCooldownMillis());
         NichirinEffects.playClearBlueSky(plugin, player);
 
         final Vector facing = horizontalDirection(player);
@@ -261,7 +262,8 @@ public final class NichirinAbilityListener implements Listener {
             return;
         }
         enbuCooldown.apply(id);
-        bossBars.start(player, "enbu", "Enbu",
+        bossBars.start(player, "enbu",
+                "§6Hinokami Kagura §8» §6§lEnbu",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player);
 

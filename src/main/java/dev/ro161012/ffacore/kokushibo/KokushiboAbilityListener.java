@@ -223,7 +223,8 @@ public final class KokushiboAbilityListener implements Listener {
             return;
         }
         catastropheCooldown.apply(id);
-        bossBars.start(player, "catastrophe", "Catastrophe",
+        bossBars.start(player, "catastrophe",
+                "§dFourteenth Form §8» §d§lCatastrophe, Tenman Crescent Moon",
                 BarColor.PURPLE, catastropheCooldown.getCooldownMillis());
         KokushiboEffects.playCatastrophe(plugin, player, catastropheMaxRadius,
                 catastropheCrescents,
@@ -237,8 +238,9 @@ public final class KokushiboAbilityListener implements Listener {
             return;
         }
         moonbowCooldown.apply(id);
-        bossBars.start(player, "moonbow", "Moonbow, Half Moon",
-                BarColor.PURPLE, moonbowCooldown.getCooldownMillis());
+        bossBars.start(player, "moonbow",
+                "§dSixteenth Form §8» §d§lMoonbow, Half Moon",
+                BarColor.PINK, moonbowCooldown.getCooldownMillis());
 
         final Location eye = player.getEyeLocation();
         final Vector facing = eye.getDirection();

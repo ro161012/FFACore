@@ -44,14 +44,12 @@ public final class NichirinEffects {
      * the caster's waist — orange-red core, yellow-white rim, a lagging
      * afterimage, and heat-haze embers.
      *
-     * @param plugin     owning plugin (for the scheduler)
-     * @param player     the caster
-     * @param ticks      how long the disc spins (shorter = snappier)
-     * @param arcDegrees retained for signature compatibility; the canonical
-     *                   form is a full circle
+     * @param plugin owning plugin (for the scheduler)
+     * @param player the caster
+     * @param ticks  how long the disc spins (shorter = snappier)
      */
     public static void playClearBlueSky(final JavaPlugin plugin, final Player player,
-                                        final int ticks, final double arcDegrees) {
+                                        final int ticks) {
         final Location waist = player.getEyeLocation().add(0.0, -1.0, 0.0);
         final int core = 20;
         final int rim = 20;

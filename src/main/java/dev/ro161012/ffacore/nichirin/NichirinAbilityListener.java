@@ -18,8 +18,6 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -31,8 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * <ul>
  *   <li><b>Flame Combo</b> (passive): land N hits without taking damage to
  *       gain Strength II; taking damage resets the combo.</li>
- *   <li><b>Clear Blue Sky</b> (offhand): a fan of true damage in an arc
- *       ahead of the caster.</li>
+ *   <li><b>Clear Blue Sky</b> (offhand): a full-circle burst of true damage
+ *       around the caster.</li>
  *   <li><b>Enbu</b> (offhand + crouch): true damage in a radius and an
  *       absorption lock on every target hit.</li>
  * </ul>
@@ -60,7 +58,6 @@ public final class NichirinAbilityListener implements Listener {
     private int strengthSeconds;
     private double clearSkyDamageHearts;
     private double clearSkyRadius;
-    private double clearSkyArcDegrees;
     private double enbuDamageHearts;
     private double enbuRadius;
     private long absorptionLockMillis;
@@ -87,7 +84,6 @@ public final class NichirinAbilityListener implements Listener {
         strengthSeconds = Math.max(1, config.getInt("nichirin.combo-strength-duration-seconds", 6));
         clearSkyDamageHearts = config.getDouble("nichirin.clear-blue-sky.damage-hearts", 2.0);
         clearSkyRadius = config.getDouble("nichirin.clear-blue-sky.radius", 3.5);
-        clearSkyArcDegrees = config.getDouble("nichirin.clear-blue-sky.arc-degrees", 160.0);
         enbuDamageHearts = config.getDouble("nichirin.enbu.damage-hearts", 2.0);
         enbuRadius = config.getDouble("nichirin.enbu.radius", 3.0);
         absorptionLockMillis = Math.max(0, config.getInt(
@@ -245,15 +241,11 @@ public final class NichirinAbilityListener implements Listener {
         bossBars.start(player, "clear-blue-sky",
                 "§6Hinokami Kagura §8» §6§lClear Blue Sky",
                 BarColor.RED, clearSkyCooldown.getCooldownMillis());
-        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyArcDegrees);
+        NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks);
 
-        final Vector facing = horizontalDirection(player);
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(
                 clearSkyRadius, clearSkyRadius, clearSkyRadius)) {
             if (!(entity instanceof LivingEntity living) || living.equals(player)) {
-                continue;
-            }
-            if (!inArc(player, living, facing, clearSkyRadius)) {
                 continue;
             }
             applyTrueDamage(living, player, clearSkyDamageHearts);
@@ -303,25 +295,4 @@ public final class NichirinAbilityListener implements Listener {
         }
     }
 
-    /**
-     * Returns whether the target lies within the fan arc ahead of the player.
-     */
-    private boolean inArc(final Player player, final LivingEntity target,
-                          final Vector facing, final double radius) {
-        if (target.getLocation().distanceSquared(player.getLocation()) > radius * radius) {
-            return false;
-        }
-        final Vector toTarget = target.getLocation().toVector()
-                .subtract(player.getLocation().toVector()).setY(0);
-        if (toTarget.lengthSquared() == 0 || facing.lengthSquared() == 0) {
-            return true;
-        }
-        final double degrees = Math.toDegrees(facing.angle(toTarget));
-        return degrees <= clearSkyArcDegrees / 2.0;
-    }
-
-    private static Vector horizontalDirection(final Player player) {
-        final Vector direction = player.getLocation().getDirection().setY(0);
-        return direction.lengthSquared() == 0 ? new Vector(0, 0, 1) : direction.normalize();
-    }
 }

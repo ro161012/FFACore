@@ -131,7 +131,7 @@ This is the only command that hands out weapons. Available weapons:
 * **Flame Combo** (passive) — land 4 hits without taking damage to gain
   Strength II. Taking damage resets the combo.
 * **Clear Blue Sky** (offhand, 50s) — hold the blade and press the swap-hands
-  key: a fan of true damage in an arc ahead of you.
+  key: a full 360° circle of true damage around you.
 * **Enbu** (offhand + crouch, 70s) — crouch and press the swap-hands key while
   holding the blade: true damage in a radius and a 15s absorption lock on
   every hit.

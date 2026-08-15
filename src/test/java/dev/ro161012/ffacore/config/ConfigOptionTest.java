@@ -156,7 +156,6 @@ class ConfigOptionTest {
                 "nichirin.combo-hits",
                 "nichirin.clear-blue-sky.cooldown-seconds",
                 "nichirin.clear-blue-sky.damage-hearts",
-                "nichirin.clear-blue-sky.arc-degrees",
                 "nichirin.clear-blue-sky.vfx-ticks",
                 "nichirin.enbu.absorption-lock-seconds",
                 "nichirin.enbu.vfx-ticks",

@@ -130,9 +130,8 @@ nichirin:
     cooldown-seconds: 50
     # True damage in hearts (ignores armour), 1 heart = 2 HP.
     damage-hearts: 2.0
+    # Full-circle reach in blocks.
     radius: 3.5
-    # Width of the fan arc in degrees, centred on the player's facing.
-    arc-degrees: 160.0
     # Ticks the ring animation plays. Lower = snappier, higher = slower.
     vfx-ticks: 12
   enbu:

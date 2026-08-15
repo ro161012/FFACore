@@ -72,7 +72,7 @@ routed through `assets/minecraft/items/netherite_sword.json` to the
 texture and tooltip sprites are sourced 1-1 from the Altar SMP pack and
 shipped here so the blade renders standalone.
 
-The ability visuals (Clear Blue Sky fan, Enbu eruption) are drawn with
+The ability visuals (Clear Blue Sky ring, Enbu crescent) are drawn with
 block display entities using full-bright translucent stained glass (orange /
 yellow / red). A core shader override
 (`rendertype_item_entity_translucent_cull.fsh`) adds a soft emissive bloom so

@@ -40,6 +40,10 @@ public final class NichirinEffects {
 
     private static final double TAU = Math.PI * 2.0;
 
+    /** Scoreboard tag marking the temporary lava projectiles so their landing
+     *  is cancelled and they never place a real lava source. */
+    public static final String LAVA_TAG = "ffacore_lava";
+
     private NichirinEffects() {
         // Utility class.
     }
@@ -249,31 +253,17 @@ public final class NichirinEffects {
         for (int i = 0; i < count; i++) {
             final double angle = i * (TAU / count);
             // A real lava block entity (not a display/particle) that erupts
-            // outward and is removed once the burst ends.
+            // outward and vanishes on impact — it never stays in the world.
             final FallingBlock block = player.getWorld().spawnFallingBlock(
                     center, Material.LAVA.createBlockData());
             block.setDropItem(false);
-            block.setGravity(false);
+            block.addScoreboardTag(LAVA_TAG);
             block.setVelocity(new Vector(
                     Math.sin(angle) * speed, 0.35, Math.cos(angle) * speed));
             lava.add(block);
         }
 
-        new BukkitRunnable() {
-            private int tick;
-
-            @Override
-            public void run() {
-                if (tick++ >= 16) {
-                    lava.forEach(block -> {
-                        if (block.isValid()) {
-                            block.remove();
-                        }
-                    });
-                    cancel();
-                }
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
+        removeWhenSettled(plugin, lava);
     }
 
     /**
@@ -299,11 +289,11 @@ public final class NichirinEffects {
                     .add(facing.clone().multiply(0.5))
                     .add(side.clone().multiply(spread * 0.5));
             // A real lava block entity (not a display/particle) that shoots
-            // forward and is removed once the burst ends.
+            // forward and vanishes on impact — it never stays in the world.
             final FallingBlock block = player.getWorld().spawnFallingBlock(
                     spawn, Material.LAVA.createBlockData());
             block.setDropItem(false);
-            block.setGravity(false);
+            block.addScoreboardTag(LAVA_TAG);
             block.setVelocity(facing.clone()
                     .multiply(speed + Math.random() * 0.25)
                     .add(side.clone().multiply(spread * 0.18))
@@ -311,12 +301,36 @@ public final class NichirinEffects {
             lava.add(block);
         }
 
+        removeWhenSettled(plugin, lava);
+    }
+
+    /**
+     * Removes the lava projectiles the moment they touch the ground and clears
+     * any stragglers once the volley is over, so no lava ever lingers in the
+     * world. The landing itself is cancelled separately in
+     * {@code NichirinAbilityListener#onLavaProjectileLand}.
+     *
+     * @param plugin owning plugin (for the scheduler)
+     * @param lava   the falling lava blocks to clean up
+     */
+    private static void removeWhenSettled(final JavaPlugin plugin,
+                                          final List<FallingBlock> lava) {
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick++ >= 16) {
+                lava.removeIf(block -> {
+                    if (!block.isValid() || block.isDead()) {
+                        return true;
+                    }
+                    if (block.isOnGround()) {
+                        block.remove();
+                        return true;
+                    }
+                    return false;
+                });
+                if (tick++ >= 40 || lava.isEmpty()) {
                     lava.forEach(block -> {
                         if (block.isValid()) {
                             block.remove();

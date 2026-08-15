@@ -263,6 +263,7 @@ public final class NichirinAbilityListener implements Listener {
         player.setVelocity(player.getVelocity().setY(upward));
         NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyRadius);
         NichirinEffects.lavaBurst(plugin, player, clearSkyRadius);
+        watchForLanding(player);
 
         // Horizontal cylinder: hits everyone around and below, whatever height
         // they are at relative to the caster.
@@ -352,6 +353,47 @@ public final class NichirinAbilityListener implements Listener {
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
+    }
+
+    /**
+     * Watches the caster until they come back down from the Clear Blue Sky
+     * boost, then detonates the earthquake shockwave on the ground beneath
+     * them.
+     *
+     * @param player the boosted player
+     */
+    private void watchForLanding(final Player player) {
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (!player.isOnline() || player.isDead()) {
+                    cancel();
+                    return;
+                }
+                if (tick > 3 && isLanded(player)) {
+                    NichirinEffects.playLandingShockwave(plugin, player);
+                    cancel();
+                    return;
+                }
+                if (tick++ > 120) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Returns true once the player has stopped rising and is standing on a
+     * solid block — i.e. they have landed from the boost.
+     */
+    private static boolean isLanded(final Player player) {
+        if (player.getVelocity().getY() > 0.05) {
+            return false;
+        }
+        final Location below = player.getLocation().subtract(0.0, 0.05, 0.0);
+        return below.getBlock().getType().isSolid();
     }
 
     /**

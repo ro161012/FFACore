@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
@@ -301,6 +303,89 @@ public final class NichirinEffects {
     }
 
     /**
+     * Detonates an earthquake shockwave under the caster as they land: the
+     * actual ground blocks lift up and slam back down in an outward ripple,
+     * like the terrain is being shaken.
+     *
+     * @param plugin owning plugin (for the scheduler)
+     * @param player the landing player
+     */
+    public static void playLandingShockwave(final JavaPlugin plugin, final Player player) {
+        final World world = player.getWorld();
+        final Location center = player.getLocation();
+        final double radius = 5.0;
+
+        final int feetY = center.getBlockY();
+        final int minX = center.getBlockX() - (int) Math.ceil(radius);
+        final int maxX = center.getBlockX() + (int) Math.ceil(radius);
+        final int minZ = center.getBlockZ() - (int) Math.ceil(radius);
+        final int maxZ = center.getBlockZ() + (int) Math.ceil(radius);
+
+        final List<BlockDisplay> displays = new ArrayList<>();
+        final List<Double> phases = new ArrayList<>();
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                final double dx = x + 0.5 - center.getX();
+                final double dz = z + 0.5 - center.getZ();
+                final double dist = Math.hypot(dx, dz);
+                if (dist > radius) {
+                    continue;
+                }
+                Block ground = null;
+                for (int y = feetY; y >= feetY - 3; y--) {
+                    final Block candidate = world.getBlockAt(x, y, z);
+                    if (candidate.getType().isSolid()) {
+                        ground = candidate;
+                        break;
+                    }
+                }
+                if (ground == null) {
+                    continue;
+                }
+                final BlockDisplay display = world.spawn(ground.getLocation(), BlockDisplay.class);
+                display.setBlock(ground.getBlockData());
+                display.setInterpolationDuration(1);
+                display.setInterpolationDelay(0);
+                displays.add(display);
+                phases.add(dist / radius);
+            }
+        }
+
+        if (displays.isEmpty()) {
+            return;
+        }
+
+        world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 0.5f);
+        world.spawnParticle(Particle.CLOUD, center, 30, radius, 0.3, radius, 0.02);
+        world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 12, radius, 0.4, radius, 0.0);
+
+        final int duration = 22;
+        final double waveWindow = 0.45;
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= duration) {
+                    displays.forEach(BlockDisplay::remove);
+                    cancel();
+                    return;
+                }
+                final double progress = tick / (double) (duration - 1);
+                for (int i = 0; i < displays.size(); i++) {
+                    final double local = (progress - phases.get(i) * waveWindow) / waveWindow;
+                    double bounce = 0.0;
+                    if (local >= 0.0 && local <= 1.0) {
+                        bounce = Math.sin(local * Math.PI) * 0.65;
+                    }
+                    setTranslationY(displays.get(i), (float) bounce);
+                }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
      * Spawns a full-bright glowing block display with the given cube scale.
      */
     private static BlockDisplay spawnBlock(final Player player, final Location location,
@@ -355,6 +440,18 @@ public final class NichirinEffects {
                 new Vector3f(0f, 0f, 0f),
                 new AxisAngle4f(0f, 0f, 0f, 1f),
                 new Vector3f(sx, sy, sz),
+                new AxisAngle4f(0f, 0f, 0f, 1f)));
+    }
+
+    /**
+     * Lifts a display straight up by {@code y} blocks while keeping its scale
+     * and orientation — used for the earthquake ground-block bounce.
+     */
+    private static void setTranslationY(final Display display, final float y) {
+        display.setTransformation(new Transformation(
+                new Vector3f(0f, y, 0f),
+                new AxisAngle4f(0f, 0f, 0f, 1f),
+                new Vector3f(1f, 1f, 1f),
                 new AxisAngle4f(0f, 0f, 0f, 1f)));
     }
 

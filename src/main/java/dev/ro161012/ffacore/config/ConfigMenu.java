@@ -50,7 +50,7 @@ public final class ConfigMenu {
 
     // Weapon section themes.
     private static final TextColor NICHIRIN = TextColor.color(0xFF8C42);
-    private static final TextColor KOKUSHIBO = TextColor.color(0xB06BE8);
+    private static final TextColor KOKUSHIBO = TextColor.color(0xA78BC8);
 
     private final FFACore plugin;
     private final List<Section> sections;
@@ -97,7 +97,7 @@ public final class ConfigMenu {
             buttons.add(button(section.title(), tooltip(section.description()),
                     click((view, audience) -> {
                         if (audience instanceof Player target) {
-                            onMainThread(() -> openSectionSafely(target, section));
+                            onMainThread(() -> openSectionOrSubmenu(target, section));
                         }
                     }), section.color()));
         }
@@ -165,6 +165,69 @@ public final class ConfigMenu {
                         .canCloseWithEscape(true)
                         .build())
                 .type(DialogType.multiAction(List.of(save, back), back, 2)));
+
+        player.showDialog(dialog);
+    }
+
+    /**
+     * Routes a section click to either the option dialog or a submenu listing
+     * its child sections.
+     *
+     * @param player  the player
+     * @param section the clicked section
+     */
+    private void openSectionOrSubmenu(final Player player, final Section section) {
+        if (section.children().isEmpty()) {
+            openSectionSafely(player, section);
+        } else {
+            openSubmenuSafely(player, section);
+        }
+    }
+
+    /**
+     * Opens a submenu, converting any failure into a visible message.
+     *
+     * @param player  the player
+     * @param section the section whose children are listed
+     */
+    private void openSubmenuSafely(final Player player, final Section section) {
+        try {
+            openSubmenu(player, section);
+        } catch (final RuntimeException ex) {
+            plugin.getLogger().log(java.util.logging.Level.SEVERE,
+                    "Failed to open config submenu " + section.id(), ex);
+            Messages.raw(player, "&cFailed to open the submenu: &f" + ex.getMessage());
+        }
+    }
+
+    /**
+     * Lists a section's child sections as buttons; clicking one opens that
+     * child's option dialog.
+     *
+     * @param player  the player
+     * @param section the parent section
+     */
+    private void openSubmenu(final Player player, final Section section) {
+        final List<ActionButton> buttons = new ArrayList<>();
+        for (final Section child : section.children()) {
+            buttons.add(button(child.title(), tooltip(child.description()),
+                    click((view, audience) -> {
+                        if (audience instanceof Player target) {
+                            onMainThread(() -> openSectionSafely(target, child));
+                        }
+                    }), child.color()));
+        }
+        final ActionButton back = backButton();
+
+        final Dialog dialog = Dialog.create(builder -> builder.empty()
+                .base(DialogBase.builder(Component.text(section.title(),
+                        NamedTextColor.WHITE, TextDecoration.BOLD))
+                        .body(List.of(DialogBody.plainMessage(Component.text(
+                                section.description(), NamedTextColor.GRAY), BODY_WIDTH)))
+                        .afterAction(DialogAfterAction.CLOSE)
+                        .canCloseWithEscape(true)
+                        .build())
+                .type(DialogType.multiAction(buttons, back, 1)));
 
         player.showDialog(dialog);
     }
@@ -428,106 +491,9 @@ public final class ConfigMenu {
                                         "Message sent when the player earns shards.",
                                         "&b+1 &3AFK Shard &7(the deep rewards patience)")
                         )),
-                new Section("customweapons-nichirin", "Custom Weapons \u00b7 Nichirin",
-                        "The Nichirin Blade: Flame Combo passive and the two flame abilities.",
-                        List.of(
-                                ConfigOption.integer("nichirin.combo-hits", "Combo hits",
-                                        "Hits landed without taking damage to trigger Flame Combo.",
-                                        1, 10, 4).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.combo-strength-duration-seconds",
-                                        "Strength duration",
-                                        "Seconds of Strength II granted when the combo completes.",
-                                        1, 60, 6).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.clear-blue-sky.cooldown-seconds",
-                                        "Clear Blue Sky cooldown",
-                                        "Cooldown in seconds for the fan slash.",
-                                        1, 600, 50).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.clear-blue-sky.damage-hearts",
-                                        "Clear Blue Sky damage",
-                                        "True damage in hearts (1 heart = 2 HP).",
-                                        1, 20, 2).withColor(NICHIRIN),
-                                ConfigOption.decimal("nichirin.clear-blue-sky.radius",
-                                        "Clear Blue Sky radius",
-                                        "Reach of the fan slash in blocks.",
-                                        1f, 10f, 0.1f, 3.5).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.clear-blue-sky.arc-degrees",
-                                        "Fan arc width",
-                                        "Width of the fan in degrees.",
-                                        30, 360, 160).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.enbu.cooldown-seconds",
-                                        "Enbu cooldown",
-                                        "Cooldown in seconds for the flame spin.",
-                                        1, 600, 70).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.enbu.damage-hearts", "Enbu damage",
-                                        "True damage in hearts.",
-                                        1, 20, 2).withColor(NICHIRIN),
-                                ConfigOption.decimal("nichirin.enbu.radius", "Enbu radius",
-                                        "Radius of the flame spin in blocks.",
-                                        1f, 10f, 0.1f, 3.0).withColor(NICHIRIN),
-                                ConfigOption.integer("nichirin.enbu.absorption-lock-seconds",
-                                        "Absorption lock",
-                                        "Seconds targets cannot gain absorption.",
-                                        1, 60, 15).withColor(NICHIRIN)
-                        ), NICHIRIN),
-                new Section("customweapons-kokushibo", "Custom Weapons \u00b7 Kokushibo",
-                        "The Kokoshibos Sword: Upper Moon One passive and the moon abilities.",
-                        List.of(
-                                ConfigOption.integer("kokushibo.upper-moon-one.interval-seconds",
-                                        "Passive interval",
-                                        "Seconds between Upper Moon One empowerment pulses.",
-                                        1, 120, 10).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.upper-moon-one.buff-duration-seconds",
-                                        "Buff duration",
-                                        "Seconds the Strength/Speed buff lasts.",
-                                        1, 120, 6).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.upper-moon-one.strength-amplifier",
-                                        "Strength level",
-                                        "Strength amplifier (0 = Strength I).",
-                                        0, 4, 0).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.upper-moon-one.speed-amplifier",
-                                        "Speed level",
-                                        "Speed amplifier (0 = Speed I).",
-                                        0, 4, 0).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.crescent-throw.cooldown-seconds",
-                                        "Crescent Throw cooldown",
-                                        "Cooldown in seconds for the Lunar Eclipse window.",
-                                        1, 600, 70).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.crescent-throw.window-seconds",
-                                        "Eclipse window",
-                                        "Seconds the Lunar Eclipse window stays open.",
-                                        1, 60, 10).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.crescent-throw.fire-interval-ms",
-                                        "Fire interval",
-                                        "Minimum milliseconds between slowing stars.",
-                                        100, 5000, 1000).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.crescent-throw.slow-seconds",
-                                        "Slow duration",
-                                        "Seconds the slowing star slows its target.",
-                                        1, 60, 4).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.crescent-throw.slow-amplifier",
-                                        "Slow level",
-                                        "Slowness amplifier (1 = Slowness II).",
-                                        0, 4, 1).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.moonbow.cooldown-seconds",
-                                        "Moonbow cooldown",
-                                        "Cooldown in seconds for the six-crescent strike.",
-                                        1, 600, 80).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.moonbow.crescents", "Crescents",
-                                        "Number of crescents striking in a line.",
-                                        1, 12, 6).withColor(KOKUSHIBO),
-                                ConfigOption.decimal("kokushibo.moonbow.spacing",
-                                        "Crescent spacing",
-                                        "Distance between each crescent in blocks.",
-                                        0.5f, 5f, 0.1f, 1.6).withColor(KOKUSHIBO),
-                                ConfigOption.decimal("kokushibo.moonbow.strike-radius",
-                                        "Strike radius",
-                                        "Hit radius around each crescent in blocks.",
-                                        0.5f, 5f, 0.1f, 1.2).withColor(KOKUSHIBO),
-                                ConfigOption.integer("kokushibo.moonbow.damage-hearts",
-                                        "Moonbow damage",
-                                        "True damage per crescent in hearts.",
-                                        1, 20, 3).withColor(KOKUSHIBO)
-                        ), KOKUSHIBO),
+                new Section("customweapons", "Custom Weapons",
+                        "Tune the Nichirin Blade and Kokoshibos Sword abilities.",
+                        List.of(), List.of(nichirinSection(), kokushiboSection())),
                 new Section("performance", "Storage & Performance",
                         "Snapshot compression, caching and async I/O.",
                         List.of(
@@ -549,12 +515,129 @@ public final class ConfigMenu {
         );
     }
 
+    private Section nichirinSection() {
+        return new Section("customweapons-nichirin", "Nichirin Blade",
+                "Flame Combo passive and the two flame abilities.",
+                List.of(
+                        ConfigOption.integer("nichirin.combo-hits", "Combo hits",
+                                "Hits landed without taking damage to trigger Flame Combo.",
+                                1, 10, 4).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.combo-strength-duration-seconds",
+                                "Strength duration",
+                                "Seconds of Strength II granted when the combo completes.",
+                                1, 60, 6).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.clear-blue-sky.cooldown-seconds",
+                                "Clear Blue Sky cooldown",
+                                "Cooldown in seconds for the fan slash.",
+                                1, 600, 50).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.clear-blue-sky.damage-hearts",
+                                "Clear Blue Sky damage",
+                                "True damage in hearts (1 heart = 2 HP).",
+                                1, 20, 2).withColor(NICHIRIN),
+                        ConfigOption.decimal("nichirin.clear-blue-sky.radius",
+                                "Clear Blue Sky radius",
+                                "Reach of the fan slash in blocks.",
+                                1f, 10f, 0.1f, 3.5).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.clear-blue-sky.arc-degrees",
+                                "Fan arc width",
+                                "Width of the fan in degrees.",
+                                30, 360, 160).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.enbu.cooldown-seconds",
+                                "Enbu cooldown",
+                                "Cooldown in seconds for the flame spin.",
+                                1, 600, 70).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.enbu.damage-hearts", "Enbu damage",
+                                "True damage in hearts.",
+                                1, 20, 2).withColor(NICHIRIN),
+                        ConfigOption.decimal("nichirin.enbu.radius", "Enbu radius",
+                                "Radius of the flame spin in blocks.",
+                                1f, 10f, 0.1f, 3.0).withColor(NICHIRIN),
+                        ConfigOption.integer("nichirin.enbu.absorption-lock-seconds",
+                                "Absorption lock",
+                                "Seconds targets cannot gain absorption.",
+                                1, 60, 15).withColor(NICHIRIN)
+                ), NICHIRIN);
+    }
+
+    private Section kokushiboSection() {
+        return new Section("customweapons-kokushibo", "Kokoshibos Sword",
+                "Upper Moon One passive and the moon abilities.",
+                List.of(
+                        ConfigOption.integer("kokushibo.upper-moon-one.interval-seconds",
+                                "Passive interval",
+                                "Seconds between Upper Moon One empowerment pulses.",
+                                1, 120, 10).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.upper-moon-one.buff-duration-seconds",
+                                "Buff duration",
+                                "Seconds the Strength/Speed buff lasts.",
+                                1, 120, 6).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.upper-moon-one.strength-amplifier",
+                                "Strength level",
+                                "Strength amplifier (0 = Strength I).",
+                                0, 4, 0).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.upper-moon-one.speed-amplifier",
+                                "Speed level",
+                                "Speed amplifier (0 = Speed I).",
+                                0, 4, 0).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.crescent-throw.cooldown-seconds",
+                                "Crescent Throw cooldown",
+                                "Cooldown in seconds for the Lunar Eclipse window.",
+                                1, 600, 70).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.crescent-throw.window-seconds",
+                                "Eclipse window",
+                                "Seconds the Lunar Eclipse window stays open.",
+                                1, 60, 10).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.crescent-throw.fire-interval-ms",
+                                "Fire interval",
+                                "Minimum milliseconds between slowing stars.",
+                                100, 5000, 1000).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.crescent-throw.slow-seconds",
+                                "Slow duration",
+                                "Seconds the slowing star slows its target.",
+                                1, 60, 4).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.crescent-throw.slow-amplifier",
+                                "Slow level",
+                                "Slowness amplifier (1 = Slowness II).",
+                                0, 4, 1).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.moonbow.cooldown-seconds",
+                                "Moonbow cooldown",
+                                "Cooldown in seconds for the six-crescent strike.",
+                                1, 600, 80).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.moonbow.crescents", "Crescents",
+                                "Number of crescents striking in a line.",
+                                1, 12, 6).withColor(KOKUSHIBO),
+                        ConfigOption.decimal("kokushibo.moonbow.spacing",
+                                "Crescent spacing",
+                                "Distance between each crescent in blocks.",
+                                0.5f, 5f, 0.1f, 1.6).withColor(KOKUSHIBO),
+                        ConfigOption.decimal("kokushibo.moonbow.strike-radius",
+                                "Strike radius",
+                                "Hit radius around each crescent in blocks.",
+                                0.5f, 5f, 0.1f, 1.2).withColor(KOKUSHIBO),
+                        ConfigOption.integer("kokushibo.moonbow.damage-hearts",
+                                "Moonbow damage",
+                                "True damage per crescent in hearts.",
+                                1, 20, 3).withColor(KOKUSHIBO)
+                ), KOKUSHIBO);
+    }
+
     private record Section(String id, String title, String description,
-                           List<ConfigOption> options, TextColor color) {
+                           List<ConfigOption> options, List<Section> children,
+                           TextColor color) {
 
         private Section(final String id, final String title, final String description,
                         final List<ConfigOption> options) {
-            this(id, title, description, options, null);
+            this(id, title, description, options, List.of(), null);
+        }
+
+        private Section(final String id, final String title, final String description,
+                        final List<ConfigOption> options, final TextColor color) {
+            this(id, title, description, options, List.of(), color);
+        }
+
+        private Section(final String id, final String title, final String description,
+                        final List<ConfigOption> options, final List<Section> children) {
+            this(id, title, description, options, children, null);
         }
     }
 

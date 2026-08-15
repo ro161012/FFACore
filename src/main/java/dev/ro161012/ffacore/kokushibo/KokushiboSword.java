@@ -154,7 +154,8 @@ public final class KokushiboSword {
             return false;
         }
         return stack.getItemMeta().getPersistentDataContainer()
-                .has(KEY, PersistentDataType.BYTE);
+                .has(KEY, PersistentDataType.BYTE)
+                || ItemUtils.hasCustomModelData(stack, MODEL_DATA);
     }
 
     /** A bold, moon-coloured ability header line. */

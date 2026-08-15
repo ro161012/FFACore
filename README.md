@@ -117,28 +117,34 @@ This is the only command that hands out weapons. Available weapons:
 * **Upper Moon One** (passive) — while holding the sword, periodically gain
   Strength and Speed.
 * **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
-  key (F) with the sword in your offhand to unleash an omni-directional vortex
-  of crescent blades that expands outward, dealing up to 3 hearts true damage
-  to everything it sweeps.
-* **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press F: six moon
-  crescents strike in a line ahead, dealing up to 3 hearts true damage each.
+  key (F) or right-click with the sword in your offhand to unleash an
+  omni-directional vortex of crescent blades that expands outward, dealing up
+  to 3 hearts true damage to everything it sweeps.
+* **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press F (or
+  right-click): six moon crescents strike in a line ahead, dealing up to
+  3 hearts true damage each.
 
 #### Nichirin Blade abilities
 
 * **Flame Combo** (passive) — land 4 hits without taking damage to gain
   Strength II. Taking damage resets the combo.
 * **Clear Blue Sky** (offhand, 50s) — hold the blade in your offhand and press
-  the swap-hands key (F): a fan of true damage in an arc ahead of you.
-* **Enbu** (offhand + crouch, 70s) — crouch and press F with the blade in your
-  offhand: true damage in a radius and a 15s absorption lock on every hit.
+  the swap-hands key (F) or right-click: a fan of true damage in an arc ahead
+  of you.
+* **Enbu** (offhand + crouch, 70s) — crouch and press F (or right-click) with
+  the blade in your offhand: true damage in a radius and a 15s absorption lock
+  on every hit.
 
 The active abilities render their visuals with block display entities, and the
 resource pack ships a core shader override so the effect glass glows.
 
 The swap-hands key (F) never moves a weapon between hands: to use an offhand
-ability you place the sword in your offhand slot manually, then press F. Once
-cast, each ability shows its cooldown as a draining boss bar (red for Nichirin,
-purple for Kokoshibo) with no chat or action-bar indicator.
+ability you place the sword in your offhand slot manually, then press F **or
+right-click** (crouch for the second ability). Weapons are recognised by their
+persistent tag *or* their custom model data (1603 nichirin / 1605 kokushibo),
+so a hand-`/give`-n copy with the same model also triggers the abilities.
+Once cast, each ability shows its cooldown as a draining boss bar (red for
+Nichirin, purple for Kokoshibo) with no chat or action-bar indicator.
 
 ### `/ffa`
 

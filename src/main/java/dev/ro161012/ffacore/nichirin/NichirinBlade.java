@@ -137,7 +137,8 @@ public final class NichirinBlade {
             return false;
         }
         return stack.getItemMeta().getPersistentDataContainer()
-                .has(KEY, PersistentDataType.BYTE);
+                .has(KEY, PersistentDataType.BYTE)
+                || ItemUtils.hasCustomModelData(stack, MODEL_DATA);
     }
 
     /** A bold, fire-coloured ability header line. */

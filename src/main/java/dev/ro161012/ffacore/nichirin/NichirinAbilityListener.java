@@ -10,9 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
@@ -172,6 +174,27 @@ public final class NichirinAbilityListener implements Listener {
         // be placed in the offhand manually. Swapping is the ability trigger.
         event.setCancelled(true);
         if (!inOffHand) {
+            return;
+        }
+        if (player.isSneaking()) {
+            castEnbu(player);
+        } else {
+            castClearBlueSky(player);
+        }
+    }
+
+    /**
+     * Right-clicking with the blade in the offhand also triggers an ability,
+     * so the abilities work even if the swap-hands key is rebound. Crouching
+     * casts Enbu; otherwise Clear Blue Sky.
+     */
+    @EventHandler
+    public void onInteract(final PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) {
+            return;
+        }
+        final Player player = event.getPlayer();
+        if (!NichirinBlade.isNichirinBlade(player.getInventory().getItemInOffHand())) {
             return;
         }
         if (player.isSneaking()) {

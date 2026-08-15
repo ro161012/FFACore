@@ -1,6 +1,7 @@
 package dev.ro161012.ffacore.util;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -147,6 +148,51 @@ public final class ItemUtils {
      */
     public static boolean isAfkShard(final ItemStack stack) {
         return hasTag(stack, AFK_SHARD_KEY);
+    }
+
+    /**
+     * Returns whether the item's custom model data matches any of the given
+     * values. Both the integer form (set with
+     * {@link ItemMeta#setCustomModelData}) and the float-list form used by
+     * {@code /give} ({@code custom_model_data:{floats:[...]}}) are read, so a
+     * hand-made preview item is recognised just like a plugin-built one.
+     *
+     * @param stack    the item to check
+     * @param expected accepted custom model data values
+     * @return true when the model data matches
+     */
+    public static boolean hasCustomModelData(final ItemStack stack, final int... expected) {
+        if (stack == null) {
+            return false;
+        }
+        final ItemMeta meta = stack.getItemMeta();
+        if (meta != null && meta.hasCustomModelData()) {
+            try {
+                final int value = meta.getCustomModelData();
+                for (final int candidate : expected) {
+                    if (value == candidate) {
+                        return true;
+                    }
+                }
+            } catch (RuntimeException ignored) {
+                // Float-only model data; read the float list below instead.
+            }
+        }
+        try {
+            final CustomModelData data = stack.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
+            if (data != null) {
+                for (final float value : data.floats()) {
+                    for (final int candidate : expected) {
+                        if (value == (float) candidate) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // Custom model data unsupported on this runtime.
+        }
+        return false;
     }
 
     /**

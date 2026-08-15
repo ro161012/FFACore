@@ -107,6 +107,7 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | Command | Permission | Description |
 |---|---|---|
 | `/ffa customweapons give <nichirin\|kokushibo> [player] [amount]` | `ffacore.customweapons.admin` | Hand out a custom weapon |
+| `/ffa customweapons resetcooldown [player]` | `ffacore.customweapons.admin` | Reset all ability cooldowns |
 | `/ffa customweapons list` | `ffacore.customweapons.admin` | List available weapons |
 
 This is the only command that hands out weapons. Available weapons:

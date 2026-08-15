@@ -252,6 +252,14 @@ public final class FFACore extends JavaPlugin {
         return configMenu;
     }
 
+    public NichirinAbilityListener getNichirinListener() {
+        return nichirinListener;
+    }
+
+    public KokushiboAbilityListener getKokushiboListener() {
+        return kokushiboListener;
+    }
+
     public Messages getMessages() {
         return messages;
     }

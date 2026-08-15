@@ -167,6 +167,19 @@ public final class KokushiboAbilityListener implements Listener {
         bossBars.close();
     }
 
+    /**
+     * Clears every active cooldown, the passive timer and cooldown bars for a
+     * player.
+     *
+     * @param id the player id
+     */
+    public void resetCooldowns(final UUID id) {
+        catastropheCooldown.clear(id);
+        moonbowCooldown.clear(id);
+        nextUpperMoonGrant.remove(id);
+        bossBars.clear(id);
+    }
+
     private void castCatastrophe(final Player player) {
         final UUID id = player.getUniqueId();
         if (catastropheCooldown.isOnCooldown(id)) {

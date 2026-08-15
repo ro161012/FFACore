@@ -202,6 +202,17 @@ public final class NichirinAbilityListener implements Listener {
     }
 
     /**
+     * Clears every active cooldown and cooldown bar for a player.
+     *
+     * @param id the player id
+     */
+    public void resetCooldowns(final UUID id) {
+        clearSkyCooldown.clear(id);
+        enbuCooldown.clear(id);
+        bossBars.clear(id);
+    }
+
+    /**
      * Blocks the Absorption potion effect while a target is locked.
      */
     @EventHandler

@@ -1,5 +1,6 @@
 package dev.ro161012.ffacore.weapon;
 
+import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.kokushibo.KokushiboSword;
 import dev.ro161012.ffacore.nichirin.NichirinBlade;
 import net.kyori.adventure.text.Component;
@@ -20,8 +21,9 @@ import java.util.Locale;
  * The {@code /ffa customweapons} command, the single entry point for handing
  * out FFACore custom weapons.
  *
- * <p>Usage: {@code /ffa customweapons give <nichirin|kokushibo> [player] [amount]}.
- * No other command hands out weapons.
+ * <p>Usage: {@code /ffa customweapons give <nichirin|kokushibo> [player] [amount]}
+ * and {@code /ffa customweapons resetcooldown [player]}. No other command hands
+ * out weapons.
  */
 public final class CustomWeaponsCommand implements CommandExecutor, TabCompleter {
 
@@ -39,6 +41,11 @@ public final class CustomWeaponsCommand implements CommandExecutor, TabCompleter
             sender.sendMessage(Component.text("Custom weapons: nichirin, kokushibo",
                     NamedTextColor.GRAY));
             return true;
+        }
+
+        if (args[0].equalsIgnoreCase("resetcooldown")
+                || args[0].equalsIgnoreCase("reset")) {
+            return resetCooldowns(sender, args);
         }
 
         if (!args[0].equalsIgnoreCase("give")) {
@@ -93,10 +100,22 @@ public final class CustomWeaponsCommand implements CommandExecutor, TabCompleter
     public List<String> onTabComplete(final CommandSender sender, final Command command,
                                       final String alias, final String[] args) {
         if (args.length == 1) {
-            return List.of("give", "list");
+            final String prefix = args[0].toLowerCase(Locale.ROOT);
+            return List.of("give", "list", "resetcooldown").stream()
+                    .filter(s -> s.startsWith(prefix)).toList();
         }
         if (args.length == 2) {
+            final String sub = args[0].toLowerCase(Locale.ROOT);
             final String prefix = args[1].toLowerCase(Locale.ROOT);
+            if (sub.equals("resetcooldown") || sub.equals("reset")) {
+                final List<String> names = new ArrayList<>();
+                for (final Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.getName().toLowerCase(Locale.ROOT).startsWith(prefix)) {
+                        names.add(player.getName());
+                    }
+                }
+                return names;
+            }
             final List<String> matches = new ArrayList<>();
             for (final String id : WEAPON_IDS) {
                 if (id.startsWith(prefix)) {
@@ -154,10 +173,46 @@ public final class CustomWeaponsCommand implements CommandExecutor, TabCompleter
         }
     }
 
+    /**
+     * Clears every custom weapon ability cooldown (and its boss bar) for a
+     * player, targeting the sender when no player is given.
+     */
+    private static boolean resetCooldowns(final CommandSender sender, final String[] args) {
+        final Player target;
+        if (args.length >= 2) {
+            target = Bukkit.getPlayerExact(args[1]);
+            if (target == null) {
+                sender.sendMessage(Component.text("Player not found.", NamedTextColor.RED));
+                return true;
+            }
+        } else if (sender instanceof Player player) {
+            target = player;
+        } else {
+            sender.sendMessage(Component.text(
+                    "Usage: /ffa customweapons resetcooldown [player]", NamedTextColor.GRAY));
+            return true;
+        }
+
+        final FFACore plugin = FFACore.getInstance();
+        if (plugin != null) {
+            if (plugin.getNichirinListener() != null) {
+                plugin.getNichirinListener().resetCooldowns(target.getUniqueId());
+            }
+            if (plugin.getKokushiboListener() != null) {
+                plugin.getKokushiboListener().resetCooldowns(target.getUniqueId());
+            }
+        }
+        sender.sendMessage(Component.text("Reset all custom weapon cooldowns for "
+                + target.getName() + ".", NamedTextColor.GREEN));
+        return true;
+    }
+
     private static void showUsage(final CommandSender sender) {
         sender.sendMessage(Component.text(
                 "Usage: /ffa customweapons give <nichirin|kokushibo> [player] [amount]",
                 NamedTextColor.GRAY));
+        sender.sendMessage(Component.text(
+                "Usage: /ffa customweapons resetcooldown [player]", NamedTextColor.GRAY));
         sender.sendMessage(Component.text(
                 "Weapons: nichirin, kokushibo", NamedTextColor.GRAY));
     }

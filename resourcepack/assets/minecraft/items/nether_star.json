@@ -18,17 +18,10 @@
         }
       },
       {
-        "threshold": 2001,
+        "threshold": 2003,
         "model": {
           "type": "minecraft:model",
-          "model": "ffacore:vfx/flame_blade"
-        }
-      },
-      {
-        "threshold": 2002,
-        "model": {
-          "type": "minecraft:model",
-          "model": "ffacore:vfx/flame_orb"
+          "model": "ffacore:item/white_crescent"
         }
       }
     ],

@@ -14,7 +14,7 @@ single Paper plugin:
 | **Kill Token currency** | Players earn an ember-themed Kill Token for PvP kills, with pair anti-farming and killstreak multipliers. |
 | **AFK zones** | Designate regions where idle players earn ocean-themed **AFK Shards**. |
 | **Nichirin Blade** | A Demon Slayer FFA weapon with a passive combo and two offhand abilities. |
-| **Kokoshibos Sword** | The Upper Moon One weapon with a passive, an expanding crescent vortex, and a six-crescent moonbow. |
+| **Kokoshibos Sword** | The Upper Moon One weapon with a passive, an expanding moon ring, and an arm-then-shoot moonbow. |
 
 Both currencies ship with a custom resource pack: unique item textures plus
 gradient tooltip backgrounds.
@@ -120,11 +120,11 @@ This is the only command that hands out weapons. Available weapons:
   signature Blood Demon Art).
 * **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
   key while holding the sword (either hand) to unleash an omni-directional
-  vortex of crescent blades that expands outward, dealing up to 3 hearts true
+  ring of moon energy that expands outward, dealing up to 3 hearts true
   damage to everything it sweeps.
 * **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press the
-  swap-hands key: six moon crescents strike in a line ahead, dealing up to
-  3 hearts true damage each.
+  swap-hands key to arm the moonbow, then left-click to launch white crescent
+  gleams straight up, dealing up to 3 hearts true damage each.
 
 #### Nichirin Blade abilities
 
@@ -250,12 +250,12 @@ kokushibo:
     damage-hearts: 3.0
     max-radius: 20.0
     crescents: 24
-    vfx-ticks: 24        # vortex expansion speed
+    vfx-ticks: 24        # ring expansion speed
   moonbow:
     cooldown-seconds: 80
     crescents: 6
     damage-hearts: 3.0
-    vfx-ticks: 16        # crescent fall time
+    vfx-ticks: 16        # crescent gleam rise time
 
 afk:
   reward-interval-seconds: 30

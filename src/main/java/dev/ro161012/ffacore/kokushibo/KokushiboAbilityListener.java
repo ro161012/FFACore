@@ -12,8 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.util.Vector;
@@ -30,10 +32,11 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li><b>Upper Moon One</b> (passive): melee strikes unleash chaotic
  *       crescent moon blades that fly out and deal true damage.</li>
  *   <li><b>Catastrophe, Tenman Crescent Moon</b> (offhand): an omni-directional
- *       vortex of crescent blades expands outward around the caster, dealing
- *       true damage to everything it sweeps.</li>
- *   <li><b>Moonbow, Half Moon</b> (offhand + crouch): six crescents strike in
- *       a line ahead, dealing true damage.</li>
+ *       ring of moon energy expands outward around the caster, dealing true
+ *       damage to everything it sweeps.</li>
+ *   <li><b>Moonbow, Half Moon</b> (offhand + crouch): arms the moonbow, then
+ *       each left-click launches a white crescent straight up, dealing true
+ *       damage to what it passes.</li>
  * </ul>
  */
 public final class KokushiboAbilityListener implements Listener {
@@ -43,6 +46,11 @@ public final class KokushiboAbilityListener implements Listener {
 
     private final Set<UUID> trueDamageTargets = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Long> nextCrescentProc = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> armedMoonbow = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> moonbowExpiry = new ConcurrentHashMap<>();
+
+    /** How long a player has to spend their Moonbow shots after arming. */
+    private static final long MOONBOW_WINDOW_MILLIS = 6000L;
 
     private final NichirinCooldown catastropheCooldown;
     private final NichirinCooldown moonbowCooldown;
@@ -56,8 +64,6 @@ public final class KokushiboAbilityListener implements Listener {
     private double catastropheMaxRadius;
     private int catastropheCrescents;
     private int moonbowCrescents;
-    private double moonbowSpacing;
-    private double strikeRadius;
     private double moonbowDamageHearts;
     private int catastropheVfxTicks;
     private int moonbowVfxTicks;
@@ -96,8 +102,6 @@ public final class KokushiboAbilityListener implements Listener {
         catastropheCrescents = Math.max(4, config.getInt(
                 "kokushibo.catastrophe.crescents", 24));
         moonbowCrescents = Math.max(1, config.getInt("kokushibo.moonbow.crescents", 6));
-        moonbowSpacing = Math.max(0.5, config.getDouble("kokushibo.moonbow.spacing", 1.6));
-        strikeRadius = Math.max(0.5, config.getDouble("kokushibo.moonbow.strike-radius", 1.2));
         moonbowDamageHearts = config.getDouble("kokushibo.moonbow.damage-hearts", 3.0);
         catastropheVfxTicks = Math.max(4, config.getInt(
                 "kokushibo.catastrophe.vfx-ticks", 24));
@@ -203,6 +207,8 @@ public final class KokushiboAbilityListener implements Listener {
         catastropheCooldown.clear(id);
         moonbowCooldown.clear(id);
         nextCrescentProc.remove(id);
+        armedMoonbow.remove(id);
+        moonbowExpiry.remove(id);
         bossBars.clear(id);
     }
 
@@ -223,6 +229,8 @@ public final class KokushiboAbilityListener implements Listener {
         catastropheCooldown.clear(id);
         moonbowCooldown.clear(id);
         nextCrescentProc.remove(id);
+        armedMoonbow.remove(id);
+        moonbowExpiry.remove(id);
         bossBars.clear(id);
     }
 
@@ -251,32 +259,72 @@ public final class KokushiboAbilityListener implements Listener {
         bossBars.start(player, "moonbow",
                 "§dSixteenth Form §8» §d§lMoonbow, Half Moon",
                 BarColor.PURPLE, moonbowCooldown.getCooldownMillis());
-
-        final Location eye = player.getEyeLocation();
-        final Vector facing = eye.getDirection();
-        for (int i = 0; i < moonbowCrescents; i++) {
-            final Location strike = eye.clone().add(
-                    facing.clone().multiply(1.2 + i * moonbowSpacing)).add(0, -0.5, 0);
-            KokushiboEffects.strikeCrescent(plugin, strike, i * 3L, moonbowVfxTicks);
-            strikeMoonbowAt(player, strike, i * 3L + moonbowVfxTicks);
-        }
+        armedMoonbow.put(id, moonbowCrescents);
+        moonbowExpiry.put(id, System.currentTimeMillis() + MOONBOW_WINDOW_MILLIS);
         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.7f);
     }
 
     /**
-     * Deals true damage to living entities within the strike point.
+     * Left-click while the Moonbow is armed launches one white crescent
+     * straight up. Arming is done with the swap key, so the left-click is
+     * consumed as the shot trigger and never breaks blocks or interacts.
      */
-    private void strikeMoonbowAt(final Player player, final Location strike,
-                                 final long delayTicks) {
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            for (final org.bukkit.entity.Entity entity : strike.getWorld()
-                    .getNearbyEntities(strike, strikeRadius, strikeRadius, strikeRadius)) {
-                if (!(entity instanceof LivingEntity living) || living.equals(player)) {
-                    continue;
-                }
-                applyTrueDamage(living, player, moonbowDamageHearts);
-            }
-        }, delayTicks);
+    @EventHandler
+    public void onMoonbowShot(final PlayerInteractEvent event) {
+        final Action action = event.getAction();
+        if (action != Action.LEFT_CLICK_AIR && action != Action.LEFT_CLICK_BLOCK) {
+            return;
+        }
+        final Player player = event.getPlayer();
+        if (!isMoonbowArmed(player)) {
+            return;
+        }
+        event.setCancelled(true);
+        spendMoonbowShot(player);
+    }
+
+    /**
+     * Returns whether the player has armed, unexpired Moonbow shots while
+     * still holding the sword.
+     */
+    private boolean isMoonbowArmed(final Player player) {
+        final UUID id = player.getUniqueId();
+        final Long expiry = moonbowExpiry.get(id);
+        if (expiry == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() > expiry) {
+            armedMoonbow.remove(id);
+            moonbowExpiry.remove(id);
+            return false;
+        }
+        if (!KokushiboSword.isKokushiboSword(player.getInventory().getItemInMainHand())
+                && !KokushiboSword.isKokushiboSword(player.getInventory().getItemInOffHand())) {
+            return false;
+        }
+        return armedMoonbow.getOrDefault(id, 0) > 0;
+    }
+
+    /**
+     * Consumes one armed Moonbow shot and launches a white crescent upward.
+     */
+    private void spendMoonbowShot(final Player player) {
+        final UUID id = player.getUniqueId();
+        final int remaining = armedMoonbow.getOrDefault(id, 0);
+        if (remaining <= 0) {
+            armedMoonbow.remove(id);
+            moonbowExpiry.remove(id);
+            return;
+        }
+        if (remaining - 1 <= 0) {
+            armedMoonbow.remove(id);
+            moonbowExpiry.remove(id);
+        } else {
+            armedMoonbow.put(id, remaining - 1);
+        }
+        KokushiboEffects.fireMoonbowCrescent(plugin, player, moonbowVfxTicks,
+                living -> applyTrueDamage(living, player, moonbowDamageHearts));
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.5f);
     }
 
     /**

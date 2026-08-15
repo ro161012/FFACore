@@ -168,20 +168,19 @@ kokushibo:
     cooldown-seconds: 70
     # True damage per target in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
-    # Maximum radius the vortex expands to, in blocks.
+    # Maximum radius the ring expands to, in blocks.
     max-radius: 20.0
-    # Number of crescent blades in the vortex.
+    # Number of glass blocks in the expanding ring.
     crescents: 24
-    # Ticks the vortex expands for. Higher = slower expansion.
+    # Ticks the ring expands for. Higher = slower expansion.
     vfx-ticks: 24
   moonbow:
     cooldown-seconds: 80
+    # Number of white crescents launched per activation.
     crescents: 6
-    spacing: 1.6
-    strike-radius: 1.2
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
-    # Ticks each strike crescent falls for before impact.
+    # Ticks each launched crescent gleams upward for.
     vfx-ticks: 16
 
 # ------------------------------------------------------------

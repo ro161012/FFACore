@@ -34,6 +34,9 @@ public final class KokushiboSword {
     /** Custom model data of the moon crescent projectile item. */
     public static final int CRESCENT_MODEL_DATA = 2;
 
+    /** Custom model data of the white Moonbow gleam crescent. */
+    public static final int WHITE_CRESCENT_MODEL_DATA = 2003;
+
     /** NBT tag identifying a Kokoshibos Sword. */
     public static final NamespacedKey KEY = new NamespacedKey("ffacore", "kokushibo_sword");
 
@@ -85,16 +88,16 @@ public final class KokushiboSword {
                 header("FOURTEENTH FORM | CATASTROPHE, TENMAN CRESCENT MOON"),
                 tag("[Offhand]"),
                 Component.empty(),
-                body("Unleash an omni-directional vortex of crescent blades."),
-                body("They expand outward in every direction, growing as they whirl."),
+                body("Unleash an omni-directional ring of moon energy."),
+                body("It expands outward in every direction, growing as it sweeps."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("70s cooldown."),
                 Component.empty(),
                 header("SIXTEENTH FORM | MOONBOW, HALF MOON"),
                 tag("[Offhand + Crouch]"),
                 Component.empty(),
-                body("Face a direction, then bring six curved slashes crashing down."),
-                body("Each leaves a crater of crescent blades in its wake."),
+                body("Arm the moonbow, then left-click to launch white crescents."),
+                body("Each crescent gleams upward, striking what it passes."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("80s cooldown.")));
         stack.setItemMeta(meta);
@@ -127,6 +130,22 @@ public final class KokushiboSword {
         final ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
             meta.setCustomModelData(CRESCENT_MODEL_DATA);
+            stack.setItemMeta(meta);
+        }
+        return stack;
+    }
+
+    /**
+     * Builds the white crescent gleam used by the Moonbow launched crescents:
+     * a {@link Material#NETHER_STAR} with custom model data {@code 2003}.
+     *
+     * @return the white crescent item
+     */
+    public static ItemStack whiteCrescentItem() {
+        final ItemStack stack = new ItemStack(Material.NETHER_STAR);
+        final ItemMeta meta = stack.getItemMeta();
+        if (meta != null) {
+            meta.setCustomModelData(WHITE_CRESCENT_MODEL_DATA);
             stack.setItemMeta(meta);
         }
         return stack;

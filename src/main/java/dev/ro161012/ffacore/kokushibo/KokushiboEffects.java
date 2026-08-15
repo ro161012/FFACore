@@ -51,10 +51,17 @@ public final class KokushiboEffects {
         display.setItemStack(KokushiboSword.crescentItem());
         display.setBillboard(Display.Billboard.CENTER);
         display.setBrightness(new Display.Brightness(15, 15));
+        display.setTransformation(new Transformation(
+                new Vector3f(0f, 0f, 0f),
+                new AxisAngle4f(0f, 0f, 0f, 1f),
+                new Vector3f(1.8f, 1.8f, 1.8f),
+                new AxisAngle4f(0f, 0f, 0f, 1f)));
         snowball.addPassenger(display);
 
         snowball.getWorld().spawnParticle(Particle.WITCH,
-                snowball.getLocation(), 12, 0.2, 0.2, 0.2, 0.02);
+                snowball.getLocation(), 30, 0.4, 0.4, 0.4, 0.03);
+        snowball.getWorld().spawnParticle(Particle.END_ROD,
+                snowball.getLocation(), 15, 0.3, 0.3, 0.3, 0.02);
 
         // Safety net: drop the crescent if the snowball despawns without a hit.
         plugin.getServer().getScheduler().runTaskLater(plugin, display::remove, 120L);
@@ -70,8 +77,8 @@ public final class KokushiboEffects {
      */
     public static void playEclipseBurst(final JavaPlugin plugin, final Player player) {
         final Location eye = player.getEyeLocation();
-        final int segments = 14;
-        final double radius = 1.7;
+        final int segments = 20;
+        final double radius = 2.2;
 
         final List<BlockDisplay> displays = new ArrayList<>();
         for (int i = 0; i < segments; i++) {
@@ -83,21 +90,23 @@ public final class KokushiboEffects {
             displays.add(display);
         }
 
-        player.getWorld().spawnParticle(Particle.WITCH, eye, 30,
-                0.7, 0.5, 0.7, 0.03);
+        player.getWorld().spawnParticle(Particle.WITCH, eye, 60,
+                1.0, 0.7, 1.0, 0.04);
+        player.getWorld().spawnParticle(Particle.DRAGON_BREATH, eye, 25,
+                0.9, 0.6, 0.9, 0.01);
 
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                if (tick >= 12) {
+                if (tick >= 16) {
                     displays.forEach(BlockDisplay::remove);
                     cancel();
                     return;
                 }
-                final double spin = Math.toRadians(tick * 30);
-                final double rise = tick * 0.05;
+                final double spin = Math.toRadians(tick * 45);
+                final double rise = tick * 0.07;
                 for (int i = 0; i < displays.size(); i++) {
                     final double angle = Math.toRadians(i * (360.0 / segments)) + spin;
                     final BlockDisplay display = displays.get(i);
@@ -106,7 +115,7 @@ public final class KokushiboEffects {
                     display.setTransformation(new Transformation(
                             new Vector3f(0f, 0f, 0f),
                             new AxisAngle4f((float) -angle, 0f, 1f, 0f),
-                            new Vector3f(0.16f, 0.9f, 0.5f),
+                            new Vector3f(0.3f, 1.4f, 0.9f),
                             new AxisAngle4f(0f, 0f, 0f, 1f)));
                 }
                 tick++;
@@ -139,23 +148,25 @@ public final class KokushiboEffects {
                 display.setInterpolationDuration(1);
                 display.setInterpolationDelay(0);
 
-                location.getWorld().spawnParticle(Particle.END_ROD, location, 8,
-                        0.25, 0.25, 0.25, 0.01);
+                location.getWorld().spawnParticle(Particle.END_ROD, location, 24,
+                        0.5, 0.5, 0.5, 0.02);
+                location.getWorld().spawnParticle(Particle.WITCH, location, 20,
+                        0.5, 0.5, 0.5, 0.02);
 
                 new BukkitRunnable() {
                     private int tick;
 
                     @Override
                     public void run() {
-                        if (tick >= 8) {
+                        if (tick >= 10) {
                             display.remove();
                             cancel();
                             return;
                         }
-                        final float scale = 1.0f - (tick * 0.09f);
+                        final float scale = 1.7f - (tick * 0.12f);
                         display.setTransformation(new Transformation(
-                                new Vector3f(0f, tick * 0.08f, 0f),
-                                new AxisAngle4f((float) (tick * 0.6f), 0f, 1f, 0f),
+                                new Vector3f(0f, tick * 0.1f, 0f),
+                                new AxisAngle4f((float) (tick * 0.8f), 0f, 1f, 0f),
                                 new Vector3f(scale, scale, scale),
                                 new AxisAngle4f(0f, 0f, 0f, 1f)));
                         tick++;

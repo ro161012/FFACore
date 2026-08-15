@@ -77,7 +77,6 @@ public final class KokushiboSword {
                 body("A living blade perfected by Upper Moon One."),
                 Component.empty(),
                 header("PASSIVE | UPPER MOON ONE"),
-                tag("[Offhand]"),
                 Component.empty(),
                 body("10s cooldown."),
                 Component.empty(),

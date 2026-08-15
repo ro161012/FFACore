@@ -28,10 +28,10 @@ import java.util.List;
 public final class NichirinEffects {
 
     /** Seconds the Clear Blue Sky fan is visible. */
-    private static final int FAN_TICKS = 8;
+    private static final int FAN_TICKS = 10;
 
     /** Seconds the Enbu flame ring is visible. */
-    private static final int RING_TICKS = 16;
+    private static final int RING_TICKS = 20;
 
     private NichirinEffects() {
         // Utility class.
@@ -49,21 +49,23 @@ public final class NichirinEffects {
         final double yaw = Math.toRadians(eye.getYaw());
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        final int segments = 11;
-        final double startRadius = 0.8;
+        final int segments = 21;
+        final double startRadius = 1.0;
         for (int i = 0; i < segments; i++) {
             final double angle = yaw + Math.toRadians(-80 + i * (160.0 / (segments - 1)));
             displays.add(spawnSegment(plugin, player, angle, startRadius, false));
         }
 
-        player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 30,
-                0.6, 0.4, 0.6, 0.02);
+        player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, eye, 80,
+                1.0, 0.8, 1.0, 0.03);
+        player.getWorld().spawnParticle(Particle.END_ROD, eye, 30,
+                0.8, 0.5, 0.8, 0.02);
 
         animate(plugin, displays, FAN_TICKS, tick -> {
-            final double radius = startRadius + (tick * 0.35);
+            final double radius = startRadius + (tick * 0.5);
             for (int i = 0; i < displays.size(); i++) {
                 final double angle = yaw + Math.toRadians(-80 + i * (160.0 / (segments - 1)));
-                place(displays.get(i), eye, angle, radius, tick * 6f);
+                place(displays.get(i), eye, angle, radius, tick * 8f);
             }
         });
     }
@@ -79,26 +81,28 @@ public final class NichirinEffects {
         final Location eye = player.getEyeLocation();
 
         final List<BlockDisplay> displays = new ArrayList<>();
-        final int segments = 18;
-        final double radius = 1.6;
+        final int segments = 24;
+        final double radius = 2.0;
         for (int i = 0; i < segments; i++) {
             final double angle = Math.toRadians(i * (360.0 / segments));
             displays.add(spawnSegment(plugin, player, angle, radius, true));
         }
 
-        player.getWorld().spawnParticle(Particle.FLAME, eye, 40,
-                0.9, 0.6, 0.9, 0.03);
+        player.getWorld().spawnParticle(Particle.FLAME, eye, 90,
+                1.2, 0.8, 1.2, 0.04);
+        player.getWorld().spawnParticle(Particle.LAVA, eye, 30,
+                0.9, 0.6, 0.9, 0.02);
 
         animate(plugin, displays, RING_TICKS, tick -> {
-            final double spin = Math.toRadians(tick * 24);
-            final double rise = tick * 0.06;
+            final double spin = Math.toRadians(tick * 32);
+            final double rise = tick * 0.08;
             for (int i = 0; i < displays.size(); i++) {
                 final double angle = Math.toRadians(i * (360.0 / segments)) + spin;
                 final BlockDisplay display = displays.get(i);
                 display.setTransformation(new Transformation(
                         new Vector3f(0f, (float) rise, 0f),
                         new AxisAngle4f((float) -angle, 0f, 1f, 0f),
-                        new Vector3f(0.16f, 0.9f, 0.5f),
+                        new Vector3f(0.3f, 1.8f, 1.0f),
                         new AxisAngle4f(0f, 0f, 0f, 1f)));
                 display.teleport(eye.clone().add(
                         Math.sin(angle) * radius, -0.6 + rise, Math.cos(angle) * radius));
@@ -135,7 +139,7 @@ public final class NichirinEffects {
         display.setTransformation(new Transformation(
                 new Vector3f(0f, 0f, 0f),
                 new AxisAngle4f((float) -angle, 0f, 1f, 0f),
-                new Vector3f(0.16f, 0.9f, 0.5f),
+                new Vector3f(0.3f, 1.6f, 0.9f),
                 new AxisAngle4f(roll, 0f, 0f, 1f)));
     }
 

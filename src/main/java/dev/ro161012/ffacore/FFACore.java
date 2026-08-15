@@ -71,8 +71,13 @@ public final class FFACore extends JavaPlugin {
         saveDefaultConfig();
         messages = new Messages(this);
 
-        worldEditHook = new WorldEditHook(this);
-        if (worldEditHook.isEnabled()) {
+        // Only load the WorldEdit integration class when WorldEdit is actually
+        // present; constructing it without WorldEdit on the classpath throws a
+        // NoClassDefFoundError and logs an "Error initializing plugin" warning.
+        worldEditHook = getServer().getPluginManager().isPluginEnabled("WorldEdit")
+                ? new WorldEditHook(this)
+                : null;
+        if (worldEditHook != null && worldEditHook.isEnabled()) {
             getLogger().info("WorldEdit integration enabled.");
         }
     }

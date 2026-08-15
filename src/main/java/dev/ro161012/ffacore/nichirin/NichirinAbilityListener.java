@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ul>
  *
  * <p>Both actives are triggered by pressing the swap-hands key while the
- * blade is in the offhand, and share the {@link BlockDisplay} visuals from
+ * blade is held (in either hand), and share the {@link BlockDisplay} visuals from
  * {@link NichirinEffects}. Damage ignores armour, toughness, resistance and
  * protection enchantments (true damage) via a short-lived marker consumed by
  * the damage event handler.
@@ -155,8 +155,10 @@ public final class NichirinAbilityListener implements Listener {
     }
 
     /**
-     * Triggers an active ability when the player swaps hands with the blade
-     * in the offhand. Crouching casts Enbu; otherwise Clear Blue Sky.
+     * Triggers an active ability when the player presses the swap-hands key
+     * while holding the blade in either hand. The swap is cancelled so the
+     * blade never moves between hands; crouching casts Enbu, otherwise
+     * Clear Blue Sky.
      */
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
@@ -169,11 +171,9 @@ public final class NichirinAbilityListener implements Listener {
             return;
         }
         // The blade never moves between hands via the swap key: it can only
-        // be placed in the offhand manually. Swapping is the ability trigger.
+        // be placed in a hand manually. Swapping is the ability trigger and
+        // works whether the blade is in the main hand or the offhand.
         event.setCancelled(true);
-        if (!inOffHand) {
-            return;
-        }
         if (player.isSneaking()) {
             castEnbu(player);
         } else {

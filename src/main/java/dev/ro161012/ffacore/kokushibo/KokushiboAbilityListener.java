@@ -122,8 +122,10 @@ public final class KokushiboAbilityListener implements Listener {
     }
 
     /**
-     * Triggers an ability when the player swaps hands with the sword in the
-     * offhand. Crouching casts Moonbow; otherwise Catastrophe.
+     * Triggers an ability when the player presses the swap-hands key while
+     * holding the sword in either hand. The swap is cancelled so the sword
+     * never moves between hands; crouching casts Moonbow, otherwise
+     * Catastrophe.
      */
     @EventHandler
     public void onSwapHands(final PlayerSwapHandItemsEvent event) {
@@ -136,11 +138,9 @@ public final class KokushiboAbilityListener implements Listener {
             return;
         }
         // The sword never moves between hands via the swap key: it can only
-        // be placed in the offhand manually. Swapping is the ability trigger.
+        // be placed in a hand manually. Swapping is the ability trigger and
+        // works whether the sword is in the main hand or the offhand.
         event.setCancelled(true);
-        if (!inOffHand) {
-            return;
-        }
         if (player.isSneaking()) {
             castMoonbow(player);
         } else {

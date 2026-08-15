@@ -117,9 +117,9 @@ This is the only command that hands out weapons. Available weapons:
 * **Upper Moon One** (passive) — while holding the sword, periodically gain
   Strength and Speed.
 * **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
-  key with the sword in your offhand to unleash an omni-directional vortex of
-  crescent blades that expands outward, dealing up to 3 hearts true damage to
-  everything it sweeps.
+  key while holding the sword (either hand) to unleash an omni-directional
+  vortex of crescent blades that expands outward, dealing up to 3 hearts true
+  damage to everything it sweeps.
 * **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press the
   swap-hands key: six moon crescents strike in a line ahead, dealing up to
   3 hearts true damage each.
@@ -128,19 +128,19 @@ This is the only command that hands out weapons. Available weapons:
 
 * **Flame Combo** (passive) — land 4 hits without taking damage to gain
   Strength II. Taking damage resets the combo.
-* **Clear Blue Sky** (offhand, 50s) — hold the blade in your offhand and press
-  the swap-hands key: a fan of true damage in an arc ahead of you.
-* **Enbu** (offhand + crouch, 70s) — crouch and press the swap-hands key with
-  the blade in your offhand: true damage in a radius and a 15s absorption lock
-  on every hit.
+* **Clear Blue Sky** (offhand, 50s) — hold the blade and press the swap-hands
+  key: a fan of true damage in an arc ahead of you.
+* **Enbu** (offhand + crouch, 70s) — crouch and press the swap-hands key while
+  holding the blade: true damage in a radius and a 15s absorption lock on
+  every hit.
 
 The active abilities render their visuals with block display entities, and the
 resource pack ships a core shader override so the effect glass glows.
 
 The swap-hands key ("Swap Item With Offhand") never moves a weapon between
-hands: to use an offhand ability you place the sword in your offhand slot
-manually, then press that key (crouch for the second ability). Whatever key
-it is bound to — F by default, or any rebind — fires the same swap event, so
+hands: press it while holding the sword — in your main hand or your offhand —
+to cast the ability (crouch for the second ability). Whatever key it is bound
+to — F by default, or any rebind such as Z — fires the same swap event, so
 the abilities follow your keybind. Weapons are recognised by their persistent
 tag *or* their custom model data (1603 nichirin / 1605 kokushibo), so a
 hand-`/give`-n copy with the same model also triggers the abilities.

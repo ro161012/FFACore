@@ -16,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public final class KokushiboEffects {
         animate(plugin, displays, totalTicks, tick -> {
             final double progress = tick / (double) totalTicks;
             final double radius = startRadius + (maxRadius - startRadius) * progress;
-            final double spin = Math.toRadians(tick * 26);
+            final double spin = Math.toRadians(tick * SPIN_DEG_PER_TICK);
 
             // Outer ring: one clean, uniform whirl of crescents spinning flat
             // around the vertical axis as it grows outward.
@@ -378,6 +377,9 @@ public final class KokushiboEffects {
      */
     private static final float CRESCENT_TILT = 0.55f;
 
+    /** How fast the Catastrophe crescents whirl, in degrees per tick. */
+    private static final double SPIN_DEG_PER_TICK = 8.0;
+
     /**
      * Spawns a crescent item display with a fixed (non-billboarded) orientation
      * so the Catastrophe vortex can spin it flat around the vertical axis.
@@ -399,14 +401,16 @@ public final class KokushiboEffects {
      */
     private static void setSpinScale(final Display display, final float scale,
                                      final double yaw) {
-        final Quaternionf rotation = new Quaternionf()
-                .rotateY((float) yaw)
-                .rotateX(CRESCENT_TILT);
+        // Spin around the world Y axis with a CONSTANT axis and a growing
+        // angle, and tilt the flat crescent up around X so it stays visible.
+        // A fixed axis never degenerates; the old quaternion -> axis-angle
+        // round-trip produced a zero axis at every full turn, which made the
+        // crescents glitch periodically as they whirled.
         display.setTransformation(new Transformation(
                 new Vector3f(0f, 0f, 0f),
-                new AxisAngle4f(rotation),
+                new AxisAngle4f((float) yaw, 0f, 1f, 0f),
                 new Vector3f(scale, scale, scale),
-                new AxisAngle4f(0f, 0f, 0f, 1f)));
+                new AxisAngle4f(CRESCENT_TILT, 1f, 0f, 0f)));
     }
 
     /**

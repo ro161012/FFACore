@@ -16,9 +16,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
@@ -30,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Implements the Kokoshibos Sword abilities.
  *
  * <ul>
- *   <li><b>Upper Moon One</b> (passive): while holding the sword, periodically
- *       empower the wielder.</li>
+ *   <li><b>Upper Moon One</b> (passive): melee strikes unleash chaotic
+ *       crescent moon blades that fly out and deal true damage.</li>
  *   <li><b>Catastrophe, Tenman Crescent Moon</b> (offhand): an omni-directional
  *       vortex of crescent blades expands outward around the caster, dealing
  *       true damage to everything it sweeps.</li>
@@ -45,16 +42,16 @@ public final class KokushiboAbilityListener implements Listener {
     private final AbilityBossBars bossBars;
 
     private final Set<UUID> trueDamageTargets = ConcurrentHashMap.newKeySet();
-    private final Map<UUID, Long> nextUpperMoonGrant = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> nextCrescentProc = new ConcurrentHashMap<>();
 
     private final NichirinCooldown catastropheCooldown;
     private final NichirinCooldown moonbowCooldown;
 
     // Cached configuration (refreshed by applyConfig()).
-    private long passiveIntervalMillis;
-    private int buffDurationSeconds;
-    private int strengthAmplifier;
-    private int speedAmplifier;
+    private double procChance;
+    private long procCooldownMillis;
+    private int crescentCount;
+    private double crescentDamageHearts;
     private double catastropheDamageHearts;
     private double catastropheMaxRadius;
     private int catastropheCrescents;
@@ -74,7 +71,6 @@ public final class KokushiboAbilityListener implements Listener {
         this.catastropheCooldown = new NichirinCooldown(70);
         this.moonbowCooldown = new NichirinCooldown(80);
         applyConfig();
-        startPassiveTask();
     }
 
     /**
@@ -82,14 +78,14 @@ public final class KokushiboAbilityListener implements Listener {
      */
     public void applyConfig() {
         final FileConfiguration config = plugin.getConfig();
-        passiveIntervalMillis = Math.max(1, config.getInt(
-                "kokushibo.upper-moon-one.interval-seconds", 10)) * 1000L;
-        buffDurationSeconds = Math.max(1, config.getInt(
-                "kokushibo.upper-moon-one.buff-duration-seconds", 6));
-        strengthAmplifier = Math.max(0, config.getInt(
-                "kokushibo.upper-moon-one.strength-amplifier", 0));
-        speedAmplifier = Math.max(0, config.getInt(
-                "kokushibo.upper-moon-one.speed-amplifier", 0));
+        procChance = Math.min(1.0, Math.max(0.0,
+                config.getDouble("kokushibo.upper-moon-one.proc-chance", 1.0)));
+        procCooldownMillis = Math.max(0, config.getInt(
+                "kokushibo.upper-moon-one.proc-cooldown-seconds", 2)) * 1000L;
+        crescentCount = Math.max(1, config.getInt(
+                "kokushibo.upper-moon-one.crescent-count", 3));
+        crescentDamageHearts = config.getDouble(
+                "kokushibo.upper-moon-one.damage-hearts", 1.0);
         catastropheDamageHearts = config.getDouble(
                 "kokushibo.catastrophe.damage-hearts", 3.0);
         catastropheMaxRadius = Math.max(2.0, config.getDouble(
@@ -119,6 +115,47 @@ public final class KokushiboAbilityListener implements Listener {
         event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, 0);
         event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, 0);
         event.setDamage(EntityDamageEvent.DamageModifier.RESISTANCE, 0);
+    }
+
+    /**
+     * Upper Moon One passive: a melee strike with the sword unleashes a
+     * volley of chaotic crescent moon blades (Kokushibo's Blood Demon Art)
+     * that fly toward the target and deal true damage.
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onCrescentBlades(final EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)
+                || !(event.getEntity() instanceof LivingEntity target)) {
+            return;
+        }
+        // Ability damage must not feed the passive.
+        if (trueDamageTargets.contains(target.getUniqueId())) {
+            return;
+        }
+        if (!KokushiboSword.isKokushiboSword(player.getInventory().getItemInMainHand())) {
+            return;
+        }
+        final UUID id = player.getUniqueId();
+        final long now = System.currentTimeMillis();
+        if (now < nextCrescentProc.getOrDefault(id, 0L)) {
+            return;
+        }
+        if (Math.random() > procChance) {
+            return;
+        }
+        nextCrescentProc.put(id, now + procCooldownMillis);
+
+        final Location eye = player.getEyeLocation();
+        final Vector base = target.getEyeLocation().toVector()
+                .subtract(eye.toVector()).normalize();
+        for (int i = 0; i < crescentCount; i++) {
+            final Vector direction = base.clone()
+                    .add(new Vector(rand(-0.5, 0.5), rand(-0.25, 0.35), rand(-0.5, 0.5)))
+                    .normalize();
+            KokushiboEffects.fireCrescent(plugin, player, eye, direction,
+                    living -> applyTrueDamage(living, player, crescentDamageHearts));
+        }
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1.4f);
     }
 
     /**
@@ -156,7 +193,7 @@ public final class KokushiboAbilityListener implements Listener {
         final UUID id = event.getPlayer().getUniqueId();
         catastropheCooldown.clear(id);
         moonbowCooldown.clear(id);
-        nextUpperMoonGrant.remove(id);
+        nextCrescentProc.remove(id);
         bossBars.clear(id);
     }
 
@@ -176,7 +213,7 @@ public final class KokushiboAbilityListener implements Listener {
     public void resetCooldowns(final UUID id) {
         catastropheCooldown.clear(id);
         moonbowCooldown.clear(id);
-        nextUpperMoonGrant.remove(id);
+        nextCrescentProc.remove(id);
         bossBars.clear(id);
     }
 
@@ -244,33 +281,9 @@ public final class KokushiboAbilityListener implements Listener {
     }
 
     /**
-     * Periodically empowers sword holders with the Upper Moon One buff.
+     * Returns a random double in the inclusive range [min, max].
      */
-    private void startPassiveTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                final long now = System.currentTimeMillis();
-                for (final Player player : plugin.getServer().getOnlinePlayers()) {
-                    final UUID id = player.getUniqueId();
-                    if (!isHoldingSword(player)) {
-                        continue;
-                    }
-                    if (now < nextUpperMoonGrant.getOrDefault(id, 0L)) {
-                        continue;
-                    }
-                    nextUpperMoonGrant.put(id, now + passiveIntervalMillis);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH,
-                            buffDurationSeconds * 20, strengthAmplifier, false, true, true));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,
-                            buffDurationSeconds * 20, speedAmplifier, false, true, true));
-                }
-            }
-        }.runTaskTimer(plugin, 20L, 20L);
-    }
-
-    private static boolean isHoldingSword(final Player player) {
-        return KokushiboSword.isKokushiboSword(player.getInventory().getItemInMainHand())
-                || KokushiboSword.isKokushiboSword(player.getInventory().getItemInOffHand());
+    private static double rand(final double min, final double max) {
+        return min + Math.random() * (max - min);
     }
 }

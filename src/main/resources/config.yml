@@ -145,11 +145,14 @@ nichirin:
 # ------------------------------------------------------------
 kokushibo:
   upper-moon-one:
-    # Seconds between passive empowerment pulses while holding the sword.
-    interval-seconds: 10
-    buff-duration-seconds: 6
-    strength-amplifier: 0
-    speed-amplifier: 0
+    # Chance (0.0-1.0) that a melee hit unleashes crescent blades.
+    proc-chance: 1.0
+    # Minimum seconds between crescent blade volleys.
+    proc-cooldown-seconds: 2
+    # Number of crescent blades fired per volley.
+    crescent-count: 3
+    # True damage per crescent in hearts, 1 heart = 2 HP.
+    damage-hearts: 1.0
   catastrophe:
     cooldown-seconds: 70
     # True damage per target in hearts, 1 heart = 2 HP.

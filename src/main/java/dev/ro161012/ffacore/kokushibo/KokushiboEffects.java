@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -164,5 +165,90 @@ public final class KokushiboEffects {
                 }.runTaskTimer(plugin, 0L, 1L);
             }
         }.runTaskLater(plugin, delayTicks);
+    }
+
+    /**
+     * Fires a single crescent moon blade that flies along the given direction,
+     * drifting chaotically as it travels. It deals true damage (through the
+     * {@code onHit} callback) to the first living target it touches and then
+     * disappears. Used by the Upper Moon One passive.
+     *
+     * @param plugin    owning plugin (for the scheduler)
+     * @param player    the caster (excluded from hits)
+     * @param origin    spawn location of the crescent
+     * @param direction travel direction (normalised)
+     * @param onHit     called once with the target when the blade connects
+     */
+    public static void fireCrescent(final JavaPlugin plugin, final Player player,
+                                    final Location origin, final Vector direction,
+                                    final Consumer<LivingEntity> onHit) {
+        final ItemDisplay display = player.getWorld().spawn(origin, ItemDisplay.class);
+        display.setItemStack(KokushiboSword.crescentItem());
+        display.setBillboard(Display.Billboard.CENTER);
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+
+        final Vector velocity = direction.clone().normalize().multiply(0.55);
+        final Set<UUID> hit = new HashSet<>();
+
+        new BukkitRunnable() {
+            private int tick;
+            private final Location pos = origin.clone();
+
+            @Override
+            public void run() {
+                if (tick++ >= 26 || !display.isValid()) {
+                    display.remove();
+                    cancel();
+                    return;
+                }
+                // Chaotic drift: a slight random wobble every tick.
+                velocity.add(new Vector(
+                        (Math.random() - 0.5) * 0.06,
+                        (Math.random() - 0.5) * 0.05,
+                        (Math.random() - 0.5) * 0.06));
+                velocity.normalize().multiply(0.55);
+                pos.add(velocity);
+
+                if (pos.getBlock().getType().isSolid()) {
+                    pos.getWorld().spawnParticle(Particle.WITCH, pos, 8,
+                            0.2, 0.2, 0.2, 0.02);
+                    display.remove();
+                    cancel();
+                    return;
+                }
+
+                display.teleport(pos);
+                final float spin = tick * 0.9f;
+                final float scale = 0.9f + (float) Math.sin(tick * 0.6) * 0.25f;
+                display.setTransformation(new Transformation(
+                        new Vector3f(0f, 0f, 0f),
+                        new AxisAngle4f(spin, 0f, 1f, 0f),
+                        new Vector3f(scale, scale, scale),
+                        new AxisAngle4f((float) (tick * 0.4), 0f, 0f, 1f)));
+
+                pos.getWorld().spawnParticle(Particle.WITCH, pos, 2,
+                        0.1, 0.1, 0.1, 0.01);
+                pos.getWorld().spawnParticle(Particle.END_ROD, pos, 1,
+                        0.1, 0.1, 0.1, 0.01);
+
+                for (final Entity entity : pos.getWorld().getNearbyEntities(
+                        pos, 1.1, 1.1, 1.1)) {
+                    if (!(entity instanceof LivingEntity living) || living.equals(player)) {
+                        continue;
+                    }
+                    if (!hit.add(living.getUniqueId())) {
+                        continue;
+                    }
+                    onHit.accept(living);
+                    pos.getWorld().spawnParticle(Particle.WITCH, pos, 12,
+                            0.3, 0.3, 0.3, 0.02);
+                    display.remove();
+                    cancel();
+                    return;
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 }

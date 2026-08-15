@@ -115,8 +115,9 @@ This is the only command that hands out weapons. Available weapons:
 
 #### Kokoshibos Sword abilities
 
-* **Upper Moon One** (passive) — while holding the sword, periodically gain
-  Strength and Speed.
+* **Upper Moon One** (passive) — melee strikes unleash chaotic crescent moon
+  blades that fly toward the target and deal true damage (Kokushibo's
+  signature Blood Demon Art).
 * **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
   key while holding the sword (either hand) to unleash an omni-directional
   vortex of crescent blades that expands outward, dealing up to 3 hearts true

@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.53] - 2026-08-15
+- Remove all custom weapon code and assets
+
+
 ## [1.21.52] - 2026-08-15
 - Spawn both custom weapons without enchantments
 

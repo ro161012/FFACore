@@ -10,6 +10,11 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.44] - 2026-08-15
+- Remove the Catastrophe moon core and recolor Moonbow purple
+- Auto-deploy jar and resource pack to local test server on release/commit
+
+
 ## [1.21.43] - 2026-08-15
 - Fix Catastrophe crash: pass required Float data to dragon_breath particles
 

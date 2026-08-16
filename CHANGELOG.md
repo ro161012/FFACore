@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.51] - 2026-08-15
+- Make Clear Blue Sky's landing shockwave erupt around the caster
+
+
 ## [1.21.50] - 2026-08-15
 - Centre Dancing Flash on the crosshair for first-person view
 

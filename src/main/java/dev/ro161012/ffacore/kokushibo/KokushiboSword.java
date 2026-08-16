@@ -31,11 +31,8 @@ public final class KokushiboSword {
     /** Custom model data selecting the kokushibo model. */
     public static final int MODEL_DATA = 1605;
 
-    /** Custom model data of the moon crescent projectile item. */
+    /** Custom model data of the purple moon crescent projectile item. */
     public static final int CRESCENT_MODEL_DATA = 2;
-
-    /** Custom model data of the white Moonbow gleam crescent. */
-    public static final int WHITE_CRESCENT_MODEL_DATA = 2003;
 
     /** NBT tag identifying a Kokushibo Sword. */
     public static final NamespacedKey KEY = new NamespacedKey("ffacore", "kokushibo_sword");
@@ -88,7 +85,7 @@ public final class KokushiboSword {
                 header("FOURTEENTH FORM | CATASTROPHE, TENMAN CRESCENT MOON"),
                 tag("[Offhand]"),
                 Component.empty(),
-                body("Unleash a vortex of orbiting crescent moon blades."),
+                body("Unleash a vortex of expanding moon-energy rings."),
                 body("Counter-rotating rings whirl outward, growing as they sweep."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("70s cooldown."),
@@ -96,7 +93,7 @@ public final class KokushiboSword {
                 header("SIXTEENTH FORM | MOONBOW, HALF MOON"),
                 tag("[Offhand + Crouch]"),
                 Component.empty(),
-                body("Arm the moonbow, then left-click to launch white crescents."),
+                body("Arm the moonbow, then left-click to launch purple crescents."),
                 body("Each crescent soars where you aim, striking what it passes."),
                 body("Each target takes up to 3 hearts true damage."),
                 body("80s cooldown.")));
@@ -120,32 +117,17 @@ public final class KokushiboSword {
     }
 
     /**
-     * Builds the moon crescent item used as the projectile and strike visual:
-     * a {@link Material#NETHER_STAR} with custom model data {@code 2}.
+     * Builds the purple moon crescent item used by the Moonbow launched
+     * crescents and the Upper Moon One passive: a
+     * {@link Material#NETHER_STAR} with custom model data {@code 2}.
      *
-     * @return the crescent item
+     * @return the purple crescent item
      */
     public static ItemStack crescentItem() {
         final ItemStack stack = new ItemStack(Material.NETHER_STAR);
         final ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
             meta.setCustomModelData(CRESCENT_MODEL_DATA);
-            stack.setItemMeta(meta);
-        }
-        return stack;
-    }
-
-    /**
-     * Builds the white crescent gleam used by the Moonbow launched crescents:
-     * a {@link Material#NETHER_STAR} with custom model data {@code 2003}.
-     *
-     * @return the white crescent item
-     */
-    public static ItemStack whiteCrescentItem() {
-        final ItemStack stack = new ItemStack(Material.NETHER_STAR);
-        final ItemMeta meta = stack.getItemMeta();
-        if (meta != null) {
-            meta.setCustomModelData(WHITE_CRESCENT_MODEL_DATA);
             stack.setItemMeta(meta);
         }
         return stack;

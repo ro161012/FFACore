@@ -16,13 +16,6 @@
           "type": "minecraft:model",
           "model": "ffacore:item/kill_token"
         }
-      },
-      {
-        "threshold": 2003,
-        "model": {
-          "type": "minecraft:model",
-          "model": "ffacore:item/white_crescent"
-        }
       }
     ],
     "fallback": {

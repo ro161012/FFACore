@@ -263,7 +263,7 @@ public final class KokushiboEffects {
         final Location origin = player.getEyeLocation();
         final Vector direction = player.getEyeLocation().getDirection().normalize();
         final ItemDisplay display = player.getWorld().spawn(origin, ItemDisplay.class);
-        display.setItemStack(KokushiboSword.whiteCrescentItem());
+        display.setItemStack(KokushiboSword.crescentItem());
         display.setBillboard(Display.Billboard.CENTER);
         display.setBrightness(new Display.Brightness(15, 15));
         display.setInterpolationDuration(1);
@@ -379,10 +379,8 @@ public final class KokushiboEffects {
                 display.teleport(pos);
                 final float scale = 1.0f + (float) Math.sin(tick * 0.6) * 0.25f;
                 setScale(display, scale, scale, scale);
-                pos.getWorld().spawnParticle(Particle.WITCH, pos, 2,
+                pos.getWorld().spawnParticle(Particle.WITCH, pos, 3,
                         0.1, 0.1, 0.1, 0.02);
-                pos.getWorld().spawnParticle(Particle.END_ROD, pos, 1,
-                        0.1, 0.1, 0.1, 0.01);
 
                 for (final Entity entity : pos.getWorld().getNearbyEntities(
                         pos, 1.1, 1.1, 1.1)) {

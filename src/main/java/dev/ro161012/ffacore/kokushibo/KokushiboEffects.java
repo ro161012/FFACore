@@ -2,10 +2,8 @@ package dev.ro161012.ffacore.kokushibo;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -31,10 +29,10 @@ import java.util.function.Consumer;
  *
  * <p>Catastrophe unleashes a vortex of orbiting crescent moon blades around
  * the caster — counter-rotating outer and inner rings that climb as they
- * expand, a pulsing moon core, a ground boundary ring, and a purple impact
- * flash on every target struck. Moonbow fires a white crescent gleam where
- * the caster aims, and the passive fires a single drifting crescent. Every
- * display entity is removed when its animation ends — nothing lingers.
+ * expand, a ground boundary ring, and a purple impact flash on every target
+ * struck. Moonbow fires a purple crescent gleam where the caster aims, and
+ * the passive fires a single drifting crescent. Every display entity is
+ * removed when its animation ends — nothing lingers.
  */
 public final class KokushiboEffects {
 
@@ -79,9 +77,6 @@ public final class KokushiboEffects {
         final int ringCount = Math.max(1, rings);
         final long staggerTicks = 4L;
         final int totalTicks = ticks + (ringCount - 1) * (int) staggerTicks;
-
-        // Pulsing moon core at the caster's chest across the whole cast.
-        pulseCore(plugin, center.clone(), totalTicks);
 
         // A purple ring marks the vortex reach on the ground beneath the caster.
         boundaryRing(plugin, center.clone().add(0.0, -1.0, 0.0), maxRadius, totalTicks);
@@ -247,6 +242,28 @@ public final class KokushiboEffects {
     }
 
     /**
+     * Fires a radial burst of purple moon-energy particles — the launch,
+     * collision and hit flash of the Moonbow crescent.
+     *
+     * @param center the centre of the burst
+     * @param points how many directions the burst radiates in
+     * @param radius how far the burst reaches
+     */
+    private static void moonBurst(final Location center, final int points,
+                                  final double radius) {
+        final World world = center.getWorld();
+        for (int i = 0; i < points; i++) {
+            final double angle = i * (TAU / points);
+            final Location point = center.clone().add(
+                    Math.sin(angle) * radius, 0.15, Math.cos(angle) * radius);
+            world.spawnParticle(Particle.DUST, point, 1, 0.0, 0.0, 0.0,
+                    new Particle.DustOptions(MOON, 1.6f));
+        }
+        world.spawnParticle(Particle.DRAGON_BREATH, center, 5, 0.35, 0.35, 0.35,
+                DRAGON_BREATH_POWER);
+    }
+
+    /**
      * Draws a growing purple ring on the ground marking the vortex reach.
      *
      * @param plugin    owning plugin (for the scheduler)
@@ -281,41 +298,7 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Pulses a glowing purple moon core at the caster's chest, radiating
-     * moon-energy dust for the duration of the cast.
-     *
-     * @param plugin owning plugin (for the scheduler)
-     * @param center the core location
-     * @param ticks  how long the core pulses for
-     */
-    private static void pulseCore(final JavaPlugin plugin, final Location center,
-                                  final int ticks) {
-        final BlockDisplay core = center.getWorld().spawn(center, BlockDisplay.class);
-        core.setBlock(Material.PURPLE_STAINED_GLASS.createBlockData());
-        core.setBrightness(new Display.Brightness(15, 15));
-        core.setInterpolationDuration(1);
-        core.setInterpolationDelay(0);
-        new BukkitRunnable() {
-            private int tick;
-
-            @Override
-            public void run() {
-                if (tick >= ticks || !core.isValid()) {
-                    core.remove();
-                    cancel();
-                    return;
-                }
-                final float scale = 0.7f + 0.3f * (float) Math.sin(tick * 0.5);
-                setScale(core, scale, scale, scale);
-                center.getWorld().spawnParticle(Particle.DUST, center, 3,
-                        0.35, 0.35, 0.35, new Particle.DustOptions(MOON, 1.5f));
-                tick++;
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
-    }
-
-    /**
-     * Fires one white crescent gleam in the direction the caster is looking,
+     * Fires one purple crescent gleam in the direction the caster is looking,
      * dealing true damage (through the {@code onHit} callback) to the first
      * living target it strikes. Used by the Sixteenth Form, Moonbow, Half
      * Moon.
@@ -338,6 +321,9 @@ public final class KokushiboEffects {
         display.setInterpolationDelay(0);
         setScale(display, 1.6f, 1.6f, 1.6f);
 
+        // Purple launch burst as the crescent leaves the blade.
+        moonBurst(origin, 10, 0.7);
+
         final int duration = Math.max(6, travelTicks);
         final double speed = 0.9;
         final Set<UUID> hit = new HashSet<>();
@@ -357,13 +343,14 @@ public final class KokushiboEffects {
                 display.teleport(pos);
                 final float scale = Math.max(0.6f, 1.6f - tick * 0.05f);
                 setScale(display, scale, scale, scale);
-                // White gleam trail behind the flying crescent.
-                pos.getWorld().spawnParticle(Particle.END_ROD, pos, 4,
-                        0.12, 0.12, 0.12, 0.0);
+                // Purple moon-energy trail behind the flying crescent.
+                pos.getWorld().spawnParticle(Particle.DUST, pos, 4,
+                        0.15, 0.15, 0.15, new Particle.DustOptions(MOON, 1.5f));
+                pos.getWorld().spawnParticle(Particle.DRAGON_BREATH, pos, 1,
+                        0.1, 0.1, 0.1, DRAGON_BREATH_POWER);
 
                 if (pos.getBlock().getType().isSolid()) {
-                    pos.getWorld().spawnParticle(Particle.END_ROD, pos, 8,
-                            0.2, 0.2, 0.2, 0.02);
+                    moonBurst(pos, 14, 0.9);
                     display.remove();
                     cancel();
                     return;
@@ -378,8 +365,7 @@ public final class KokushiboEffects {
                         continue;
                     }
                     onHit.accept(living);
-                    pos.getWorld().spawnParticle(Particle.END_ROD, pos, 10,
-                            0.3, 0.3, 0.3, 0.02);
+                    moonBurst(pos, 18, 1.1);
                     display.remove();
                     cancel();
                     return;

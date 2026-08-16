@@ -6,8 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
@@ -416,107 +414,42 @@ public final class NichirinEffects {
     }
 
     /**
-     * Detonates an earthquake shockwave under the caster as they land: the
-     * actual ground blocks lift up and slam back down in an outward ripple,
-     * like the terrain is being shaken.
+     * Detonates a visible shockwave around the caster as they land: a
+     * horizontal ring of glowing solar glass blocks and ember dust expands
+     * outward from the player's feet, then fades.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the landing player
      */
     public static void playLandingShockwave(final JavaPlugin plugin, final Player player) {
         final World world = player.getWorld();
-        final Location center = player.getLocation();
-        final double radius = 5.0;
-
-        final int feetY = center.getBlockY();
-        final int minX = center.getBlockX() - (int) Math.ceil(radius);
-        final int maxX = center.getBlockX() + (int) Math.ceil(radius);
-        final int minZ = center.getBlockZ() - (int) Math.ceil(radius);
-        final int maxZ = center.getBlockZ() + (int) Math.ceil(radius);
-
-        final List<Location> spots = new ArrayList<>();
-        final List<BlockData> datas = new ArrayList<>();
-        final List<Double> phases = new ArrayList<>();
-        for (int x = minX; x <= maxX; x++) {
-            for (int z = minZ; z <= maxZ; z++) {
-                final double dx = x + 0.5 - center.getX();
-                final double dz = z + 0.5 - center.getZ();
-                final double dist = Math.hypot(dx, dz);
-                if (dist > radius) {
-                    continue;
-                }
-                Block ground = null;
-                for (int y = feetY; y >= feetY - 3; y--) {
-                    final Block candidate = world.getBlockAt(x, y, z);
-                    if (candidate.getType().isSolid()) {
-                        ground = candidate;
-                        break;
-                    }
-                }
-                if (ground == null) {
-                    continue;
-                }
-                spots.add(ground.getLocation());
-                datas.add(ground.getBlockData());
-                phases.add(dist / radius);
-            }
-        }
-
-        if (spots.isEmpty()) {
-            return;
-        }
+        final Location center = player.getLocation().add(0.0, 0.2, 0.0);
 
         world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 0.9f, 0.5f);
-        world.spawnParticle(Particle.CLOUD, center, 30, radius, 0.3, radius, 0.02);
-        world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 12, radius, 0.4, radius, 0.0);
 
-        // Each block pops up only when the ripple reaches it, so a copied
-        // block never sits overlapping (and thus shadowed/dark inside) the
-        // real ground block.
-        final int duration = 22;
-        final double waveWindow = 0.45;
-        for (int i = 0; i < spots.size(); i++) {
-            final Location spot = spots.get(i);
-            final BlockData data = datas.get(i);
-            final long delay = Math.round(phases.get(i) * waveWindow * duration);
-            plugin.getServer().getScheduler().runTaskLater(
-                    plugin, () -> bounceBlock(plugin, spot, data), delay);
+        final double radius = 6.0;
+        final int count = Math.max(36, (int) Math.round(Math.PI * 2.0 * radius / 0.7));
+        final List<Display> ring = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            ring.add(spawnBlock(player, center,
+                    i % 2 == 0 ? Material.ORANGE_STAINED_GLASS
+                            : Material.YELLOW_STAINED_GLASS,
+                    0.5f));
         }
-    }
 
-    /**
-     * Spawns a full-bright copy of a ground block at {@code spot} and bounces
-     * it up once before removing it — the slamming block of the landing
-     * shockwave ripple.
-     */
-    private static void bounceBlock(final JavaPlugin plugin, final Location spot,
-                                    final BlockData data) {
-        final World world = spot.getWorld();
-        if (world == null) {
-            return;
-        }
-        final BlockDisplay display = world.spawn(spot, BlockDisplay.class);
-        display.setBlock(data);
-        display.setBrightness(new Display.Brightness(15, 15));
-        display.setInterpolationDuration(1);
-        display.setInterpolationDelay(0);
-
-        final int bounceTicks = 10;
-        new BukkitRunnable() {
-            private int tick;
-
-            @Override
-            public void run() {
-                if (tick >= bounceTicks || !display.isValid()) {
-                    display.remove();
-                    cancel();
-                    return;
-                }
-                final double local = tick / (double) (bounceTicks - 1);
-                setTranslationY(display, (float) (Math.sin(local * Math.PI) * 0.65));
-                tick++;
+        animate(plugin, ring, 14, tick -> {
+            final double progress = tick / (double) 13;
+            final double r = 0.5 + progress * radius;
+            for (int i = 0; i < count; i++) {
+                final double angle = i * (TAU / count);
+                ring.get(i).teleport(center.clone().add(
+                        Math.sin(angle) * r, 0.0, Math.cos(angle) * r));
+                final float fade = (float) (0.55 * (1.0 - progress * 0.7));
+                setScale(ring.get(i), fade, 0.25f, fade);
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+            dust(center, EMBER, 24, r, 0.2, r, 1.3f);
+            dust(center, SOLAR, 12, r * 0.8, 0.15, r * 0.8, 1.0f);
+        });
     }
 
     /**
@@ -552,18 +485,6 @@ public final class NichirinEffects {
                 new Vector3f(0f, 0f, 0f),
                 new AxisAngle4f(0f, 0f, 0f, 1f),
                 new Vector3f(sx, sy, sz),
-                new AxisAngle4f(0f, 0f, 0f, 1f)));
-    }
-
-    /**
-     * Lifts a display straight up by {@code y} blocks while keeping its scale
-     * and orientation — used for the earthquake ground-block bounce.
-     */
-    private static void setTranslationY(final Display display, final float y) {
-        display.setTransformation(new Transformation(
-                new Vector3f(0f, y, 0f),
-                new AxisAngle4f(0f, 0f, 0f, 1f),
-                new Vector3f(1f, 1f, 1f),
                 new AxisAngle4f(0f, 0f, 0f, 1f)));
     }
 

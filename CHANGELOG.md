@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.43] - 2026-08-15
+- Fix Catastrophe crash: pass required Float data to dragon_breath particles
+
+
 ## [1.21.42] - 2026-08-15
 - Use vanilla lava texture and fix the Catastrophe crescent vortex crash
 

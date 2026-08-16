@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.48] - 2026-08-15
+- Make all crescent visuals purple, dropping the white Moonbow crescent
+
+
 ## [1.21.47] - 2026-08-15
 - Drop crescent blades from Fourteenth Form, keep them on Moonbow
 

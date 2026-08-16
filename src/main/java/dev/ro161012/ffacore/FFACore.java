@@ -15,9 +15,6 @@ import dev.ro161012.ffacore.killtoken.KillListener;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenGuiListener;
 import dev.ro161012.ffacore.killtoken.KillTokenManager;
-import dev.ro161012.ffacore.kokushibo.KokushiboAbilityListener;
-import dev.ro161012.ffacore.nichirin.NichirinAbilityListener;
-import dev.ro161012.ffacore.weapon.CustomWeaponsCommand;
 import dev.ro161012.ffacore.perf.PerformanceTracker;
 import dev.ro161012.ffacore.placeholder.AfkExpansion;
 import dev.ro161012.ffacore.placeholder.ArenaExpansion;
@@ -58,10 +55,6 @@ public final class FFACore extends JavaPlugin {
     private KillTokenManager killTokenManager;
     private AfkManager afkManager;
 
-    // Nichirin Blade ability subsystem.
-    private NichirinAbilityListener nichirinListener;
-    private KokushiboAbilityListener kokushiboListener;
-
     private ConfigMenu configMenu;
     private Messages messages;
 
@@ -95,25 +88,20 @@ public final class FFACore extends JavaPlugin {
 
         killTokenManager = new KillTokenManager(this);
         afkManager = new AfkManager(this);
-        nichirinListener = new NichirinAbilityListener(this);
-        kokushiboListener = new KokushiboAbilityListener(this);
         configMenu = new ConfigMenu(this);
 
         final ArenaCommand arenaCommand = new ArenaCommand(this);
         final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
         final AfkCommand afkCommand = new AfkCommand(this);
-        final CustomWeaponsCommand customWeaponsCommand = new CustomWeaponsCommand();
 
         registerArena();
         registerKillToken();
         registerAfk();
-        registerNichirin();
-        registerKokushibo();
 
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
             final FfaCommand executor = new FfaCommand(this, arenaCommand,
-                    killTokenCommand, afkCommand, customWeaponsCommand);
+                    killTokenCommand, afkCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }
@@ -143,14 +131,6 @@ public final class FFACore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AfkListener(this), this);
     }
 
-    private void registerNichirin() {
-        getServer().getPluginManager().registerEvents(nichirinListener, this);
-    }
-
-    private void registerKokushibo() {
-        getServer().getPluginManager().registerEvents(kokushiboListener, this);
-    }
-
     /**
      * Pushes the current in-memory configuration to every subsystem so edits
      * made through the dialog config menu (or a reload) take effect without
@@ -160,8 +140,6 @@ public final class FFACore extends JavaPlugin {
         messages.reload();
         killTokenManager.applyConfig();
         afkManager.applyConfig();
-        nichirinListener.applyConfig();
-        kokushiboListener.applyConfig();
         regenerationManager.applyConfig();
         scheduleManager.applyConfig();
         arenaStorage.applyConfig();
@@ -194,12 +172,6 @@ public final class FFACore extends JavaPlugin {
         }
         if (afkManager != null) {
             afkManager.shutdown();
-        }
-        if (nichirinListener != null) {
-            nichirinListener.close();
-        }
-        if (kokushiboListener != null) {
-            kokushiboListener.close();
         }
         getLogger().info("FFACore disabled.");
     }
@@ -250,14 +222,6 @@ public final class FFACore extends JavaPlugin {
 
     public ConfigMenu getConfigMenu() {
         return configMenu;
-    }
-
-    public NichirinAbilityListener getNichirinListener() {
-        return nichirinListener;
-    }
-
-    public KokushiboAbilityListener getKokushiboListener() {
-        return kokushiboListener;
     }
 
     public Messages getMessages() {

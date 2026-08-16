@@ -4,13 +4,6 @@
     "property": "minecraft:custom_model_data",
     "entries": [
       {
-        "threshold": 2,
-        "model": {
-          "type": "minecraft:model",
-          "model": "nino:weapons/kokushibo_crescent"
-        }
-      },
-      {
         "threshold": 1001,
         "model": {
           "type": "minecraft:model",

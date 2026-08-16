@@ -13,8 +13,6 @@ single Paper plugin:
 | **Arena regeneration** | Snapshot an arena once, restore it instantly after every match. |
 | **Kill Token currency** | Players earn an ember-themed Kill Token for PvP kills, with pair anti-farming and killstreak multipliers. |
 | **AFK zones** | Designate regions where idle players earn ocean-themed **AFK Shards**. |
-| **Nichirin Blade** | A Demon Slayer FFA weapon with a passive combo and two offhand abilities. |
-| **Kokushibo Sword** | The Upper Moon One weapon with a passive, an expanding moon ring, and an arm-then-shoot moonbow. |
 
 Both currencies ship with a custom resource pack: unique item textures plus
 gradient tooltip backgrounds.
@@ -102,54 +100,6 @@ Regeneration modes: `STANDARD`, `PHASED`, `SELECTIVE`, `WAVE`, `WORLD_EDIT`.
 | `/ffa afk give [player] [amount]` | `ffacore.afk.give` | Hand out AFK Shards |
 | `/ffa afk reload` | `ffacore.afk.reload` | Reload configuration |
 
-### `/ffa customweapons`
-
-| Command | Permission | Description |
-|---|---|---|
-| `/ffa customweapons give <nichirin\|kokushibo> [player] [amount]` | `ffacore.customweapons.admin` | Hand out a custom weapon |
-| `/ffa customweapons resetcooldown [player]` | `ffacore.customweapons.admin` | Reset all ability cooldowns |
-| `/ffa customweapons list` | `ffacore.customweapons.admin` | List available weapons |
-
-This is the only command that hands out weapons. Available weapons:
-`nichirin` (Nichirin Blade) and `kokushibo` (Kokushibo Sword).
-
-#### Kokushibo Sword abilities
-
-* **Upper Moon One** (passive) — melee strikes unleash chaotic crescent moon
-  blades that fly toward the target and deal true damage (Kokushibo's
-  signature Blood Demon Art).
-* **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
-  key while holding the sword (either hand) to unleash a vortex of orbiting
-  crescent moon blades: counter-rotating rings that climb and sweep outward,
-  each dealing up to 3 hearts true damage to everything it passes.
-* **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press the
-  swap-hands key to arm the moonbow, then left-click to launch white crescent
-  gleams straight up, dealing up to 3 hearts true damage each.
-
-#### Nichirin Blade abilities
-
-* **Flame Combo** (passive) — land 4 hits without taking damage to gain
-  Strength II. Taking damage resets the combo.
-* **Clear Blue Sky** (offhand, 50s) — hold the blade and press the swap-hands
-  key: a full 360° circle of true damage that boosts you up and sears targets
-  with fire that ignores Fire Resistance.
-* **Dancing Flash** (offhand + crouch, 70s) — crouch and press the swap-hands
-  key while holding the blade: true damage in a radius and a 15s absorption
-  lock on every hit.
-
-The active abilities render their visuals with block display entities, and the
-resource pack ships a core shader override so the effect glass glows.
-
-The swap-hands key ("Swap Item With Offhand") never moves a weapon between
-hands: press it while holding the sword — in your main hand or your offhand —
-to cast the ability (crouch for the second ability). Whatever key it is bound
-to — F by default, or any rebind such as Z — fires the same swap event, so
-the abilities follow your keybind. Weapons are recognised by their persistent
-tag *or* their custom model data (1603 nichirin / 1605 kokushibo), so a
-hand-`/give`-n copy with the same model also triggers the abilities.
-Once cast, each ability shows its cooldown as a draining boss bar (red for
-Nichirin, purple for Kokushibo) with no chat or action-bar indicator.
-
 ### `/ffa`
 
 Every FFACore command lives under `/ffa`:
@@ -159,7 +109,6 @@ Every FFACore command lives under `/ffa`:
 | `/ffa arena ...` | `ffacore.arena.*` | Arena regeneration management |
 | `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
 | `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
-| `/ffa customweapons ...` | `ffacore.customweapons.admin` | Hand out custom weapons |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
@@ -170,13 +119,11 @@ are the only commands the plugin registers - there are no standalone
 #### In-game config menu (`/ffa config`)
 
 Opens a native Paper dialog (1.21.6+ client) with a section menu:
-General, Regeneration, Kill Token, AFK Zones, Custom Weapons, and Storage &
-Performance. The Custom Weapons section opens a submenu listing the two
-weapons, colour-themed (Nichirin orange, Kokushibo purple). Each screen lets
-you toggle
+General, Regeneration, Kill Token, AFK Zones, and Storage &
+Performance. Each screen lets you toggle
 booleans, drag sliders, pick enum options or type values, then hit **Save &
 Apply** — the change is written to `config.yml` and pushed to every
-subsystem (including both weapons' abilities) immediately, no restart or
+subsystem immediately, no restart or
 reload required. **Back** returns to the section list.
 
 ## Permissions
@@ -187,7 +134,6 @@ Each subsystem also exposes fine-grained permissions:
 * Arena: `ffacore.arena.*` (all default to `op`)
 * Kill Token: `ffacore.killtoken.*` (all default to `op`)
 * AFK: `ffacore.afk.use` defaults to `true`; the rest default to `op`
-* Custom Weapons: `ffacore.customweapons.admin` (defaults to `op`)
 
 See `plugin.yml` for the full list.
 
@@ -225,37 +171,6 @@ regeneration:
 killstreak:
   enabled: true
   max-token-multiplier: 5
-
-nichirin:
-  combo-hits: 4
-  clear-blue-sky:
-    cooldown-seconds: 50
-    damage-hearts: 2.0
-    radius: 15.0         # full-circle reach
-    boost-power: 1.4     # upward launch on cast
-    fire-seconds: 3      # searing fire (ignores Fire Resistance)
-    sear-hearts: 1.0     # searing damage per second
-    vfx-ticks: 12        # animation length (lower = snappier)
-  enbu:
-    cooldown-seconds: 70
-    damage-hearts: 2.0
-    radius: 4.0          # dash reach
-    vfx-ticks: 20
-
-kokushibo:
-  upper-moon-one:
-    crescent-speed: 1.0  # passive crescent flight speed
-  catastrophe:
-    cooldown-seconds: 70
-    damage-hearts: 3.0
-    max-radius: 14.0
-    rings: 3             # crescent rings per cast
-    vfx-ticks: 24        # ring expansion speed
-  moonbow:
-    cooldown-seconds: 80
-    crescents: 6
-    damage-hearts: 3.0
-    vfx-ticks: 16        # crescent gleam rise time
 
 afk:
   reward-interval-seconds: 30

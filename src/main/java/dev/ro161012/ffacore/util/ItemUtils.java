@@ -151,22 +151,6 @@ public final class ItemUtils {
     }
 
     /**
-     * Hides the enchantment glint on an item even when it carries real
-     * enchantments, via the {@code minecraft:enchantment_glint_override}
-     * data component.
-     *
-     * @param stack the item
-     */
-    public static void hideEnchantmentGlint(final ItemStack stack) {
-        try {
-            stack.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false);
-        } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            // Glint override is cosmetic; ignore when the runtime does not
-            // expose the minecraft:enchantment_glint_override component.
-        }
-    }
-
-    /**
      * Returns whether the item's custom model data matches any of the given
      * values. Both the integer form (set with
      * {@link ItemMeta#setCustomModelData}) and the float-list form used by

@@ -149,8 +149,7 @@ public final class ConfigOption {
 
     /**
      * Returns a copy of this option with the given label colour applied, so a
-     * config section can theme its options (e.g. the Nichirin section orange
-     * and the Kokushibo section purple).
+     * config section can theme its options.
      *
      * @param tint the label colour
      * @return a tinted copy

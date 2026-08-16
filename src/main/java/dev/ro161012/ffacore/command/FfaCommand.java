@@ -4,7 +4,6 @@ import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.afk.AfkCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
 import dev.ro161012.ffacore.util.Messages;
-import dev.ro161012.ffacore.weapon.CustomWeaponsCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,6 @@ import java.util.Locale;
  *   <li>{@code /ffa arena ...} &mdash; arena regeneration management.</li>
  *   <li>{@code /ffa killtoken ...} &mdash; the Kill Token currency.</li>
  *   <li>{@code /ffa afk ...} &mdash; AFK zones and AFK Shards.</li>
- *   <li>{@code /ffa customweapons ...} &mdash; hand out custom weapons.</li>
  *   <li>{@code /ffa config} &mdash; the in-game config menu.</li>
  *   <li>{@code /ffa reload} &mdash; reload config.yml from disk.</li>
  * </ul>
@@ -36,7 +34,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     private final ArenaCommand arenaCommand;
     private final KillTokenCommand killTokenCommand;
     private final AfkCommand afkCommand;
-    private final CustomWeaponsCommand customWeaponsCommand;
 
     /**
      * Creates the command handler.
@@ -45,17 +42,14 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
      * @param arenaCommand        the arena sub-command executor
      * @param killTokenCommand    the kill token sub-command executor
      * @param afkCommand          the afk sub-command executor
-     * @param customWeaponsCommand the custom weapons sub-command executor
      */
     public FfaCommand(final FFACore plugin, final ArenaCommand arenaCommand,
                       final KillTokenCommand killTokenCommand,
-                      final AfkCommand afkCommand,
-                      final CustomWeaponsCommand customWeaponsCommand) {
+                      final AfkCommand afkCommand) {
         this.plugin = plugin;
         this.arenaCommand = arenaCommand;
         this.killTokenCommand = killTokenCommand;
         this.afkCommand = afkCommand;
-        this.customWeaponsCommand = customWeaponsCommand;
     }
 
     @Override
@@ -73,10 +67,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 }
                 case "afk" -> {
                     return afkCommand.onCommand(sender, command, "ffa afk", rest);
-                }
-                case "customweapons", "weapons", "weapon", "cw" -> {
-                    return customWeaponsCommand.onCommand(
-                            sender, command, "ffa customweapons", rest);
                 }
                 case "config" -> {
                     return openConfig(sender);
@@ -99,7 +89,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
         messages.raw(sender, "&3AFK Zones &8- &7" + plugin.getAfkManager().getZoneCount()
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/ffa afk&8)");
-        messages.raw(sender, "&5Custom Weapons &8- &7Nichirin Blade & Kokushibo Sword &8(&f/ffa customweapons&8)");
         messages.raw(sender, "&8&m--------------------------------");
         messages.raw(sender, "&7Use &f/ffa config &7to open the in-game config menu.");
         messages.raw(sender, "&7Use &f/ffa reload &7to reload config.yml from disk.");
@@ -135,7 +124,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                                       final String alias, final String[] args) {
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
-            return List.of("arena", "killtoken", "afk", "customweapons", "config",
+            return List.of("arena", "killtoken", "afk", "config",
                     "reload").stream().filter(s -> s.startsWith(prefix)).toList();
         }
         if (args.length >= 2) {
@@ -146,9 +135,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 case "killtoken", "token", "kt" ->
                         killTokenCommand.onTabComplete(sender, command, "ffa killtoken", rest);
                 case "afk" -> afkCommand.onTabComplete(sender, command, "ffa afk", rest);
-                case "customweapons", "weapons", "weapon", "cw" ->
-                        customWeaponsCommand.onTabComplete(
-                                sender, command, "ffa customweapons", rest);
                 default -> List.of();
             };
         }

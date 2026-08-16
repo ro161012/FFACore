@@ -129,9 +129,9 @@ class ConfigOptionTest {
     @Test
     void readsDecimalFromConfig() {
         final YamlConfiguration config = new YamlConfiguration();
-        config.set("nichirin.clear-blue-sky.radius", 3.5);
+        config.set("example.ratio", 3.5);
         final ConfigOption option = ConfigOption.decimal(
-                "nichirin.clear-blue-sky.radius", "Radius", "Reach in blocks.",
+                "example.ratio", "Ratio", "A fractional value.",
                 1f, 10f, 0.1f, 3.5);
 
         assertEquals(3.5, option.currentValue(config));
@@ -140,35 +140,11 @@ class ConfigOptionTest {
     @Test
     void withColorAppliesLabelTint() {
         final ConfigOption option = ConfigOption.integer(
-                "nichirin.combo-hits", "Combo hits", "Hits to complete the combo.",
+                "example.count", "Count", "A whole-number value.",
                 1, 10, 4);
         final TextColor orange = TextColor.color(0xFF8C42);
 
         assertNull(option.color(), "options are untinted by default");
         assertEquals(orange, option.withColor(orange).color());
-    }
-
-    @Test
-    void weaponConfigPathsSanitiseToValidDialogKeys() {
-        final java.util.regex.Pattern valid =
-                java.util.regex.Pattern.compile("^[a-z0-9_]+$");
-        for (final String path : java.util.List.of(
-                "nichirin.combo-hits",
-                "nichirin.clear-blue-sky.cooldown-seconds",
-                "nichirin.clear-blue-sky.damage-hearts",
-                "nichirin.clear-blue-sky.boost-power",
-                "nichirin.clear-blue-sky.fire-seconds",
-                "nichirin.clear-blue-sky.sear-hearts",
-                "nichirin.clear-blue-sky.vfx-ticks",
-                "nichirin.enbu.absorption-lock-seconds",
-                "nichirin.enbu.vfx-ticks",
-                "kokushibo.upper-moon-one.crescent-speed",
-                "kokushibo.catastrophe.vfx-ticks",
-                "kokushibo.moonbow.vfx-ticks",
-                "kokushibo.moonbow.damage-hearts")) {
-            final ConfigOption option = ConfigOption.integer(path, "x", "y", 1, 100, 1);
-            assertTrue(valid.matcher(option.key()).matches(),
-                    "invalid dialog key: " + option.key());
-        }
     }
 }

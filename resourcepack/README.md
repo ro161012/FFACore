@@ -16,17 +16,7 @@ their display names.
 | `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Legacy ember gradient tooltip (kept for old items) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
-| `assets/altarsmp/textures/gui/sprites/tooltip/nichirin_sword_*.png` | Fiery orange/red tooltip (Nichirin Blade) |
-| `assets/altarsmp/textures/gui/sprites/tooltip/kokoshibo_sword_*.png` | Animated purple tooltip (Kokushibo Sword, 20 frames) |
-| `assets/minecraft/items/netherite_sword.json` | Maps custom model data `1603`/`1605`/`2514` to the blade models |
-| `assets/minecraft/items/nether_star.json` | Maps custom model data `2` to the purple crescent and `1001` to the Kill Token |
-| `assets/nino/models/weapons/nichirin_blade.json` | The Nichirin Blade 3D model |
-| `assets/nino/textures/item/nichirin_blade.png` | The animated blade texture |
-| `assets/nino/models/weapons/kokushibo.json` | The Kokushibo Sword 3D model |
-| `assets/nino/models/weapons/kokushibo2.json` | The animated empowered blade model (custom model data `2514`) |
-| `assets/nino/models/weapons/kokushibo_crescent.json` | The purple moon crescent projectile model |
-| `assets/nino/textures/item/kokushibo*.png`, `crescent.png` | Kokushibo blade and crescent textures |
-| `assets/minecraft/shaders/core/rendertype_item_entity_translucent_cull.fsh` | Core shader: emissive bloom for the translucent glass / crescent display entities |
+
 
 ## Installation
 
@@ -62,34 +52,6 @@ pack (custom tooltip styles, added in 1.21.2) and shipped inside this pack so
 players see them even without the Altar pack installed. The legacy
 `ffacore:ocean`/`ffacore:ember` styles are kept for items handed out before
 the switch.
-
-## Nichirin Blade
-
-The Nichirin Blade is a `netherite_sword` with custom model data `1603`,
-routed through `assets/minecraft/items/netherite_sword.json` to the
-`nino:weapons/nichirin_blade` model. Its tooltip style
-(`altarsmp:nichirin_sword`) supplies the fiery gradient border. The model,
-texture and tooltip sprites are sourced 1-1 from the Altar SMP pack and
-shipped here so the blade renders standalone.
-
-The ability visuals (Clear Blue Sky ring, Enbu crescent) are drawn with
-block display entities using full-bright translucent stained glass (orange /
-yellow / red). A core shader override
-(`rendertype_item_entity_translucent_cull.fsh`) adds a soft emissive bloom so
-the glass reads as glowing molten energy instead of flat tinted glass.
-
-## Kokushibo Sword
-
-The Kokushibo Sword is a `netherite_sword` with custom model data `1605`
-(`nino:weapons/kokushibo`), and its animated empowered variant is registered
-at `2514` (`kokushibo2`). The tooltip style (`altarsmp:kokoshibo_sword`) gives
-it the animated purple gradient border.
-
-The passive crescent projectile is drawn with item display entities carrying
-the `nino:weapons/kokushibo_crescent` model (a `nether_star` with custom model
-data `2`), and Moonbow launches the same purple crescent. Catastrophe expands
-a ring of purple moon-energy particles. The crescent effects are full-bright
-and share the same emissive core shader override.
 
 ## Regenerating the art
 

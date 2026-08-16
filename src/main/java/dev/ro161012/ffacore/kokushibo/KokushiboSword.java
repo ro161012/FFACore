@@ -7,7 +7,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,8 +52,8 @@ public final class KokushiboSword {
 
     /**
      * Creates a fresh Kokushibo Sword with the exact tooltip layout used by
-     * the reference plugin: enchants, flavour lore, the passive and the two
-     * active abilities.
+     * the reference plugin: flavour lore, the passive and the two active
+     * abilities.
      *
      * @return the sword item
      */
@@ -69,8 +68,6 @@ public final class KokushiboSword {
                 .decoration(TextDecoration.BOLD, true)
                 .decoration(TextDecoration.ITALIC, false));
 
-        meta.addEnchant(Enchantment.SHARPNESS, 5, true);
-        meta.addEnchant(Enchantment.LOOTING, 3, true);
         meta.setCustomModelData(MODEL_DATA);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.lore(List.of(

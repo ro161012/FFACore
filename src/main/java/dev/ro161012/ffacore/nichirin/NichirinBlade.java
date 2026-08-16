@@ -7,7 +7,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -51,8 +50,8 @@ public final class NichirinBlade {
 
     /**
      * Creates a fresh Nichirin Blade item with the exact tooltip layout used
-     * by the reference plugin: enchants, flavour lore, then the passive and
-     * two active abilities with their trigger tags and cooldowns.
+     * by the reference plugin: flavour lore, then the passive and two active
+     * abilities with their trigger tags and cooldowns.
      *
      * @return the blade item
      */
@@ -67,9 +66,6 @@ public final class NichirinBlade {
                 .decoration(TextDecoration.BOLD, true)
                 .decoration(TextDecoration.ITALIC, false));
 
-        meta.addEnchant(Enchantment.SHARPNESS, 5, true);
-        meta.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
-        meta.addEnchant(Enchantment.UNBREAKING, 3, true);
         meta.setCustomModelData(MODEL_DATA);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.lore(List.of(

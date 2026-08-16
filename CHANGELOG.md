@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.45] - 2026-08-15
+- Make Dancing Flash lava blocks knock back and hiss on landing
+
+
 ## [1.21.44] - 2026-08-15
 - Remove the Catastrophe moon core and recolor Moonbow purple
 - Auto-deploy jar and resource pack to local test server on release/commit

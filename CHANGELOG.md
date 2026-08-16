@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.42] - 2026-08-15
+- Use vanilla lava texture and fix the Catastrophe crescent vortex crash
+
+
 ## [1.21.41] - 2026-08-15
 - Rebuild Catastrophe as a crescent-blade vortex and reduce its range
 - Add animated lava block model for the Nichirin lava bursts

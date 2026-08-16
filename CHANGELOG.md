@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.50] - 2026-08-15
+- Centre Dancing Flash on the crosshair for first-person view
+
+
 ## [1.21.49] - 2026-08-15
 - Add glowing moon-crystal shards to the Fourteenth Form vortex
 

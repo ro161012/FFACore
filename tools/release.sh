@@ -62,6 +62,7 @@ fi
 # --- Build + commit + tag ---------------------------------------------------
 sed -i "s#<version>$CUR_VER</version>#<version>$NEW_VER</version>#" pom.xml
 ./mvnw -q clean package
+bash tools/copy-artifacts.sh
 git add pom.xml CHANGELOG.md
 git -c user.name="ro161012" -c user.email="ro161012@users.noreply.github.com" \
   commit -m "Bump version to $NEW_VER"

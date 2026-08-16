@@ -46,6 +46,14 @@ public final class KokushiboEffects {
     /** Scale of a vortex crescent blade. */
     private static final float CRESCENT_SCALE = 1.4f;
 
+    /**
+     * Power/scale data for the dragon-breath particle. On 1.21.11 this
+     * particle requires an explicit {@link Float} data argument, so it must
+     * be boxed (a primitive would widen to the {@code double extra} overload
+     * and pass {@code null} data).
+     */
+    private static final Float DRAGON_BREATH_POWER = Float.valueOf(1.0f);
+
     private KokushiboEffects() {
         // Utility class.
     }
@@ -215,7 +223,7 @@ public final class KokushiboEffects {
         pos.getWorld().spawnParticle(Particle.DUST, pos, 2, 0.1, 0.1, 0.1,
                 new Particle.DustOptions(MOON, 1.4f));
         pos.getWorld().spawnParticle(Particle.DRAGON_BREATH, pos, 1,
-                0.05, 0.05, 0.05, 0.0);
+                0.05, 0.05, 0.05, DRAGON_BREATH_POWER);
     }
 
     /**
@@ -234,7 +242,8 @@ public final class KokushiboEffects {
                     new Particle.DustOptions(MOON, 1.5f));
             world.spawnParticle(Particle.END_ROD, point, 1, 0.05, 0.05, 0.05, 0.01);
         }
-        world.spawnParticle(Particle.DRAGON_BREATH, center, 6, 0.4, 0.3, 0.4, 0.01);
+        world.spawnParticle(Particle.DRAGON_BREATH, center, 6, 0.4, 0.3, 0.4,
+                DRAGON_BREATH_POWER);
     }
 
     /**

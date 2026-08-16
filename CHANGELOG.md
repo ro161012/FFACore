@@ -10,6 +10,11 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.41] - 2026-08-15
+- Rebuild Catastrophe as a crescent-blade vortex and reduce its range
+- Add animated lava block model for the Nichirin lava bursts
+
+
 ## [1.21.40] - 2026-08-15
 - Generate full changelogs and maintain CHANGELOG.md on release
 - Use orange dust and glowing lava blocks for Nichirin; rebuild Catastrophe as purple rings

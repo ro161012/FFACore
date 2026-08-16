@@ -2,8 +2,10 @@ package dev.ro161012.ffacore.kokushibo;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -16,7 +18,9 @@ import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -24,8 +28,8 @@ import java.util.function.Consumer;
 /**
  * Renders the Kokushibo Sword ability visuals.
  *
- * <p>Catastrophe unleashes a vortex of purple moon-energy rings around the
- * caster — counter-rotating outer and inner rings that climb as they
+ * <p>Catastrophe unleashes a vortex of purple moon energy around the caster —
+ * glowing moon-crystal shards and counter-rotating rings that climb as they
  * expand, a ground boundary ring, and a purple impact flash on every target
  * struck. Moonbow fires a purple crescent gleam where the caster aims, and
  * the passive fires a single drifting crescent. Every display entity is
@@ -106,6 +110,23 @@ public final class KokushiboEffects {
                                    final int ticks, final double spinSpeed) {
         final World world = center.getWorld();
 
+        // Glowing purple moon-crystal shards orbit outward with the rings,
+        // giving the vortex 3D body above the flat particle ring.
+        final int outerShards = 14;
+        final int innerShards = 7;
+        final List<BlockDisplay> outer = new ArrayList<>();
+        final List<BlockDisplay> inner = new ArrayList<>();
+        final List<Double> outerPhase = new ArrayList<>();
+        final List<Double> innerPhase = new ArrayList<>();
+        for (int i = 0; i < outerShards; i++) {
+            outer.add(spawnShard(world, center));
+            outerPhase.add(i * (TAU / outerShards));
+        }
+        for (int i = 0; i < innerShards; i++) {
+            inner.add(spawnShard(world, center));
+            innerPhase.add(i * (TAU / innerShards));
+        }
+
         final Set<UUID> struck = new HashSet<>();
         new BukkitRunnable() {
             private int tick;
@@ -113,6 +134,8 @@ public final class KokushiboEffects {
             @Override
             public void run() {
                 if (tick >= ticks) {
+                    outer.forEach(BlockDisplay::remove);
+                    inner.forEach(BlockDisplay::remove);
                     cancel();
                     return;
                 }
@@ -121,7 +144,18 @@ public final class KokushiboEffects {
                 final double spin = tick * spinSpeed;
                 final double climb = progress * 0.8;
 
-                // Outer moon-energy ring whirls one way, inner halo the other.
+                // Moon-crystal shards whirl outward: outer ring one way,
+                // inner halo the other, both climbing as they expand.
+                for (int i = 0; i < outerShards; i++) {
+                    placeShard(outer.get(i), center, outerPhase.get(i) + spin,
+                            radius, 0.5 + climb);
+                }
+                for (int i = 0; i < innerShards; i++) {
+                    placeShard(inner.get(i), center, innerPhase.get(i) - spin * 1.3,
+                            radius * 0.55, 0.1 + climb * 0.5);
+                }
+
+                // Purple moon-energy rings ride beneath the shards.
                 ringParticles(center, radius, 0.35 + climb, spin, 24);
                 ringParticles(center, radius * 0.55, -0.1 + climb * 0.5,
                         -spin * 1.3, 14);
@@ -145,6 +179,43 @@ public final class KokushiboEffects {
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Spawns one full-bright purple moon-crystal shard at the vortex centre,
+     * ready to be swept outward by {@link #placeShard}.
+     *
+     * @param world the world to spawn in
+     * @param at    the spawn location
+     * @return the spawned shard
+     */
+    private static BlockDisplay spawnShard(final World world, final Location at) {
+        final BlockDisplay display = world.spawn(at, BlockDisplay.class);
+        display.setBlock(Material.AMETHYST_BLOCK.createBlockData());
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+        return display;
+    }
+
+    /**
+     * Moves a moon-crystal shard to its position on the vortex. The shards
+     * never rotate — only a gentle scale pulse — so the display transform
+     * stays free of anything that can glitch.
+     *
+     * @param display the shard to place
+     * @param center  the vortex centre
+     * @param angle   position around the vertical axis
+     * @param radius  distance from the centre
+     * @param y       height of the shard
+     */
+    private static void placeShard(final BlockDisplay display, final Location center,
+                                   final double angle, final double radius,
+                                   final double y) {
+        display.teleport(center.clone().add(
+                Math.sin(angle) * radius, y, Math.cos(angle) * radius));
+        final float scale = 0.28f + 0.12f * (float) Math.sin(angle * 4.0);
+        setScale(display, scale, scale, scale);
     }
 
     /**

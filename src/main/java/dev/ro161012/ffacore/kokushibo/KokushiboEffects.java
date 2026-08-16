@@ -9,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
@@ -17,9 +16,7 @@ import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -27,8 +24,8 @@ import java.util.function.Consumer;
 /**
  * Renders the Kokushibo Sword ability visuals.
  *
- * <p>Catastrophe unleashes a vortex of orbiting crescent moon blades around
- * the caster — counter-rotating outer and inner rings that climb as they
+ * <p>Catastrophe unleashes a vortex of purple moon-energy rings around the
+ * caster — counter-rotating outer and inner rings that climb as they
  * expand, a ground boundary ring, and a purple impact flash on every target
  * struck. Moonbow fires a purple crescent gleam where the caster aims, and
  * the passive fires a single drifting crescent. Every display entity is
@@ -40,9 +37,6 @@ public final class KokushiboEffects {
 
     /** Solid bright-purple colour used by the moon-energy rings. */
     private static final Color MOON = Color.fromRGB(177, 74, 255);
-
-    /** Scale of a vortex crescent blade. */
-    private static final float CRESCENT_SCALE = 1.4f;
 
     /**
      * Power/scale data for the dragon-breath particle. On 1.21.11 this
@@ -58,8 +52,9 @@ public final class KokushiboEffects {
 
     /**
      * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — a
-     * vortex of crescent moon blades that whirls outward around the caster.
-     * Each ring sweeps outward and strikes every living target it passes
+     * vortex of purple moon-energy rings that whirls outward around the
+     * caster. Each ring sweeps outward and strikes every living target it
+     * passes
      * exactly once, so more rings land more hits.
      *
      * @param plugin    owning plugin (for the scheduler)
@@ -93,9 +88,9 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Expands one ring of crescent blades outward: an outer whirl and a
-     * counter-rotating inner halo that climb as they grow, each blade leaving
-     * a purple slash trail and striking each target once as it passes.
+     * Expands one ring of purple moon energy outward: an outer ring and a
+     * counter-rotating inner halo that climb as they grow, each striking a
+     * target once as the wave passes.
      *
      * @param plugin    owning plugin (for the scheduler)
      * @param player    the caster (excluded from strikes)
@@ -110,22 +105,6 @@ public final class KokushiboEffects {
                                    final Consumer<LivingEntity> onStrike,
                                    final int ticks, final double spinSpeed) {
         final World world = center.getWorld();
-        final ItemStack blade = KokushiboSword.crescentItem();
-
-        final int outerCount = 16;
-        final int innerCount = 8;
-        final List<ItemDisplay> outer = new ArrayList<>();
-        final List<ItemDisplay> inner = new ArrayList<>();
-        final List<Double> outerPhase = new ArrayList<>();
-        final List<Double> innerPhase = new ArrayList<>();
-        for (int i = 0; i < outerCount; i++) {
-            outer.add(spawnCrescent(world, center, blade));
-            outerPhase.add(i * (TAU / outerCount));
-        }
-        for (int i = 0; i < innerCount; i++) {
-            inner.add(spawnCrescent(world, center, blade));
-            innerPhase.add(i * (TAU / innerCount));
-        }
 
         final Set<UUID> struck = new HashSet<>();
         new BukkitRunnable() {
@@ -134,8 +113,6 @@ public final class KokushiboEffects {
             @Override
             public void run() {
                 if (tick >= ticks) {
-                    outer.forEach(ItemDisplay::remove);
-                    inner.forEach(ItemDisplay::remove);
                     cancel();
                     return;
                 }
@@ -144,17 +121,12 @@ public final class KokushiboEffects {
                 final double spin = tick * spinSpeed;
                 final double climb = progress * 0.8;
 
-                // Outer whirl spins one way, inner halo the other.
-                for (int i = 0; i < outerCount; i++) {
-                    placeCrescent(outer.get(i), center, outerPhase.get(i) + spin,
-                            radius, 0.35 + climb);
-                }
-                for (int i = 0; i < innerCount; i++) {
-                    placeCrescent(inner.get(i), center, innerPhase.get(i) - spin * 1.3,
-                            radius * 0.55, -0.1 + climb * 0.5);
-                }
+                // Outer moon-energy ring whirls one way, inner halo the other.
+                ringParticles(center, radius, 0.35 + climb, spin, 24);
+                ringParticles(center, radius * 0.55, -0.1 + climb * 0.5,
+                        -spin * 1.3, 14);
 
-                // Each target is struck once per ring as the blades sweep past.
+                // Each target is struck once per ring as the wave sweeps past.
                 for (final Entity entity : world.getNearbyEntities(
                         center, radius, 5.0, radius)) {
                     if (!(entity instanceof LivingEntity living) || living.equals(player)) {
@@ -176,51 +148,26 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Spawns one full-bright crescent blade display at the vortex centre,
-     * ready to be swept outward by {@link #placeCrescent}.
+     * Draws one ring of solid purple moon-energy particles at the given
+     * radius and height, offset by the whirl angle so the ring visibly spins.
      *
-     * @param world  the world to spawn in
-     * @param at     the spawn location
-     * @param blade  the crescent item
-     * @return the spawned display
+     * @param center the vortex centre
+     * @param radius distance from the centre
+     * @param y      height of the ring
+     * @param spin   current whirl angle in radians
+     * @param points how many particles make up the ring
      */
-    private static ItemDisplay spawnCrescent(final World world, final Location at,
-                                             final ItemStack blade) {
-        final ItemDisplay display = world.spawn(at, ItemDisplay.class);
-        display.setItemStack(blade);
-        display.setBillboard(Display.Billboard.CENTER);
-        display.setBrightness(new Display.Brightness(15, 15));
-        display.setInterpolationDuration(1);
-        display.setInterpolationDelay(0);
-        return display;
-    }
-
-    /**
-     * Moves a crescent blade to its position on the vortex. The blades are
-     * billboarded so they always face the camera, which means no rotation is
-     * ever applied — only a gentle scale pulse — keeping the display
-     * transform free of anything that can glitch or crash the client.
-     *
-     * @param display the blade to place
-     * @param center  the vortex centre
-     * @param angle   position around the vertical axis
-     * @param radius  distance from the centre
-     * @param y       height of the blade
-     */
-    private static void placeCrescent(final ItemDisplay display, final Location center,
-                                      final double angle, final double radius,
-                                      final double y) {
-        display.teleport(center.clone().add(
-                Math.sin(angle) * radius, y, Math.cos(angle) * radius));
-        final float scale = CRESCENT_SCALE
-                * (0.9f + 0.1f * (float) Math.sin(angle * 3.0));
-        setScale(display, scale, scale, scale);
-        // Purple slash trail behind the flying blade.
-        final Location pos = display.getLocation();
-        pos.getWorld().spawnParticle(Particle.DUST, pos, 2, 0.1, 0.1, 0.1,
-                new Particle.DustOptions(MOON, 1.4f));
-        pos.getWorld().spawnParticle(Particle.DRAGON_BREATH, pos, 1,
-                0.05, 0.05, 0.05, DRAGON_BREATH_POWER);
+    private static void ringParticles(final Location center, final double radius,
+                                      final double y, final double spin,
+                                      final int points) {
+        final World world = center.getWorld();
+        for (int i = 0; i < points; i++) {
+            final double angle = i * (TAU / points) + spin;
+            final Location point = center.clone().add(
+                    Math.sin(angle) * radius, y, Math.cos(angle) * radius);
+            world.spawnParticle(Particle.DUST, point, 1, 0.0, 0.0, 0.0,
+                    new Particle.DustOptions(MOON, 1.6f));
+        }
     }
 
     /**

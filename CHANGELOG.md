@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.47] - 2026-08-15
+- Drop crescent blades from Fourteenth Form, keep them on Moonbow
+
+
 ## [1.21.46] - 2026-08-15
 - Add live config knobs for weapon VFX and lengthen Catastrophe
 

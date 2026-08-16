@@ -10,6 +10,10 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.46] - 2026-08-15
+- Add live config knobs for weapon VFX and lengthen Catastrophe
+
+
 ## [1.21.45] - 2026-08-15
 - Make Dancing Flash lava blocks knock back and hiss on landing
 

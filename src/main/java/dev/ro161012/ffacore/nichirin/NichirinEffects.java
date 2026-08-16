@@ -148,8 +148,13 @@ public final class NichirinEffects {
     public static void playEnbu(final JavaPlugin plugin, final Player player,
                                 final int ticks, final double radius) {
         final Location eye = player.getEyeLocation();
-        final Vector facing = horizontalFacing(player);
+        // Centre the slash on the crosshair (full pitch included) so it lands
+        // in the middle of the screen in first person.
+        final Vector facing = player.getEyeLocation().getDirection().normalize();
         final Vector up = new Vector(0.0, 1.0, 0.0);
+        // Push the whole slash forward of the camera's near plane so it is
+        // clearly visible when the caster plays in first person.
+        final Location origin = eye.clone().add(facing.clone().multiply(1.6));
 
         final int crescentOuter = Math.max(16, (int) Math.round(radius * 2.0));
         final int crescentInner = Math.max(10, crescentOuter * 3 / 4);
@@ -196,7 +201,7 @@ public final class NichirinEffects {
                 final double angle = Math.toRadians(-80.0 + t * 160.0);
                 final Vector dir = facing.clone().multiply(Math.cos(angle))
                         .add(up.clone().multiply(Math.sin(angle)));
-                displays.get(i).teleport(eye.clone().add(dir.multiply(slashRadius)));
+                displays.get(i).teleport(origin.clone().add(dir.multiply(slashRadius)));
                 setScale(displays.get(i), 0.7f, 0.7f, 0.7f);
             }
             for (int i = 0; i < crescentInner; i++) {
@@ -205,12 +210,12 @@ public final class NichirinEffects {
                 final Vector dir = facing.clone().multiply(Math.cos(angle))
                         .add(up.clone().multiply(Math.sin(angle)));
                 displays.get(crescentOuter + i).teleport(
-                        eye.clone().add(dir.multiply(slashRadius * 0.8)));
+                        origin.clone().add(dir.multiply(slashRadius * 0.8)));
                 setScale(displays.get(crescentOuter + i), 0.6f, 0.6f, 0.6f);
             }
 
             // Bright leading block rides the tip, swelling then fading.
-            final Location tip = eye.clone().add(facing.clone().multiply(slashRadius));
+            final Location tip = origin.clone().add(facing.clone().multiply(slashRadius));
             displays.get(tipIndex).teleport(tip);
             final float tipScale = (float) (0.95 + slashProgress * 1.2);
             setScale(displays.get(tipIndex), tipScale, tipScale, tipScale);

@@ -610,7 +610,7 @@ public final class ConfigMenu {
                         ConfigOption.decimal("kokushibo.catastrophe.max-radius",
                                 "Vortex reach",
                                 "Maximum radius the vortex expands to, in blocks.",
-                                2f, 40f, 0.5f, 20.0).withColor(KOKUSHIBO),
+                                2f, 40f, 0.5f, 14.0).withColor(KOKUSHIBO),
                         ConfigOption.integer("kokushibo.catastrophe.rings",
                                 "Rings",
                                 "Moon-energy rings that shoot out per cast.",

@@ -2,21 +2,27 @@ package dev.ro161012.ffacore.kokushibo;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -24,10 +30,12 @@ import java.util.function.Consumer;
 /**
  * Renders the Kokushibo Sword ability visuals.
  *
- * <p>Catastrophe shoots out expanding rings of full-purple moon-energy
- * particles, Moonbow fires a white crescent gleam where the caster aims, and
- * the passive fires a single drifting crescent. Every display entity is
- * removed when its animation ends — nothing lingers.
+ * <p>Catastrophe unleashes a vortex of orbiting crescent moon blades around
+ * the caster — counter-rotating outer and inner rings that climb as they
+ * expand, a pulsing moon core, a ground boundary ring, and a purple impact
+ * flash on every target struck. Moonbow fires a white crescent gleam where
+ * the caster aims, and the passive fires a single drifting crescent. Every
+ * display entity is removed when its animation ends — nothing lingers.
  */
 public final class KokushiboEffects {
 
@@ -36,20 +44,26 @@ public final class KokushiboEffects {
     /** Solid bright-purple colour used by the moon-energy rings. */
     private static final Color MOON = Color.fromRGB(177, 74, 255);
 
+    /** Lean applied to each flat crescent so it stays visible from eye level. */
+    private static final float CRESCENT_TILT = 0.5f;
+
+    /** Scale of a vortex crescent blade. */
+    private static final float CRESCENT_SCALE = 1.4f;
+
     private KokushiboEffects() {
         // Utility class.
     }
 
     /**
      * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — a
-     * sequence of expanding rings of full-purple moon energy. Each ring
-     * sweeps outward from the caster and strikes every living target it
-     * passes exactly once, so more rings land more hits.
+     * vortex of crescent moon blades that whirls outward around the caster.
+     * Each ring sweeps outward and strikes every living target it passes
+     * exactly once, so more rings land more hits.
      *
      * @param plugin    owning plugin (for the scheduler)
      * @param player    the caster
      * @param maxRadius the radius each ring expands out to, in blocks
-     * @param rings     how many moon-energy rings shoot out per cast
+     * @param rings     how many crescent rings shoot out per cast
      * @param onStrike  called once per target per ring
      * @param ticks     how long each ring takes to expand
      */
@@ -58,34 +72,60 @@ public final class KokushiboEffects {
                                        final Consumer<LivingEntity> onStrike,
                                        final int ticks) {
         final Location center = player.getEyeLocation().add(0.0, -0.4, 0.0);
-        // Stagger each ring a little so several waves read as one vortex.
-        final long staggerTicks = 4L;
         final int ringCount = Math.max(1, rings);
+        final long staggerTicks = 4L;
+        final int totalTicks = ticks + (ringCount - 1) * (int) staggerTicks;
+
+        // Pulsing moon core at the caster's chest across the whole cast.
+        pulseCore(plugin, center.clone(), totalTicks);
+
+        // A purple ring marks the vortex reach on the ground beneath the caster.
+        boundaryRing(plugin, center.clone().add(0.0, -1.0, 0.0), maxRadius, totalTicks);
+
+        // Stagger each ring so the waves read as one continuous vortex.
         for (int wave = 0; wave < ringCount; wave++) {
             final long delay = wave * staggerTicks;
             plugin.getServer().getScheduler().runTaskLater(plugin,
-                    () -> sweepRing(plugin, player, center.clone(), maxRadius,
+                    () -> vortexWave(plugin, player, center.clone(), maxRadius,
                             onStrike, ticks),
                     delay);
         }
     }
 
     /**
-     * Expands a single ring of solid purple moon-energy particles outward,
-     * striking each living target once as the ring passes over it.
+     * Expands one ring of crescent blades outward: an outer whirl and a
+     * counter-rotating inner halo that climb as they grow, each blade leaving
+     * a purple slash trail and striking each target once as it passes.
      *
      * @param plugin    owning plugin (for the scheduler)
      * @param player    the caster (excluded from strikes)
-     * @param center    the ring centre
+     * @param center    the vortex centre
      * @param maxRadius final reach of the ring in blocks
      * @param onStrike  called once per target as the ring passes it
      * @param ticks     how long the ring takes to expand
      */
-    private static void sweepRing(final JavaPlugin plugin, final Player player,
-                                  final Location center, final double maxRadius,
-                                  final Consumer<LivingEntity> onStrike,
-                                  final int ticks) {
+    private static void vortexWave(final JavaPlugin plugin, final Player player,
+                                   final Location center, final double maxRadius,
+                                   final Consumer<LivingEntity> onStrike,
+                                   final int ticks) {
         final World world = center.getWorld();
+        final ItemStack blade = KokushiboSword.crescentItem();
+
+        final int outerCount = 18;
+        final int innerCount = 9;
+        final List<ItemDisplay> outer = new ArrayList<>();
+        final List<ItemDisplay> inner = new ArrayList<>();
+        final List<Double> outerPhase = new ArrayList<>();
+        final List<Double> innerPhase = new ArrayList<>();
+        for (int i = 0; i < outerCount; i++) {
+            outer.add(spawnCrescent(world, center, blade));
+            outerPhase.add(i * (TAU / outerCount));
+        }
+        for (int i = 0; i < innerCount; i++) {
+            inner.add(spawnCrescent(world, center, blade));
+            innerPhase.add(i * (TAU / innerCount));
+        }
+
         final Set<UUID> struck = new HashSet<>();
         new BukkitRunnable() {
             private int tick;
@@ -93,22 +133,29 @@ public final class KokushiboEffects {
             @Override
             public void run() {
                 if (tick >= ticks) {
+                    outer.forEach(ItemDisplay::remove);
+                    inner.forEach(ItemDisplay::remove);
                     cancel();
                     return;
                 }
                 final double progress = tick / (double) Math.max(1, ticks - 1);
                 final double radius = 1.0 + (maxRadius - 1.0) * progress;
-                final int points = Math.max(48, (int) Math.round(TAU * radius / 0.6));
-                for (int i = 0; i < points; i++) {
-                    final double angle = i * (TAU / points);
-                    final double y = 0.6 * Math.sin(progress * Math.PI);
-                    final Location point = center.clone().add(
-                            Math.sin(angle) * radius, y, Math.cos(angle) * radius);
-                    world.spawnParticle(Particle.DUST, point, 1, 0.0, 0.0, 0.0,
-                            new Particle.DustOptions(MOON, 1.7f));
+                final double spin = tick * 0.14;
+                final double climb = progress * 0.8;
+
+                // Outer whirl spins one way, inner halo the other.
+                for (int i = 0; i < outerCount; i++) {
+                    placeCrescent(outer.get(i), center, outerPhase.get(i) + spin,
+                            radius, 0.35 + climb);
                 }
+                for (int i = 0; i < innerCount; i++) {
+                    placeCrescent(inner.get(i), center, innerPhase.get(i) - spin * 1.3,
+                            radius * 0.55, -0.1 + climb * 0.5);
+                }
+
+                // Each target is struck once per ring as the blades sweep past.
                 for (final Entity entity : world.getNearbyEntities(
-                        center, radius, 4.0, radius)) {
+                        center, radius, 5.0, radius)) {
                     if (!(entity instanceof LivingEntity living) || living.equals(player)) {
                         continue;
                     }
@@ -119,8 +166,149 @@ public final class KokushiboEffects {
                     }
                     if (struck.add(living.getUniqueId())) {
                         onStrike.accept(living);
+                        impactFlash(living.getLocation().add(0.0, 1.0, 0.0));
                     }
                 }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Spawns one full-bright crescent blade display at the vortex centre,
+     * ready to be swept outward by {@link #placeCrescent}.
+     *
+     * @param world  the world to spawn in
+     * @param at     the spawn location
+     * @param blade  the crescent item
+     * @return the spawned display
+     */
+    private static ItemDisplay spawnCrescent(final World world, final Location at,
+                                             final ItemStack blade) {
+        final ItemDisplay display = world.spawn(at, ItemDisplay.class);
+        display.setItemStack(blade);
+        display.setBillboard(Display.Billboard.FIXED);
+        display.setBrightness(new Display.Brightness(15, 15));
+        display.setInterpolationDuration(1);
+        display.setInterpolationDelay(0);
+        return display;
+    }
+
+    /**
+     * Moves a crescent blade to its position on the vortex and orients it.
+     * The rotation is built as a single quaternion from a yaw plus a fixed
+     * lean — never converted through axis/angle — so the blades cannot hit a
+     * degenerate axis and glitch as they whirl.
+     *
+     * @param display the blade to place
+     * @param center  the vortex centre
+     * @param angle   yaw around the vertical axis
+     * @param radius  distance from the centre
+     * @param y       height of the blade
+     */
+    private static void placeCrescent(final ItemDisplay display, final Location center,
+                                      final double angle, final double radius,
+                                      final double y) {
+        display.teleport(center.clone().add(
+                Math.sin(angle) * radius, y, Math.cos(angle) * radius));
+        final Quaternionf rotation = new Quaternionf()
+                .rotateY((float) angle)
+                .rotateX(CRESCENT_TILT);
+        display.setTransformation(new Transformation(
+                new Vector3f(0f, 0f, 0f),
+                rotation,
+                new Vector3f(CRESCENT_SCALE, CRESCENT_SCALE, CRESCENT_SCALE),
+                new Quaternionf()));
+        // Purple slash trail behind the flying blade.
+        final Location pos = display.getLocation();
+        pos.getWorld().spawnParticle(Particle.DUST, pos, 2, 0.1, 0.1, 0.1,
+                new Particle.DustOptions(MOON, 1.4f));
+        pos.getWorld().spawnParticle(Particle.DRAGON_BREATH, pos, 1,
+                0.05, 0.05, 0.05, 0.0);
+    }
+
+    /**
+     * Fires a ring of purple particles off a struck target — the impact flash
+     * of the Fourteenth Form.
+     *
+     * @param center the centre of the burst
+     */
+    private static void impactFlash(final Location center) {
+        final World world = center.getWorld();
+        for (int i = 0; i < 14; i++) {
+            final double angle = i * (TAU / 14);
+            final Location point = center.clone().add(
+                    Math.sin(angle) * 0.8, 0.2, Math.cos(angle) * 0.8);
+            world.spawnParticle(Particle.DUST, point, 1, 0.0, 0.0, 0.0,
+                    new Particle.DustOptions(MOON, 1.5f));
+            world.spawnParticle(Particle.END_ROD, point, 1, 0.05, 0.05, 0.05, 0.01);
+        }
+        world.spawnParticle(Particle.DRAGON_BREATH, center, 6, 0.4, 0.3, 0.4, 0.01);
+    }
+
+    /**
+     * Draws a growing purple ring on the ground marking the vortex reach.
+     *
+     * @param plugin    owning plugin (for the scheduler)
+     * @param ground    the ground centre beneath the caster
+     * @param maxRadius final radius of the boundary ring
+     * @param ticks     how long the ring expands for
+     */
+    private static void boundaryRing(final JavaPlugin plugin, final Location ground,
+                                     final double maxRadius, final int ticks) {
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= ticks) {
+                    cancel();
+                    return;
+                }
+                final double progress = tick / (double) Math.max(1, ticks - 1);
+                final double radius = 0.5 + (maxRadius - 0.5) * progress;
+                final int points = Math.max(40, (int) Math.round(TAU * radius / 0.7));
+                for (int i = 0; i < points; i++) {
+                    final double angle = i * (TAU / points);
+                    final Location point = ground.clone().add(
+                            Math.sin(angle) * radius, 0.05, Math.cos(angle) * radius);
+                    ground.getWorld().spawnParticle(Particle.DUST, point, 1,
+                            0.0, 0.0, 0.0, new Particle.DustOptions(MOON, 1.3f));
+                }
+                tick++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Pulses a glowing purple moon core at the caster's chest, radiating
+     * moon-energy dust for the duration of the cast.
+     *
+     * @param plugin owning plugin (for the scheduler)
+     * @param center the core location
+     * @param ticks  how long the core pulses for
+     */
+    private static void pulseCore(final JavaPlugin plugin, final Location center,
+                                  final int ticks) {
+        final BlockDisplay core = center.getWorld().spawn(center, BlockDisplay.class);
+        core.setBlock(Material.PURPLE_STAINED_GLASS.createBlockData());
+        core.setBrightness(new Display.Brightness(15, 15));
+        core.setInterpolationDuration(1);
+        core.setInterpolationDelay(0);
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= ticks || !core.isValid()) {
+                    core.remove();
+                    cancel();
+                    return;
+                }
+                final float scale = 0.7f + 0.3f * (float) Math.sin(tick * 0.5);
+                setScale(core, scale, scale, scale);
+                center.getWorld().spawnParticle(Particle.DUST, center, 3,
+                        0.35, 0.35, 0.35, new Particle.DustOptions(MOON, 1.5f));
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
@@ -292,5 +480,4 @@ public final class KokushiboEffects {
                 new Vector3f(sx, sy, sz),
                 new AxisAngle4f(0f, 0f, 0f, 1f)));
     }
-
 }

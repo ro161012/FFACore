@@ -168,8 +168,8 @@ kokushibo:
     cooldown-seconds: 70
     # True damage per target in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
-    # Maximum radius the ring expands to, in blocks.
-    max-radius: 20.0
+    # Maximum radius the vortex expands to, in blocks.
+    max-radius: 14.0
     # How many moon-energy rings shoot out per cast. Each ring sweeps
     # outward and strikes targets once.
     rings: 3

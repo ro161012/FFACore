@@ -49,9 +49,6 @@ public final class KokushiboAbilityListener implements Listener {
     private final Map<UUID, Integer> armedMoonbow = new ConcurrentHashMap<>();
     private final Map<UUID, Long> moonbowExpiry = new ConcurrentHashMap<>();
 
-    /** How long a player has to spend their Moonbow shots after arming. */
-    private static final long MOONBOW_WINDOW_MILLIS = 6000L;
-
     private final NichirinCooldown catastropheCooldown;
     private final NichirinCooldown moonbowCooldown;
 
@@ -68,6 +65,8 @@ public final class KokushiboAbilityListener implements Listener {
     private int catastropheVfxTicks;
     private int moonbowVfxTicks;
     private double crescentSpeed;
+    private double catastropheSpinSpeed;
+    private long moonbowWindowMillis;
 
     /**
      * Creates the listener and loads configuration.
@@ -108,6 +107,10 @@ public final class KokushiboAbilityListener implements Listener {
         moonbowVfxTicks = Math.max(4, config.getInt("kokushibo.moonbow.vfx-ticks", 16));
         crescentSpeed = Math.max(0.1, config.getDouble(
                 "kokushibo.upper-moon-one.crescent-speed", 1.0));
+        catastropheSpinSpeed = Math.max(0.02, config.getDouble(
+                "kokushibo.catastrophe.spin-speed", 0.14));
+        moonbowWindowMillis = Math.max(1000L, config.getInt(
+                "kokushibo.moonbow.window-seconds", 6) * 1000L);
 
         catastropheCooldown.setCooldownSeconds(
                 config.getInt("kokushibo.catastrophe.cooldown-seconds", 70));
@@ -246,7 +249,7 @@ public final class KokushiboAbilityListener implements Listener {
         KokushiboEffects.playCatastrophe(plugin, player, catastropheMaxRadius,
                 catastropheRings,
                 living -> applyTrueDamage(living, player, catastropheDamageHearts),
-                catastropheVfxTicks);
+                catastropheVfxTicks, catastropheSpinSpeed);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.7f);
     }
 
@@ -260,7 +263,7 @@ public final class KokushiboAbilityListener implements Listener {
                 "§dSixteenth Form §8» §d§lMoonbow, Half Moon",
                 BarColor.PURPLE, moonbowCooldown.getCooldownMillis());
         armedMoonbow.put(id, moonbowCrescents);
-        moonbowExpiry.put(id, System.currentTimeMillis() + MOONBOW_WINDOW_MILLIS);
+        moonbowExpiry.put(id, System.currentTimeMillis() + moonbowWindowMillis);
         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.7f);
     }
 

@@ -71,6 +71,12 @@ public final class NichirinAbilityListener implements Listener {
     private long absorptionLockMillis;
     private int clearSkyVfxTicks;
     private int enbuVfxTicks;
+    private int clearSkyLavaCount;
+    private int enbuLavaCount;
+    private double enbuKnockbackStrength;
+    private double enbuKnockbackRadius;
+    private int enbuFireSeconds;
+    private double enbuSearHearts;
 
     /**
      * Creates the listener and loads configuration.
@@ -103,6 +109,15 @@ public final class NichirinAbilityListener implements Listener {
         clearSkyVfxTicks = Math.max(4, config.getInt(
                 "nichirin.clear-blue-sky.vfx-ticks", 12));
         enbuVfxTicks = Math.max(4, config.getInt("nichirin.enbu.vfx-ticks", 20));
+        clearSkyLavaCount = Math.max(1, config.getInt(
+                "nichirin.clear-blue-sky.lava-count", 28));
+        enbuLavaCount = Math.max(1, config.getInt("nichirin.enbu.lava-count", 20));
+        enbuKnockbackStrength = Math.max(0.0, config.getDouble(
+                "nichirin.enbu.lava-knockback-strength", 1.2));
+        enbuKnockbackRadius = Math.max(1.0, config.getDouble(
+                "nichirin.enbu.lava-knockback-radius", 2.0));
+        enbuFireSeconds = Math.max(1, config.getInt("nichirin.enbu.fire-seconds", 3));
+        enbuSearHearts = config.getDouble("nichirin.enbu.sear-hearts", 1.0);
 
         if (clearSkyCooldown == null) {
             clearSkyCooldown = new NichirinCooldown(
@@ -262,7 +277,7 @@ public final class NichirinAbilityListener implements Listener {
                 clearSkyBoost + player.getVelocity().getY());
         player.setVelocity(player.getVelocity().setY(upward));
         NichirinEffects.playClearBlueSky(plugin, player, clearSkyVfxTicks, clearSkyRadius);
-        NichirinEffects.lavaBurst(plugin, player, clearSkyRadius);
+        NichirinEffects.lavaBurst(plugin, player, clearSkyRadius, clearSkyLavaCount);
         watchForLanding(player);
 
         // Horizontal cylinder: hits everyone around and below, whatever height
@@ -278,7 +293,7 @@ public final class NichirinAbilityListener implements Listener {
                 continue;
             }
             applyTrueDamage(living, player, clearSkyDamageHearts);
-            ignite(living, player);
+            ignite(living, player, clearSkyFireSeconds, clearSkySearHearts);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.2f);
     }
@@ -293,7 +308,8 @@ public final class NichirinAbilityListener implements Listener {
                 "§6Hinokami Kagura §8» §6§lDancing Flash",
                 BarColor.RED, enbuCooldown.getCooldownMillis());
         NichirinEffects.playEnbu(plugin, player, enbuVfxTicks, enbuRadius);
-        NichirinEffects.lavaBurstForward(plugin, player, enbuRadius);
+        NichirinEffects.lavaBurstForward(plugin, player, enbuRadius, enbuLavaCount,
+                enbuKnockbackStrength, enbuKnockbackRadius);
 
         final long lockUntil = System.currentTimeMillis() + absorptionLockMillis;
         for (final org.bukkit.entity.Entity entity : player.getNearbyEntities(
@@ -309,7 +325,7 @@ public final class NichirinAbilityListener implements Listener {
             absorptionLockedUntil.put(living.getUniqueId(), lockUntil);
             living.setAbsorptionAmount(0);
             // The lava sears targets with fire that ignores Fire Resistance.
-            ignite(living, player);
+            ignite(living, player, enbuFireSeconds, enbuSearHearts);
         }
         player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
     }
@@ -332,12 +348,18 @@ public final class NichirinAbilityListener implements Listener {
      * Lights a target on fire with searing ticks that ignore Fire Resistance.
      * The visible burn fades naturally; the searing damage is applied directly
      * as true damage over the configured duration.
+     *
+     * @param target      who burns
+     * @param source      the caster
+     * @param fireSeconds seconds of visible fire
+     * @param searHearts  hearts of true damage per second while burning
      */
-    private void ignite(final LivingEntity target, final Player source) {
-        target.setFireTicks(Math.max(target.getFireTicks(), clearSkyFireSeconds * 20));
+    private void ignite(final LivingEntity target, final Player source,
+                        final int fireSeconds, final double searHearts) {
+        target.setFireTicks(Math.max(target.getFireTicks(), fireSeconds * 20));
         final UUID targetId = target.getUniqueId();
         new BukkitRunnable() {
-            private int remaining = clearSkyFireSeconds;
+            private int remaining = fireSeconds;
 
             @Override
             public void run() {
@@ -350,7 +372,7 @@ public final class NichirinAbilityListener implements Listener {
                     cancel();
                     return;
                 }
-                applyTrueDamage(living, source, clearSkySearHearts);
+                applyTrueDamage(living, source, searHearts);
                 if (--remaining <= 0) {
                     cancel();
                 }

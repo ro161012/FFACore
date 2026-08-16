@@ -68,11 +68,12 @@ public final class KokushiboEffects {
      * @param rings     how many crescent rings shoot out per cast
      * @param onStrike  called once per target per ring
      * @param ticks     how long each ring takes to expand
+     * @param spinSpeed how fast the vortex whirls, in radians per tick
      */
     public static void playCatastrophe(final JavaPlugin plugin, final Player player,
                                        final double maxRadius, final int rings,
                                        final Consumer<LivingEntity> onStrike,
-                                       final int ticks) {
+                                       final int ticks, final double spinSpeed) {
         final Location center = player.getEyeLocation().add(0.0, -0.4, 0.0);
         final int ringCount = Math.max(1, rings);
         final long staggerTicks = 4L;
@@ -86,7 +87,7 @@ public final class KokushiboEffects {
             final long delay = wave * staggerTicks;
             plugin.getServer().getScheduler().runTaskLater(plugin,
                     () -> vortexWave(plugin, player, center.clone(), maxRadius,
-                            onStrike, ticks),
+                            onStrike, ticks, spinSpeed),
                     delay);
         }
     }
@@ -102,11 +103,12 @@ public final class KokushiboEffects {
      * @param maxRadius final reach of the ring in blocks
      * @param onStrike  called once per target as the ring passes it
      * @param ticks     how long the ring takes to expand
+     * @param spinSpeed how fast the vortex whirls, in radians per tick
      */
     private static void vortexWave(final JavaPlugin plugin, final Player player,
                                    final Location center, final double maxRadius,
                                    final Consumer<LivingEntity> onStrike,
-                                   final int ticks) {
+                                   final int ticks, final double spinSpeed) {
         final World world = center.getWorld();
         final ItemStack blade = KokushiboSword.crescentItem();
 
@@ -139,7 +141,7 @@ public final class KokushiboEffects {
                 }
                 final double progress = tick / (double) Math.max(1, ticks - 1);
                 final double radius = 1.0 + (maxRadius - 1.0) * progress;
-                final double spin = tick * 0.14;
+                final double spin = tick * spinSpeed;
                 final double climb = progress * 0.8;
 
                 // Outer whirl spins one way, inner halo the other.

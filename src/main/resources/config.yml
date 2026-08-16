@@ -140,6 +140,8 @@ nichirin:
     sear-hearts: 1.0
     # Ticks the ring animation plays. Lower = snappier, higher = slower.
     vfx-ticks: 12
+    # Lava blocks that erupt outward in the ring.
+    lava-count: 28
   enbu:
     cooldown-seconds: 70
     damage-hearts: 2.0
@@ -148,6 +150,16 @@ nichirin:
     absorption-lock-seconds: 15
     # Ticks the flame vortex animation plays.
     vfx-ticks: 20
+    # Lava blocks fired in the forward volley.
+    lava-count: 20
+    # Strength of the shove when a lava block lands.
+    lava-knockback-strength: 1.2
+    # Radius around the landing block that gets shoved.
+    lava-knockback-radius: 2.0
+    # Seconds targets burn after the dash.
+    fire-seconds: 3
+    # Hearts of searing damage per second while burning.
+    sear-hearts: 1.0
 
 # ------------------------------------------------------------
 #  Kokushibo Sword (Upper Moon One FFA weapon)
@@ -173,16 +185,20 @@ kokushibo:
     # How many moon-energy rings shoot out per cast. Each ring sweeps
     # outward and strikes targets once.
     rings: 3
-    # Ticks each ring takes to expand. Higher = slower expansion.
-    vfx-ticks: 24
+    # How fast the crescent vortex whirls, in radians per tick.
+    spin-speed: 0.14
+    # Ticks each ring takes to expand. Higher = slower and longer.
+    vfx-ticks: 30
   moonbow:
     cooldown-seconds: 80
-    # Number of white crescents launched per activation.
+    # Number of crescent shots launched per activation.
     crescents: 6
     # True damage per crescent in hearts, 1 heart = 2 HP.
     damage-hearts: 3.0
     # Ticks each launched crescent flies for.
     vfx-ticks: 16
+    # Seconds you have to fire your armed crescents.
+    window-seconds: 6
 
 # ------------------------------------------------------------
 #  Compressed Kill Token block

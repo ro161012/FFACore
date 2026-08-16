@@ -246,11 +246,11 @@ public final class NichirinEffects {
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
      * @param radius how far the blocks shoot out, in blocks
+     * @param count  how many lava blocks erupt
      */
     public static void lavaBurst(final JavaPlugin plugin, final Player player,
-                                 final double radius) {
+                                 final double radius, final int count) {
         final Location center = player.getLocation().add(0.0, 0.3, 0.0);
-        final int count = 28;
         final double speed = Math.max(0.45, 0.35 + radius * 0.015);
         final List<Location> spawns = new ArrayList<>();
         final List<Vector> velocities = new ArrayList<>();
@@ -260,28 +260,33 @@ public final class NichirinEffects {
             velocities.add(new Vector(
                     Math.sin(angle) * speed, 0.45, Math.cos(angle) * speed));
         }
-        launchLavaBlocks(plugin, player, spawns, velocities, 30, false);
+        launchLavaBlocks(plugin, player, spawns, velocities, 30, false, 0.0, 0.0);
     }
 
     /**
      * Shoots glowing lava-orange blocks forward in the player's facing
      * direction, arcing up and spreading sideways before disappearing.
      *
-     * @param plugin owning plugin (for the scheduler)
-     * @param player the caster
-     * @param radius how far the blocks shoot forward, in blocks
+     * @param plugin            owning plugin (for the scheduler)
+     * @param player            the caster
+     * @param radius            how far the blocks shoot forward, in blocks
+     * @param count             how many lava blocks fire
+     * @param knockbackStrength shove applied when a block lands
+     * @param knockbackRadius   range of the landing shove, in blocks
      */
     public static void lavaBurstForward(final JavaPlugin plugin, final Player player,
-                                        final double radius) {
+                                        final double radius, final int count,
+                                        final double knockbackStrength,
+                                        final double knockbackRadius) {
         final Location origin = player.getEyeLocation();
         final Vector facing = horizontalFacing(player);
         final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
-        final int count = 20;
         final double speed = 0.5 + Math.max(0.0, radius) * 0.05;
         final List<Location> spawns = new ArrayList<>();
         final List<Vector> velocities = new ArrayList<>();
+        final double spreadDenom = Math.max(1, count - 1);
         for (int i = 0; i < count; i++) {
-            final double spread = (i / (double) (count - 1)) * 2.0 - 1.0;
+            final double spread = (i / spreadDenom) * 2.0 - 1.0;
             // Spawn just ahead of the caster so the volley is instantly in view.
             final Location spawn = origin.clone()
                     .add(facing.clone().multiply(0.5))
@@ -292,7 +297,8 @@ public final class NichirinEffects {
                     .add(side.clone().multiply(spread * 0.18))
                     .add(new Vector(0.0, 0.14 + Math.random() * 0.18, 0.0)));
         }
-        launchLavaBlocks(plugin, player, spawns, velocities, 26, true);
+        launchLavaBlocks(plugin, player, spawns, velocities, 26, true,
+                knockbackStrength, knockbackRadius);
     }
 
     /**
@@ -304,14 +310,18 @@ public final class NichirinEffects {
      * @param player       the caster
      * @param spawns       one spawn location per block
      * @param velocities   one initial velocity per block
-     * @param maxTicks     how long the volley flies before expiring
-     * @param impactOnLand whether a landing block sears and knocks back
+     * @param maxTicks         how long the volley flies before expiring
+     * @param impactOnLand     whether a landing block sears and knocks back
+     * @param knockbackStrength shove applied when a block lands
+     * @param knockbackRadius   range of the landing shove, in blocks
      */
     private static void launchLavaBlocks(final JavaPlugin plugin, final Player player,
                                          final List<Location> spawns,
                                          final List<Vector> velocities,
                                          final int maxTicks,
-                                         final boolean impactOnLand) {
+                                         final boolean impactOnLand,
+                                         final double knockbackStrength,
+                                         final double knockbackRadius) {
         final World world = player.getWorld();
         final List<BlockDisplay> blocks = new ArrayList<>();
         final Map<UUID, Vector> motion = new HashMap<>();
@@ -352,7 +362,7 @@ public final class NichirinEffects {
                     dust(next, EMBER, 3, 0.15, 0.15, 0.15, 1.3f);
                     if (velocity.getY() <= 0.0 && next.getBlock().getType().isSolid()) {
                         if (impactOnLand) {
-                            lavaImpact(player, next);
+                            lavaImpact(player, next, knockbackStrength, knockbackRadius);
                         }
                         block.remove();
                         blocks.remove(block);
@@ -367,16 +377,19 @@ public final class NichirinEffects {
      * the impact point with ember dust, and knocks nearby targets back away
      * from the splash.
      *
-     * @param caster the player who fired the volley (excluded from knockback)
-     * @param impact where the lava block landed
+     * @param caster   the player who fired the volley (excluded from knockback)
+     * @param impact   where the lava block landed
+     * @param strength knockback strength
+     * @param radius   knockback radius, in blocks
      */
-    private static void lavaImpact(final Player caster, final Location impact) {
+    private static void lavaImpact(final Player caster, final Location impact,
+                                   final double strength, final double radius) {
         final World world = impact.getWorld();
         world.playSound(impact, Sound.BLOCK_LAVA_EXTINGUISH, 0.8f, 1.1f);
         dust(impact, EMBER, 10, 0.5, 0.3, 0.5, 1.4f);
         dust(impact, SOLAR, 5, 0.35, 0.25, 0.35, 1.0f);
 
-        for (final Entity entity : world.getNearbyEntities(impact, 2.0, 2.0, 2.0)) {
+        for (final Entity entity : world.getNearbyEntities(impact, radius, radius, radius)) {
             if (!(entity instanceof LivingEntity living) || living.equals(caster)) {
                 continue;
             }
@@ -393,7 +406,7 @@ public final class NichirinEffects {
                 dirX = dx / length;
                 dirZ = dz / length;
             }
-            living.knockback(1.2, dirX, dirZ);
+            living.knockback(strength, dirX, dirZ);
         }
     }
 

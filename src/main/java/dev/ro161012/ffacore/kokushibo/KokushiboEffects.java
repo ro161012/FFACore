@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -43,9 +42,6 @@ public final class KokushiboEffects {
 
     /** Solid bright-purple colour used by the moon-energy rings. */
     private static final Color MOON = Color.fromRGB(177, 74, 255);
-
-    /** Lean applied to each flat crescent so it stays visible from eye level. */
-    private static final float CRESCENT_TILT = 0.5f;
 
     /** Scale of a vortex crescent blade. */
     private static final float CRESCENT_SCALE = 1.4f;
@@ -111,8 +107,8 @@ public final class KokushiboEffects {
         final World world = center.getWorld();
         final ItemStack blade = KokushiboSword.crescentItem();
 
-        final int outerCount = 18;
-        final int innerCount = 9;
+        final int outerCount = 16;
+        final int innerCount = 8;
         final List<ItemDisplay> outer = new ArrayList<>();
         final List<ItemDisplay> inner = new ArrayList<>();
         final List<Double> outerPhase = new ArrayList<>();
@@ -187,7 +183,7 @@ public final class KokushiboEffects {
                                              final ItemStack blade) {
         final ItemDisplay display = world.spawn(at, ItemDisplay.class);
         display.setItemStack(blade);
-        display.setBillboard(Display.Billboard.FIXED);
+        display.setBillboard(Display.Billboard.CENTER);
         display.setBrightness(new Display.Brightness(15, 15));
         display.setInterpolationDuration(1);
         display.setInterpolationDelay(0);
@@ -195,14 +191,14 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Moves a crescent blade to its position on the vortex and orients it.
-     * The rotation is built as a single quaternion from a yaw plus a fixed
-     * lean — never converted through axis/angle — so the blades cannot hit a
-     * degenerate axis and glitch as they whirl.
+     * Moves a crescent blade to its position on the vortex. The blades are
+     * billboarded so they always face the camera, which means no rotation is
+     * ever applied — only a gentle scale pulse — keeping the display
+     * transform free of anything that can glitch or crash the client.
      *
      * @param display the blade to place
      * @param center  the vortex centre
-     * @param angle   yaw around the vertical axis
+     * @param angle   position around the vertical axis
      * @param radius  distance from the centre
      * @param y       height of the blade
      */
@@ -211,14 +207,9 @@ public final class KokushiboEffects {
                                       final double y) {
         display.teleport(center.clone().add(
                 Math.sin(angle) * radius, y, Math.cos(angle) * radius));
-        final Quaternionf rotation = new Quaternionf()
-                .rotateY((float) angle)
-                .rotateX(CRESCENT_TILT);
-        display.setTransformation(new Transformation(
-                new Vector3f(0f, 0f, 0f),
-                rotation,
-                new Vector3f(CRESCENT_SCALE, CRESCENT_SCALE, CRESCENT_SCALE),
-                new Quaternionf()));
+        final float scale = CRESCENT_SCALE
+                * (0.9f + 0.1f * (float) Math.sin(angle * 3.0));
+        setScale(display, scale, scale, scale);
         // Purple slash trail behind the flying blade.
         final Location pos = display.getLocation();
         pos.getWorld().spawnParticle(Particle.DUST, pos, 2, 0.1, 0.1, 0.1,

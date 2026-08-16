@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "ffacore:block/lava_orb"
+    "all": "minecraft:block/lava_still"
   }
 }

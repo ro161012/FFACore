@@ -170,9 +170,10 @@ kokushibo:
     damage-hearts: 3.0
     # Maximum radius the ring expands to, in blocks.
     max-radius: 20.0
-    # Number of glass blocks in the expanding ring.
-    crescents: 24
-    # Ticks the ring expands for. Higher = slower expansion.
+    # How many moon-energy rings shoot out per cast. Each ring sweeps
+    # outward and strikes targets once.
+    rings: 3
+    # Ticks each ring takes to expand. Higher = slower expansion.
     vfx-ticks: 24
   moonbow:
     cooldown-seconds: 80

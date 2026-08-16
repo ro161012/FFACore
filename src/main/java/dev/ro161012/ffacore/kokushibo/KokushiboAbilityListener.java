@@ -62,7 +62,7 @@ public final class KokushiboAbilityListener implements Listener {
     private double crescentDamageHearts;
     private double catastropheDamageHearts;
     private double catastropheMaxRadius;
-    private int catastropheCrescents;
+    private int catastropheRings;
     private int moonbowCrescents;
     private double moonbowDamageHearts;
     private int catastropheVfxTicks;
@@ -99,8 +99,8 @@ public final class KokushiboAbilityListener implements Listener {
                 "kokushibo.catastrophe.damage-hearts", 3.0);
         catastropheMaxRadius = Math.max(2.0, config.getDouble(
                 "kokushibo.catastrophe.max-radius", 20.0));
-        catastropheCrescents = Math.max(4, config.getInt(
-                "kokushibo.catastrophe.crescents", 24));
+        catastropheRings = Math.max(1, config.getInt(
+                "kokushibo.catastrophe.rings", 3));
         moonbowCrescents = Math.max(1, config.getInt("kokushibo.moonbow.crescents", 6));
         moonbowDamageHearts = config.getDouble("kokushibo.moonbow.damage-hearts", 3.0);
         catastropheVfxTicks = Math.max(4, config.getInt(
@@ -244,7 +244,7 @@ public final class KokushiboAbilityListener implements Listener {
                 "§dFourteenth Form §8» §d§lCatastrophe, Tenman Crescent Moon",
                 BarColor.PURPLE, catastropheCooldown.getCooldownMillis());
         KokushiboEffects.playCatastrophe(plugin, player, catastropheMaxRadius,
-                catastropheCrescents,
+                catastropheRings,
                 living -> applyTrueDamage(living, player, catastropheDamageHearts),
                 catastropheVfxTicks);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.7f);

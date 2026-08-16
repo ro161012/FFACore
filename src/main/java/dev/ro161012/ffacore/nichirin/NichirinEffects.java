@@ -1,5 +1,6 @@
 package dev.ro161012.ffacore.nichirin;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -9,7 +10,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -19,7 +19,10 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.IntConsumer;
 
 /**
@@ -27,22 +30,24 @@ import java.util.function.IntConsumer;
  * Kagura forms using full-bright translucent stained-glass block displays,
  * tinted by the pack's solar-fire core shader, with actual lava blocks that
  * erupt outward and then disappear.
- *
- * <p><b>Clear Blue Sky</b> is a continuous 360&deg; disc of solar fire that
- * spins around the caster's waist: an orange-red core ring inside a
- * yellow-white outer ring and a lingering afterimage, with lava shooting
- * outward. <b>Dancing Flash</b> opens with an electric launch, sweeps a
- * vertical crescent of glass blocks forward, and detonates into an
- * expanding yellow/orange shockwave with a forward lava volley. Every
- * display is removed when its animation ends.
+ *     * <p><b>Clear Blue Sky</b> is a continuous 360&deg; disc of solar fire that
+     * spins around the caster's waist: an orange-red core ring inside a
+     * yellow-white outer ring and a lingering afterimage, with glowing
+     * lava-orange blocks shooting outward. <b>Dancing Flash</b> opens with an
+     * electric launch, sweeps a vertical crescent of glass blocks forward,
+     * and detonates into an expanding yellow/orange shockwave with a forward
+     * volley of glowing blocks. Every display is removed when its animation
+     * ends.
  */
 public final class NichirinEffects {
 
     private static final double TAU = Math.PI * 2.0;
 
-    /** Scoreboard tag marking the temporary lava projectiles so their landing
-     *  is cancelled and they never place a real lava source. */
-    public static final String LAVA_TAG = "ffacore_lava";
+    /** Solid ember-orange colour used by the ability rings. */
+    private static final Color EMBER = Color.fromRGB(255, 122, 0);
+
+    /** Lighter solar-orange highlight colour. */
+    private static final Color SOLAR = Color.fromRGB(255, 190, 60);
 
     private NichirinEffects() {
         // Utility class.
@@ -108,25 +113,22 @@ public final class NichirinEffects {
                 setScale(displays.get(core + rim + i), ghostScale, ghostScale * 0.7f, ghostScale);
             }
 
-            // Lava shoots outward from the rim, then fades like heat haze.
+            // Full-orange ember dust shoots outward from the rim, then fades
+            // like heat haze.
             final Location edge = waist.clone().add(0.0, 0.15, 0.0);
-            edge.getWorld().spawnParticle(Particle.LAVA, edge, 30, ringRadius, 0.35, ringRadius, 0.08);
-            edge.getWorld().spawnParticle(Particle.FALLING_LAVA, waist, 14, ringRadius, 0.25, ringRadius, 0.03);
-            edge.getWorld().spawnParticle(Particle.FLAME, edge, 22, ringRadius * 0.7, 0.35, ringRadius * 0.7, 0.04);
-            edge.getWorld().spawnParticle(Particle.END_ROD, edge, 16, ringRadius, 0.45, ringRadius, 0.01);
-            edge.getWorld().spawnParticle(Particle.SMOKE, edge, 8, ringRadius * 0.5, 0.3, ringRadius * 0.5, 0.0);
-            // A bright flame ring rides the disc edge so the whole circle
+            dust(edge, EMBER, 40, ringRadius, 0.35, ringRadius, 1.4f);
+            dust(waist, SOLAR, 18, ringRadius, 0.25, ringRadius, 1.1f);
+            dust(edge, EMBER, 30, ringRadius * 0.7, 0.35, ringRadius * 0.7, 1.2f);
+            dust(edge, SOLAR, 20, ringRadius, 0.45, ringRadius, 0.9f);
+            dust(edge, EMBER, 10, ringRadius * 0.5, 0.3, ringRadius * 0.5, 1.6f);
+            // A bright ember ring rides the disc edge so the whole circle
             // reads as one band of solar fire, not sparse dots.
             for (int p = 0; p < 12; p++) {
                 final double angle = p * (TAU / 12);
                 final Location point = edge.clone().add(
                         Math.sin(angle) * ringRadius, 0.0, Math.cos(angle) * ringRadius);
-                point.getWorld().spawnParticle(Particle.FLAME, point, 4,
-                        0.25, 0.25, 0.25, 0.03);
-                point.getWorld().spawnParticle(Particle.LAVA, point, 2,
-                        0.2, 0.2, 0.2, 0.0);
-                point.getWorld().spawnParticle(Particle.END_ROD, point, 2,
-                        0.2, 0.2, 0.2, 0.01);
+                dust(point, SOLAR, 5, 0.25, 0.25, 0.25, 1.5f);
+                dust(point, EMBER, 3, 0.2, 0.2, 0.2, 1.3f);
             }
         });
     }
@@ -174,13 +176,13 @@ public final class NichirinEffects {
             final double progress = tick / (double) Math.max(1, ticks - 1);
             final boolean launching = progress < 0.2;
 
-            // Electric launch: yellow lightning crackles around the feet.
+            // Electric launch: yellow lightning crackles around the feet with
+            // an orange ember flash.
             if (launching) {
                 final Location feet = player.getLocation();
                 feet.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, feet.add(0.0, 0.2, 0.0),
                         8, 0.5, 0.1, 0.5, 0.02);
-                feet.getWorld().spawnParticle(Particle.FIREWORK, feet.add(0.0, 0.6, 0.0),
-                        5, 0.4, 0.3, 0.4, 0.01);
+                dust(feet.add(0.0, 0.6, 0.0), SOLAR, 5, 0.4, 0.3, 0.4, 1.1f);
             }
 
             // The crescent sweeps forward: a vertical arc of flame blades in
@@ -223,56 +225,49 @@ public final class NichirinEffects {
                 setScale(displays.get(shockIndex + i), 0.5f, 0.2f, 0.5f);
             }
 
-            // Flame trail along the crescent and the final electric/fire burst.
-            tip.getWorld().spawnParticle(Particle.FLAME, tip, 8, 0.6, 0.6, 0.6, 0.04);
-            tip.getWorld().spawnParticle(Particle.END_ROD, tip, 5, 0.5, 0.5, 0.5, 0.02);
+            // Ember dust trail along the crescent and the final burst.
+            dust(tip, EMBER, 10, 0.6, 0.6, 0.6, 1.4f);
+            dust(tip, SOLAR, 6, 0.5, 0.5, 0.5, 1.1f);
             if (impactProgress > 0.0) {
                 final Location ground = eye.clone().add(0.0, -1.0, 0.0);
-                ground.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, ground, 6,
-                        ringRadius, 0.3, ringRadius, 0.02);
-                ground.getWorld().spawnParticle(Particle.LAVA, ground, 8,
-                        ringRadius * 0.6, 0.2, ringRadius * 0.6, 0.02);
+                dust(ground, EMBER, 10, ringRadius, 0.3, ringRadius, 1.3f);
+                dust(ground, SOLAR, 8, ringRadius * 0.6, 0.2, ringRadius * 0.6, 1.0f);
             }
         });
     }
 
     /**
-     * Erupts actual lava blocks outward in a ring around the caster. The lava
-     * arcs up and out, then disappears once the burst finishes.
+     * Erupts glowing lava-orange blocks outward in a ring around the caster.
+     * They arc up and out, then disappear when they land or the burst ends —
+     * nothing ever stays in the world.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
-     * @param radius how far the lava shoots out, in blocks
+     * @param radius how far the blocks shoot out, in blocks
      */
     public static void lavaBurst(final JavaPlugin plugin, final Player player,
                                  final double radius) {
-        final Location center = player.getLocation().add(0.0, 0.2, 0.0);
+        final Location center = player.getLocation().add(0.0, 0.3, 0.0);
         final int count = 28;
-        final double speed = Math.max(0.4, 0.35 + radius * 0.015);
-        final List<FallingBlock> lava = new ArrayList<>();
+        final double speed = Math.max(0.45, 0.35 + radius * 0.015);
+        final List<Location> spawns = new ArrayList<>();
+        final List<Vector> velocities = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final double angle = i * (TAU / count);
-            // A real lava block entity (not a display/particle) that erupts
-            // outward and vanishes on impact — it never stays in the world.
-            final FallingBlock block = player.getWorld().spawnFallingBlock(
-                    center, Material.LAVA.createBlockData());
-            block.setDropItem(false);
-            block.addScoreboardTag(LAVA_TAG);
-            block.setVelocity(new Vector(
-                    Math.sin(angle) * speed, 0.35, Math.cos(angle) * speed));
-            lava.add(block);
+            spawns.add(center.clone());
+            velocities.add(new Vector(
+                    Math.sin(angle) * speed, 0.45, Math.cos(angle) * speed));
         }
-
-        removeWhenSettled(plugin, lava);
+        launchLavaBlocks(plugin, player, spawns, velocities, 30);
     }
 
     /**
-     * Shoots actual lava blocks forward in the player's facing direction,
-     * arcing up and spreading sideways before disappearing.
+     * Shoots glowing lava-orange blocks forward in the player's facing
+     * direction, arcing up and spreading sideways before disappearing.
      *
      * @param plugin owning plugin (for the scheduler)
      * @param player the caster
-     * @param radius how far the lava shoots forward, in blocks
+     * @param radius how far the blocks shoot forward, in blocks
      */
     public static void lavaBurstForward(final JavaPlugin plugin, final Player player,
                                         final double radius) {
@@ -281,62 +276,80 @@ public final class NichirinEffects {
         final Vector side = new Vector(-facing.getZ(), 0.0, facing.getX());
         final int count = 20;
         final double speed = 0.5 + Math.max(0.0, radius) * 0.05;
-        final List<FallingBlock> lava = new ArrayList<>();
+        final List<Location> spawns = new ArrayList<>();
+        final List<Vector> velocities = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final double spread = (i / (double) (count - 1)) * 2.0 - 1.0;
             // Spawn just ahead of the caster so the volley is instantly in view.
             final Location spawn = origin.clone()
                     .add(facing.clone().multiply(0.5))
                     .add(side.clone().multiply(spread * 0.5));
-            // A real lava block entity (not a display/particle) that shoots
-            // forward and vanishes on impact — it never stays in the world.
-            final FallingBlock block = player.getWorld().spawnFallingBlock(
-                    spawn, Material.LAVA.createBlockData());
-            block.setDropItem(false);
-            block.addScoreboardTag(LAVA_TAG);
-            block.setVelocity(facing.clone()
+            spawns.add(spawn);
+            velocities.add(facing.clone()
                     .multiply(speed + Math.random() * 0.25)
                     .add(side.clone().multiply(spread * 0.18))
-                    .add(new Vector(0.0, 0.12 + Math.random() * 0.18, 0.0)));
-            lava.add(block);
+                    .add(new Vector(0.0, 0.14 + Math.random() * 0.18, 0.0)));
         }
-
-        removeWhenSettled(plugin, lava);
+        launchLavaBlocks(plugin, player, spawns, velocities, 26);
     }
 
     /**
-     * Removes the lava projectiles the moment they touch the ground and clears
-     * any stragglers once the volley is over, so no lava ever lingers in the
-     * world. The landing itself is cancelled separately in
-     * {@code NichirinAbilityListener#onLavaProjectileLand}.
+     * Launches glowing lava-orange block displays along the given velocities.
+     * Each block flies, trails ember dust, and is removed the moment it lands
+     * or when the flight times out, so no lava ever lingers in the world.
      *
-     * @param plugin owning plugin (for the scheduler)
-     * @param lava   the falling lava blocks to clean up
+     * @param plugin     owning plugin (for the scheduler)
+     * @param player     the caster
+     * @param spawns     one spawn location per block
+     * @param velocities one initial velocity per block
+     * @param maxTicks   how long the volley flies before expiring
      */
-    private static void removeWhenSettled(final JavaPlugin plugin,
-                                          final List<FallingBlock> lava) {
+    private static void launchLavaBlocks(final JavaPlugin plugin, final Player player,
+                                         final List<Location> spawns,
+                                         final List<Vector> velocities,
+                                         final int maxTicks) {
+        final World world = player.getWorld();
+        final List<BlockDisplay> blocks = new ArrayList<>();
+        final Map<UUID, Vector> motion = new HashMap<>();
+        for (int i = 0; i < spawns.size(); i++) {
+            final BlockDisplay block = world.spawn(spawns.get(i), BlockDisplay.class);
+            block.setBlock(Material.SHROOMLIGHT.createBlockData());
+            block.setBrightness(new Display.Brightness(15, 15));
+            block.setInterpolationDuration(1);
+            block.setInterpolationDelay(0);
+            setScale(block, 0.55f, 0.55f, 0.55f);
+            blocks.add(block);
+            motion.put(block.getUniqueId(), velocities.get(i).clone());
+        }
+
         new BukkitRunnable() {
             private int tick;
 
             @Override
             public void run() {
-                lava.removeIf(block -> {
-                    if (!block.isValid() || block.isDead()) {
-                        return true;
-                    }
-                    if (block.isOnGround()) {
-                        block.remove();
-                        return true;
-                    }
-                    return false;
-                });
-                if (tick++ >= 40 || lava.isEmpty()) {
-                    lava.forEach(block -> {
+                if (tick++ >= maxTicks || blocks.isEmpty()) {
+                    blocks.forEach(block -> {
                         if (block.isValid()) {
                             block.remove();
                         }
                     });
                     cancel();
+                    return;
+                }
+                for (final BlockDisplay block : new ArrayList<>(blocks)) {
+                    if (!block.isValid()) {
+                        blocks.remove(block);
+                        continue;
+                    }
+                    final Vector velocity = motion.get(block.getUniqueId());
+                    final Location next = block.getLocation().add(velocity);
+                    block.teleport(next);
+                    velocity.subtract(new Vector(0.0, 0.02, 0.0));
+                    dust(next, EMBER, 3, 0.15, 0.15, 0.15, 1.3f);
+                    if (velocity.getY() <= 0.0 && next.getBlock().getType().isSolid()) {
+                        block.remove();
+                        blocks.remove(block);
+                    }
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);
@@ -513,6 +526,29 @@ public final class NichirinEffects {
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Spawns solid-coloured dust particles (a full colour, not fire/lava
+     * textures) at a point.
+     *
+     * @param at    centre of the particle cloud
+     * @param color the solid particle colour
+     * @param count number of particles
+     * @param dx    horizontal spread
+     * @param dy    vertical spread
+     * @param dz    horizontal spread
+     * @param size  particle size (1.0 is default)
+     */
+    private static void dust(final Location at, final Color color, final int count,
+                             final double dx, final double dy, final double dz,
+                             final float size) {
+        final World world = at.getWorld();
+        if (world == null) {
+            return;
+        }
+        world.spawnParticle(Particle.DUST, at, count, dx, dy, dz,
+                new Particle.DustOptions(color, size));
     }
 
     /**

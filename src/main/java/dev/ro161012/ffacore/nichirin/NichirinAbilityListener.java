@@ -7,13 +7,11 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
@@ -244,20 +242,6 @@ public final class NichirinAbilityListener implements Listener {
         if (event.getModifiedType() == PotionEffectType.ABSORPTION) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Cancels the landing of the temporary lava projectiles so they vanish on
-     * impact instead of placing real lava sources in the world.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLavaProjectileLand(final EntityChangeBlockEvent event) {
-        if (!(event.getEntity() instanceof FallingBlock block)
-                || !block.getScoreboardTags().contains(NichirinEffects.LAVA_TAG)) {
-            return;
-        }
-        event.setCancelled(true);
-        block.remove();
     }
 
     private void castClearBlueSky(final Player player) {

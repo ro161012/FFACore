@@ -119,9 +119,9 @@ This is the only command that hands out weapons. Available weapons:
   blades that fly toward the target and deal true damage (Kokushibo's
   signature Blood Demon Art).
 * **Catastrophe, Tenman Crescent Moon** (offhand, 70s) — press the swap-hands
-  key while holding the sword (either hand) to unleash an omni-directional
-  ring of moon energy that expands outward, dealing up to 3 hearts true
-  damage to everything it sweeps.
+  key while holding the sword (either hand) to shoot out a configurable
+  number of full-purple moon-energy rings that sweep outward, each dealing up
+  to 3 hearts true damage to everything it passes.
 * **Moonbow, Half Moon** (offhand + crouch, 80s) — crouch and press the
   swap-hands key to arm the moonbow, then left-click to launch white crescent
   gleams straight up, dealing up to 3 hearts true damage each.
@@ -249,7 +249,7 @@ kokushibo:
     cooldown-seconds: 70
     damage-hearts: 3.0
     max-radius: 20.0
-    crescents: 24
+    rings: 3             # moon-energy rings per cast
     vfx-ticks: 24        # ring expansion speed
   moonbow:
     cooldown-seconds: 80

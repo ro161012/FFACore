@@ -1,10 +1,9 @@
 package dev.ro161012.ffacore.kokushibo;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -17,108 +16,114 @@ import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 
 /**
- * Renders the Kokushibo Sword ability visuals as glowing purple geometry and
- * crescent displays.
+ * Renders the Kokushibo Sword ability visuals.
  *
- * <p>Catastrophe expands a ring of purple glass blocks outward from the
- * caster, Moonbow fires white crescent gleams straight up one by one, and the
- * passive fires a single drifting crescent. The glass is full-bright
- * translucent rendered through the companion core shader, and every display
- * entity is removed when its animation ends — nothing lingers.
+ * <p>Catastrophe shoots out expanding rings of full-purple moon-energy
+ * particles, Moonbow fires a white crescent gleam where the caster aims, and
+ * the passive fires a single drifting crescent. Every display entity is
+ * removed when its animation ends — nothing lingers.
  */
 public final class KokushiboEffects {
 
     private static final double TAU = Math.PI * 2.0;
+
+    /** Solid bright-purple colour used by the moon-energy rings. */
+    private static final Color MOON = Color.fromRGB(177, 74, 255);
 
     private KokushiboEffects() {
         // Utility class.
     }
 
     /**
-     * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — an
-     * omni-directional ring of purple energy expanding outward in every
-     * direction.
-     *
-     * <p>Damage is applied immediately to every living target inside
-     * {@code maxRadius} (the strike hits in all directions at once), then the
-     * expanding ring sweeps outward as the visual. The {@code onStrike}
-     * callback receives each target exactly once.
+     * Plays the Fourteenth Form: Catastrophe, Tenman Crescent Moon — a
+     * sequence of expanding rings of full-purple moon energy. Each ring
+     * sweeps outward from the caster and strikes every living target it
+     * passes exactly once, so more rings land more hits.
      *
      * @param plugin    owning plugin (for the scheduler)
      * @param player    the caster
-     * @param maxRadius the radius the ring expands out to, in blocks
-     * @param crescents number of glass blocks in the expanding ring
-     * @param onStrike  called once per target struck
-     * @param ticks     how long the ring plays (shorter = snappier)
+     * @param maxRadius the radius each ring expands out to, in blocks
+     * @param rings     how many moon-energy rings shoot out per cast
+     * @param onStrike  called once per target per ring
+     * @param ticks     how long each ring takes to expand
      */
     public static void playCatastrophe(final JavaPlugin plugin, final Player player,
-                                       final double maxRadius, final int crescents,
+                                       final double maxRadius, final int rings,
                                        final Consumer<LivingEntity> onStrike,
                                        final int ticks) {
-        final Location center = player.getEyeLocation().add(0.0, -0.5, 0.0);
+        final Location center = player.getEyeLocation().add(0.0, -0.4, 0.0);
+        // Stagger each ring a little so several waves read as one vortex.
+        final long staggerTicks = 4L;
+        final int ringCount = Math.max(1, rings);
+        for (int wave = 0; wave < ringCount; wave++) {
+            final long delay = wave * staggerTicks;
+            plugin.getServer().getScheduler().runTaskLater(plugin,
+                    () -> sweepRing(plugin, player, center.clone(), maxRadius,
+                            onStrike, ticks),
+                    delay);
+        }
+    }
 
-        // Strike everything around the caster immediately so the damage always
-        // lands, then the expanding ring plays as the visual sweep.
+    /**
+     * Expands a single ring of solid purple moon-energy particles outward,
+     * striking each living target once as the ring passes over it.
+     *
+     * @param plugin    owning plugin (for the scheduler)
+     * @param player    the caster (excluded from strikes)
+     * @param center    the ring centre
+     * @param maxRadius final reach of the ring in blocks
+     * @param onStrike  called once per target as the ring passes it
+     * @param ticks     how long the ring takes to expand
+     */
+    private static void sweepRing(final JavaPlugin plugin, final Player player,
+                                  final Location center, final double maxRadius,
+                                  final Consumer<LivingEntity> onStrike,
+                                  final int ticks) {
+        final World world = center.getWorld();
         final Set<UUID> struck = new HashSet<>();
-        for (final Entity entity : center.getWorld().getNearbyEntities(
-                center, maxRadius, 4.0, maxRadius)) {
-            if (!(entity instanceof LivingEntity living) || living.equals(player)) {
-                continue;
+        new BukkitRunnable() {
+            private int tick;
+
+            @Override
+            public void run() {
+                if (tick >= ticks) {
+                    cancel();
+                    return;
+                }
+                final double progress = tick / (double) Math.max(1, ticks - 1);
+                final double radius = 1.0 + (maxRadius - 1.0) * progress;
+                final int points = Math.max(48, (int) Math.round(TAU * radius / 0.6));
+                for (int i = 0; i < points; i++) {
+                    final double angle = i * (TAU / points);
+                    final double y = 0.6 * Math.sin(progress * Math.PI);
+                    final Location point = center.clone().add(
+                            Math.sin(angle) * radius, y, Math.cos(angle) * radius);
+                    world.spawnParticle(Particle.DUST, point, 1, 0.0, 0.0, 0.0,
+                            new Particle.DustOptions(MOON, 1.7f));
+                }
+                for (final Entity entity : world.getNearbyEntities(
+                        center, radius, 4.0, radius)) {
+                    if (!(entity instanceof LivingEntity living) || living.equals(player)) {
+                        continue;
+                    }
+                    final double dx = living.getLocation().getX() - center.getX();
+                    final double dz = living.getLocation().getZ() - center.getZ();
+                    if (dx * dx + dz * dz > radius * radius) {
+                        continue;
+                    }
+                    if (struck.add(living.getUniqueId())) {
+                        onStrike.accept(living);
+                    }
+                }
+                tick++;
             }
-            final double dx = living.getLocation().getX() - center.getX();
-            final double dz = living.getLocation().getZ() - center.getZ();
-            if (dx * dx + dz * dz <= maxRadius * maxRadius
-                    && struck.add(living.getUniqueId())) {
-                onStrike.accept(living);
-                // A purple ring erupts off each target as it is struck.
-                purpleBurst(living.getLocation().add(0.0, 1.0, 0.0));
-            }
-        }
-
-        final int totalTicks = Math.max(1, ticks);
-        final double startRadius = 1.6;
-        final int blocks = Math.max(16, crescents);
-        final List<Display> ring = new ArrayList<>();
-        for (int i = 0; i < blocks; i++) {
-            ring.add(spawnBlockAt(center, Material.PURPLE_STAINED_GLASS));
-        }
-
-        center.getWorld().spawnParticle(Particle.WITCH, center, 60, 1.5, 0.8, 1.5, 0.02);
-        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 20, 1.2, 0.6, 1.2, 0.01);
-        center.getWorld().spawnParticle(Particle.END_ROD, center, 20, 1.5, 0.8, 1.5, 0.01);
-
-        animate(plugin, ring, totalTicks, tick -> {
-            final double progress = tick / (double) totalTicks;
-            final double radius = startRadius + (maxRadius - startRadius) * progress;
-
-            // A single clean band of purple glass expanding outward.
-            for (int i = 0; i < blocks; i++) {
-                final double angle = i * (TAU / blocks);
-                ring.get(i).teleport(center.clone().add(
-                        Math.sin(angle) * radius, 0.0, Math.cos(angle) * radius));
-                final float scale = 0.5f + (float) progress * 0.6f;
-                setScale(ring.get(i), scale, 0.28f, scale);
-            }
-
-            // Purple energy sparkles drifting outward with the ring.
-            if (tick % 2 == 0) {
-                center.getWorld().spawnParticle(Particle.WITCH, center, 4,
-                        radius, 0.3, radius, 0.01);
-                center.getWorld().spawnParticle(Particle.END_ROD, center, 3,
-                        radius, 0.25, radius, 0.005);
-                center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 2,
-                        radius, 0.2, radius, 0.01);
-            }
-        });
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 
     /**
@@ -276,41 +281,6 @@ public final class KokushiboEffects {
     }
 
     /**
-     * Emits a ring of purple energy around a struck target — the impact flash
-     * of the Fourteenth Form.
-     *
-     * @param center the centre of the burst
-     */
-    private static void purpleBurst(final Location center) {
-        final World world = center.getWorld();
-        if (world == null) {
-            return;
-        }
-        for (int i = 0; i < 16; i++) {
-            final double angle = i * (TAU / 16);
-            final Location point = center.clone().add(
-                    Math.sin(angle) * 0.9, 0.15, Math.cos(angle) * 0.9);
-            world.spawnParticle(Particle.WITCH, point, 2, 0.1, 0.1, 0.1, 0.01);
-            world.spawnParticle(Particle.END_ROD, point, 1, 0.1, 0.1, 0.1, 0.01);
-        }
-        world.spawnParticle(Particle.DRAGON_BREATH, center, 8, 0.5, 0.4, 0.5, 0.01);
-    }
-
-    /**
-     * Spawns a full-bright glowing purple glass block display at a world
-     * location.
-     */
-    private static BlockDisplay spawnBlockAt(final Location location, final Material material) {
-        final BlockDisplay display = location.getWorld().spawn(location, BlockDisplay.class);
-        display.setBlock(material.createBlockData());
-        display.setBrightness(new Display.Brightness(15, 15));
-        display.setInterpolationDuration(1);
-        display.setInterpolationDelay(0);
-        setScale(display, 0.35f, 0.06f, 0.35f);
-        return display;
-    }
-
-    /**
      * Applies a scale-only transform to a display (no rotation, so it never
      * flickers).
      */
@@ -323,24 +293,4 @@ public final class KokushiboEffects {
                 new AxisAngle4f(0f, 0f, 0f, 1f)));
     }
 
-    /**
-     * Runs a per-tick animation callback, then removes every display.
-     */
-    private static void animate(final JavaPlugin plugin, final List<Display> displays,
-                                final int totalTicks, final IntConsumer ticker) {
-        new BukkitRunnable() {
-            private int tick;
-
-            @Override
-            public void run() {
-                if (tick >= totalTicks) {
-                    displays.forEach(Display::remove);
-                    cancel();
-                    return;
-                }
-                ticker.accept(tick);
-                tick++;
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
-    }
 }

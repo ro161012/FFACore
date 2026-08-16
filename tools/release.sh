@@ -34,10 +34,35 @@ if [ -z "$TOKEN" ]; then
 fi
 AUTH="Authorization: token $TOKEN"
 
+# --- Full changelog ---------------------------------------------------------
+# Every commit since the previous release tag becomes one bullet in the
+# changelog; version-bump commits are noise and are filtered out.
+CHANGELOG=$(git log --pretty=format:'- %s' "v$CUR_VER..HEAD" 2>/dev/null \
+  | grep -v '^-[[:space:]]*Bump version' || true)
+if [ -z "$CHANGELOG" ]; then
+  CHANGELOG="- Initial release"
+fi
+
+# --- Update CHANGELOG.md ------------------------------------------------------
+# Insert the new section directly under the [Unreleased] heading so the file
+# always lists the newest release first.
+CHANGELOG_FILE="CHANGELOG.md"
+if [ -f "$CHANGELOG_FILE" ]; then
+  {
+    sed -n '1,/^## \[Unreleased\]/p' "$CHANGELOG_FILE"
+    echo
+    echo "## [$NEW_VER] - $(date +%Y-%m-%d)"
+    printf '%s\n' "$CHANGELOG"
+    echo
+    sed -n '/^## \[Unreleased\]/,$p' "$CHANGELOG_FILE" | sed '1d'
+  } > "$CHANGELOG_FILE.tmp"
+  mv "$CHANGELOG_FILE.tmp" "$CHANGELOG_FILE"
+fi
+
 # --- Build + commit + tag ---------------------------------------------------
 sed -i "s#<version>$CUR_VER</version>#<version>$NEW_VER</version>#" pom.xml
 ./mvnw -q clean package
-git add pom.xml
+git add pom.xml CHANGELOG.md
 git -c user.name="ro161012" -c user.email="ro161012@users.noreply.github.com" \
   commit -m "Bump version to $NEW_VER"
 git -c user.name="ro161012" -c user.email="ro161012@users.noreply.github.com" \
@@ -52,9 +77,13 @@ test -f "$JAR" && test -f "$ZIP"
 
 BODY="## FFACore $NEW_VER
 
-- Built against Paper API 1.21.11, resource pack \`pack_format\` 75 (1.21.11)
-- Altar SMP 1:1 gradient tooltips (ocean / ember)
-- See the git log for the full change set since v$CUR_VER."
+### Changes
+$CHANGELOG
+
+### Installation
+- **Jar** \`FFACore-$NEW_VER.jar\` -> your server's \`plugins/\` folder
+- **Resource pack** \`FFACore-Resourcepack.zip\` -> client resource packs, then F3+T
+- Built against Paper API 1.21.11, resource pack \`pack_format\` 75 (1.21.11)"
 
 RELEASE=$(curl -s -X POST -H "$AUTH" -H "Accept: application/vnd.github+json" \
   -d "$(node -e 'console.log(JSON.stringify({tag_name:process.argv[1],name:process.argv[1],body:process.argv[2]}))' "v$NEW_VER" "$BODY")" \

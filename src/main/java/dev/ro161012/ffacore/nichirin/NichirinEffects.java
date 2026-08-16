@@ -10,6 +10,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -258,7 +260,7 @@ public final class NichirinEffects {
             velocities.add(new Vector(
                     Math.sin(angle) * speed, 0.45, Math.cos(angle) * speed));
         }
-        launchLavaBlocks(plugin, player, spawns, velocities, 30);
+        launchLavaBlocks(plugin, player, spawns, velocities, 30, false);
     }
 
     /**
@@ -290,7 +292,7 @@ public final class NichirinEffects {
                     .add(side.clone().multiply(spread * 0.18))
                     .add(new Vector(0.0, 0.14 + Math.random() * 0.18, 0.0)));
         }
-        launchLavaBlocks(plugin, player, spawns, velocities, 26);
+        launchLavaBlocks(plugin, player, spawns, velocities, 26, true);
     }
 
     /**
@@ -298,16 +300,18 @@ public final class NichirinEffects {
      * Each block flies, trails ember dust, and is removed the moment it lands
      * or when the flight times out, so no lava ever lingers in the world.
      *
-     * @param plugin     owning plugin (for the scheduler)
-     * @param player     the caster
-     * @param spawns     one spawn location per block
-     * @param velocities one initial velocity per block
-     * @param maxTicks   how long the volley flies before expiring
+     * @param plugin       owning plugin (for the scheduler)
+     * @param player       the caster
+     * @param spawns       one spawn location per block
+     * @param velocities   one initial velocity per block
+     * @param maxTicks     how long the volley flies before expiring
+     * @param impactOnLand whether a landing block sears and knocks back
      */
     private static void launchLavaBlocks(final JavaPlugin plugin, final Player player,
                                          final List<Location> spawns,
                                          final List<Vector> velocities,
-                                         final int maxTicks) {
+                                         final int maxTicks,
+                                         final boolean impactOnLand) {
         final World world = player.getWorld();
         final List<BlockDisplay> blocks = new ArrayList<>();
         final Map<UUID, Vector> motion = new HashMap<>();
@@ -347,12 +351,50 @@ public final class NichirinEffects {
                     velocity.subtract(new Vector(0.0, 0.02, 0.0));
                     dust(next, EMBER, 3, 0.15, 0.15, 0.15, 1.3f);
                     if (velocity.getY() <= 0.0 && next.getBlock().getType().isSolid()) {
+                        if (impactOnLand) {
+                            lavaImpact(player, next);
+                        }
                         block.remove();
                         blocks.remove(block);
                     }
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * A lava block just struck the ground: plays a matching lava hiss, sears
+     * the impact point with ember dust, and knocks nearby targets back away
+     * from the splash.
+     *
+     * @param caster the player who fired the volley (excluded from knockback)
+     * @param impact where the lava block landed
+     */
+    private static void lavaImpact(final Player caster, final Location impact) {
+        final World world = impact.getWorld();
+        world.playSound(impact, Sound.BLOCK_LAVA_EXTINGUISH, 0.8f, 1.1f);
+        dust(impact, EMBER, 10, 0.5, 0.3, 0.5, 1.4f);
+        dust(impact, SOLAR, 5, 0.35, 0.25, 0.35, 1.0f);
+
+        for (final Entity entity : world.getNearbyEntities(impact, 2.0, 2.0, 2.0)) {
+            if (!(entity instanceof LivingEntity living) || living.equals(caster)) {
+                continue;
+            }
+            final double dx = living.getLocation().getX() - impact.getX();
+            final double dz = living.getLocation().getZ() - impact.getZ();
+            final double length = Math.hypot(dx, dz);
+            final double dirX;
+            final double dirZ;
+            if (length < 1.0e-6) {
+                final double angle = Math.random() * TAU;
+                dirX = Math.cos(angle);
+                dirZ = Math.sin(angle);
+            } else {
+                dirX = dx / length;
+                dirZ = dz / length;
+            }
+            living.knockback(1.2, dirX, dirZ);
+        }
     }
 
     /**

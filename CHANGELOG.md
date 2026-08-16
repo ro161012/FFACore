@@ -10,6 +10,11 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.40] - 2026-08-15
+- Generate full changelogs and maintain CHANGELOG.md on release
+- Use orange dust and glowing lava blocks for Nichirin; rebuild Catastrophe as purple rings
+
+
 ## [1.21.39] - 2026-08-15
 - Fix Catastrophe: apply damage immediately and enlarge the expanding ring
 

@@ -24,7 +24,7 @@ import java.util.Set;
  */
 public final class PreviewRegistry {
 
-    private static final String RESOURCE = "/preview-items.json";
+    private static final String RESOURCE = "preview-items.json";
 
     private final List<PreviewItem> items;
     private final List<String> categories;
@@ -47,8 +47,13 @@ public final class PreviewRegistry {
 
     private List<PreviewItem> load(final JavaPlugin plugin) {
         final List<PreviewItem> loaded = new ArrayList<>();
+        final java.io.InputStream stream = plugin.getResource(RESOURCE);
+        if (stream == null) {
+            plugin.getLogger().warning("preview-items.json not found inside the plugin jar.");
+            return loaded;
+        }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                plugin.getResource(RESOURCE), StandardCharsets.UTF_8))) {
+                stream, StandardCharsets.UTF_8))) {
             final JsonObject root = gson.fromJson(reader, JsonObject.class);
             if (root == null || !root.has("items")) {
                 return loaded;

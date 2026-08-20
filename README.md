@@ -109,12 +109,32 @@ Every FFACore command lives under `/ffa`:
 | `/ffa arena ...` | `ffacore.arena.*` | Arena regeneration management |
 | `/ffa killtoken ...` | `ffacore.killtoken.*` | The Kill Token currency |
 | `/ffa afk ...` | `ffacore.afk.*` | AFK zones and AFK Shards |
+| `/ffa preview` | `ffacore.preview` | Browse and take every custom item from the merged pack |
 | `/ffa config` | `ffacore.config` | Open the in-game config menu |
 | `/ffa reload` | `ffacore.admin` | Reload `config.yml` from disk |
 
 Without arguments it shows a live overview of all three subsystems. These
 are the only commands the plugin registers - there are no standalone
 `/arena`, `/killtoken` or `/afk` commands.
+
+#### Item preview (`/ffa preview`)
+
+The merged resource pack ships hundreds of custom items (the Nexo packs:
+weapons, bows, wings, halos, furniture, signs, icons &hellip;). `/ffa preview`
+opens a paged GUI to browse them by category - click to take one,
+shift-click for a stack. You can also grab by name directly:
+
+```text
+/ffa preview                       # open the browser GUI
+/ffa preview weapons               # jump straight to a category
+/ffa preview give kanabo [amount]  # hand out a specific item by name
+/ffa preview find scythe           # find catalog entries by text
+/ffa preview list                  # list categories + item counts
+```
+
+The catalog (`preview-items.json`) is generated from the resource pack by
+`tools/gen_preview_registry.js` so it always matches what the pack can
+render.
 
 #### In-game config menu (`/ffa config`)
 

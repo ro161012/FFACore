@@ -4,6 +4,27 @@ Companion resource pack for the FFACore plugin. It provides custom textures
 for the two currencies and the gradient tooltip backgrounds drawn behind
 their display names.
 
+## Merged packs
+
+This directory is the merge target for both the FFACore/Altar assets and the
+**Nexo item packs** that ship alongside them (weapons, bows, wings, halos,
+furniture, signs, icons &hellip;). The Nexo pack is merged in with
+`tools/merge_nexo_pack.js` (run automatically by `tools/release.sh` when the
+source `../../asdasdads` folder exists):
+
+* New files are copied in wholesale.
+* `assets/minecraft/items/*.json` custom-model-data dispatches are merged
+  entry-by-entry, so both packs' model ranges keep working on the same base
+  item.
+* Font providers, language keys and sound events are merged; the FFACore
+  side wins collisions.
+* `pack.mcmeta` keeps the FFACore description and carries Nexo's overlay
+  directories (`nexo_1_21_*`) plus the format range over.
+
+The plugin's `/ffa preview` command reads `preview-items.json`, which is
+regenerated from this directory by `tools/gen_preview_registry.js`, and lets
+admins browse + take every custom item in the pack from in-game.
+
 ## Contents
 
 | Path | Purpose |

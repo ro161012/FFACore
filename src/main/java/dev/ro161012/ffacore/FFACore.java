@@ -19,6 +19,9 @@ import dev.ro161012.ffacore.perf.PerformanceTracker;
 import dev.ro161012.ffacore.placeholder.AfkExpansion;
 import dev.ro161012.ffacore.placeholder.ArenaExpansion;
 import dev.ro161012.ffacore.placeholder.KillTokenExpansion;
+import dev.ro161012.ffacore.preview.PreviewCommand;
+import dev.ro161012.ffacore.preview.PreviewMenu;
+import dev.ro161012.ffacore.preview.PreviewRegistry;
 import dev.ro161012.ffacore.regeneration.RegenerationManager;
 import dev.ro161012.ffacore.schedule.ScheduleManager;
 import dev.ro161012.ffacore.selection.SelectionManager;
@@ -57,6 +60,8 @@ public final class FFACore extends JavaPlugin {
 
     private ConfigMenu configMenu;
     private Messages messages;
+    private PreviewRegistry previewRegistry;
+    private PreviewMenu previewMenu;
 
     @Override
     public void onLoad() {
@@ -89,19 +94,23 @@ public final class FFACore extends JavaPlugin {
         killTokenManager = new KillTokenManager(this);
         afkManager = new AfkManager(this);
         configMenu = new ConfigMenu(this);
+        previewRegistry = new PreviewRegistry(this);
+        previewMenu = new PreviewMenu(this);
 
         final ArenaCommand arenaCommand = new ArenaCommand(this);
         final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
         final AfkCommand afkCommand = new AfkCommand(this);
+        final PreviewCommand previewCommand = new PreviewCommand(this, previewMenu);
 
         registerArena();
         registerKillToken();
         registerAfk();
+        getServer().getPluginManager().registerEvents(previewMenu, this);
 
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
             final FfaCommand executor = new FfaCommand(this, arenaCommand,
-                    killTokenCommand, afkCommand);
+                    killTokenCommand, afkCommand, previewCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }
@@ -226,5 +235,13 @@ public final class FFACore extends JavaPlugin {
 
     public Messages getMessages() {
         return messages;
+    }
+
+    public PreviewRegistry getPreviewRegistry() {
+        return previewRegistry;
+    }
+
+    public PreviewMenu getPreviewMenu() {
+        return previewMenu;
     }
 }

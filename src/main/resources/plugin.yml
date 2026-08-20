@@ -27,6 +27,10 @@ permissions:
     description: Open the in-game config menu and apply changes in realtime.
     default: op
 
+  ffacore.preview:
+    description: Browse and take every custom item from the merged resource pack.
+    default: op
+
   # ---- Arena ----
   ffacore.arena.use:
     description: Basic arena information commands.

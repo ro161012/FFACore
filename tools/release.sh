@@ -59,6 +59,18 @@ if [ -f "$CHANGELOG_FILE" ]; then
   mv "$CHANGELOG_FILE.tmp" "$CHANGELOG_FILE"
 fi
 
+# --- Regenerate the merged pack + preview catalog ------------------------
+# The nexo pack (../../asdasdads) is merged into resourcepack/ and the
+# preview-items.json catalog is rebuilt from it, so every release ships the
+# latest items and the /ffa preview command matches the pack.
+if [ -d "../../asdasdads" ]; then
+  echo "==> Merging nexo pack + regenerating preview catalog"
+  node tools/merge_nexo_pack.js
+  node tools/gen_preview_registry.js
+else
+  echo "==> No ../../asdasdads pack found - keeping existing pack/catalog"
+fi
+
 # --- Build + commit + tag ---------------------------------------------------
 sed -i "s#<version>$CUR_VER</version>#<version>$NEW_VER</version>#" pom.xml
 ./mvnw -q clean package

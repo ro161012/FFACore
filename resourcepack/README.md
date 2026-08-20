@@ -1,8 +1,8 @@
 # FFACore Resource Pack
 
 Companion resource pack for the FFACore plugin. It provides custom textures
-for the two currencies and the gradient tooltip backgrounds drawn behind
-their display names.
+for the two currencies and ability items, plus animated gradient tooltip
+backgrounds and frames that keep every custom item visually consistent.
 
 ## Merged packs
 
@@ -37,6 +37,7 @@ admins browse + take every custom item in the pack from in-game.
 | `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Legacy ember gradient tooltip (kept for old items) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
+| `assets/minecraft/textures/gui/sprites/tooltip/*.png` | Purple, frost, earth, gold and void gradient tooltips for abilities; ITEM uses the vanilla frame with an item-colored title |
 
 
 ## Installation
@@ -60,6 +61,8 @@ gradient, and the items carry a `minecraft:tooltip_style` data component:
 * AFK Shard &rarr; `altarsmp:cutlass` (animated)
 * Kill Token &rarr; `altarsmp:bloodlust` (animated)
 * Compressed Kill Token Block &rarr; `altarsmp:bloodlust` (animated)
+* Ability items default to `minecraft:purple`; their global or per-item theme
+  can be changed from `/ffa config` or `config.yml` without rebuilding the pack.
 
 The client resolves each style to a pair of nine-slice sprites under
 `textures/gui/sprites/tooltip/` &mdash; `<style>_background.png` (stretched

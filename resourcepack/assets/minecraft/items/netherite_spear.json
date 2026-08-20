@@ -25,6 +25,34 @@
           "model": "spears_and_staffs_1:gs",
           "tints": []
         }
+      },
+      {
+        "threshold": 910101,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/rocket_spear"
+        }
+      },
+      {
+        "threshold": 910102,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/venom_spear"
+        }
+      },
+      {
+        "threshold": 910103,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/dash_spear"
+        }
+      },
+      {
+        "threshold": 910104,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/vault_spear"
+        }
       }
     ]
   }

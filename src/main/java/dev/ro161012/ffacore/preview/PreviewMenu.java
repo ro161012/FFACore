@@ -1,6 +1,7 @@
 package dev.ro161012.ffacore.preview;
 
 import dev.ro161012.ffacore.FFACore;
+import dev.ro161012.ffacore.customitem.CustomItemType;
 import dev.ro161012.ffacore.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,7 +33,7 @@ public final class PreviewMenu implements Listener {
 
     private static final int PAGES_SIZE = 54;
     private static final int ITEMS_PER_PAGE = PAGES_SIZE - 9;
-    private static final int NAV_ROW = PAGES_SIZE - 9;
+    private static final int NAV_ROW = ITEMS_PER_PAGE;
 
     private final FFACore plugin;
 
@@ -105,6 +106,11 @@ public final class PreviewMenu implements Listener {
     }
 
     private ItemStack createPreviewItem(final PreviewItem item) {
+        final CustomItemType custom = plugin.getCustomItemManager().typeForModelData(
+                item.materialOrFallback(), item.cmd());
+        if (custom != null) {
+            return plugin.getCustomItemManager().createItem(custom, 1);
+        }
         final ItemStack stack = new ItemStack(item.materialOrFallback());
         final ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
@@ -124,13 +130,7 @@ public final class PreviewMenu implements Listener {
         meta.setLore(lore);
         stack.setItemMeta(meta);
 
-        final PreviewItemBuilder builder = new PreviewItemBuilder(stack);
-        if (item.cmd() != null) {
-            builder.withCustomModelData(item.cmd());
-        } else if (item.itemModel() != null) {
-            builder.withItemModel(item.itemModel());
-        }
-        return builder.build();
+        return applyModel(stack, item);
     }
 
     private ItemStack navItem(final Material mat, final String name) {
@@ -159,6 +159,10 @@ public final class PreviewMenu implements Listener {
             return;
         }
         event.setCancelled(true);
+        if (event.getRawSlot() < 0
+                || event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
+            return;
+        }
         final ItemStack clicked = event.getCurrentItem();
         if (clicked == null || !clicked.hasItemMeta()) {
             return;
@@ -209,12 +213,16 @@ public final class PreviewMenu implements Listener {
      * @param amount stack size
      */
     public void give(final Player player, final PreviewItem item, final int amount) {
-        final ItemStack stack = new PreviewItemBuilder(
-                new ItemStack(item.materialOrFallback()))
-                .withAmount(amount)
-                .withCustomModelData(item.cmd())
-                .withItemModel(item.itemModel())
-                .build();
+        final CustomItemType custom = plugin.getCustomItemManager().typeForModelData(
+                item.materialOrFallback(), item.cmd());
+        if (custom != null) {
+            plugin.getCustomItemManager().give(player, custom, amount);
+            Messages.raw(player, "&7Gave you &f" + custom.displayName()
+                    + (amount > 1 ? " &7x" + amount : "") + "&7.");
+            return;
+        }
+        final ItemStack stack = applyModel(
+                new ItemStack(item.materialOrFallback(), amount), item);
         final Map<Integer, ItemStack> leftover =
                 player.getInventory().addItem(stack);
         for (final ItemStack drop : leftover.values()) {
@@ -222,6 +230,20 @@ public final class PreviewMenu implements Listener {
         }
         Messages.raw(player, "&7Gave you &f" + item.name()
                 + (amount > 1 ? " &7x" + amount : "") + "&7.");
+    }
+
+    private ItemStack applyModel(final ItemStack stack, final PreviewItem item) {
+        final ItemMeta meta = stack.getItemMeta();
+        if (item.cmd() != null) {
+            meta.setCustomModelData(item.cmd());
+        } else if (item.itemModel() != null && !item.itemModel().isEmpty()) {
+            final String[] parts = item.itemModel().split(":", 2);
+            final String namespace = parts.length == 2 ? parts[0] : "minecraft";
+            final String key = parts.length == 2 ? parts[1] : parts[0];
+            meta.setItemModel(NamespacedKey.fromString(namespace + ":" + key));
+        }
+        stack.setItemMeta(meta);
+        return stack;
     }
 
     /**
@@ -236,47 +258,4 @@ public final class PreviewMenu implements Listener {
         }
     }
 
-    /**
-     * Small fluent helper that applies the model data components to a stack.
-     */
-    private static final class PreviewItemBuilder {
-
-        private final ItemStack stack;
-
-        private PreviewItemBuilder(final ItemStack stack) {
-            this.stack = stack;
-        }
-
-        private PreviewItemBuilder withAmount(final int amount) {
-            stack.setAmount(amount);
-            return this;
-        }
-
-        private PreviewItemBuilder withCustomModelData(final Integer cmd) {
-            if (cmd == null) {
-                return this;
-            }
-            final ItemMeta meta = stack.getItemMeta();
-            meta.setCustomModelData(cmd);
-            stack.setItemMeta(meta);
-            return this;
-        }
-
-        private PreviewItemBuilder withItemModel(final String model) {
-            if (model == null || model.isEmpty()) {
-                return this;
-            }
-            final ItemMeta meta = stack.getItemMeta();
-            final String[] parts = model.split(":", 2);
-            final String namespace = parts.length == 2 ? parts[0] : "minecraft";
-            final String key = parts.length == 2 ? parts[1] : parts[0];
-            meta.setItemModel(NamespacedKey.fromString(namespace + ":" + key));
-            stack.setItemMeta(meta);
-            return this;
-        }
-
-        private ItemStack build() {
-            return stack;
-        }
-    }
 }

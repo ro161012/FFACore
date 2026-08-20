@@ -45,6 +45,20 @@
           "type": "condition"
         },
         "threshold": 1
+      },
+      {
+        "threshold": 910301,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/grapple_bow"
+        }
+      },
+      {
+        "threshold": 910302,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/volley_bow"
+        }
       }
     ],
     "fallback": {

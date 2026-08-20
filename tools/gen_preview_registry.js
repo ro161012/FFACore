@@ -169,7 +169,9 @@ function main() {
             continue;
         }
         const modelObj = data.model;
-        if (!modelObj || modelObj.type !== 'range_dispatch') continue;
+        if (!modelObj || !['range_dispatch', 'minecraft:range_dispatch'].includes(modelObj.type)) {
+            continue;
+        }
         const entries = Array.isArray(modelObj.entries) ? modelObj.entries : [];
         for (const entry of entries) {
             const model = resolveModel(entry.model);

@@ -79,6 +79,13 @@
       "category": "Bows"
     },
     {
+      "name": "Grapple Bow",
+      "material": "BOW",
+      "cmd": 910301,
+      "model": "ffacore:item/grapple_bow",
+      "category": "Bows"
+    },
+    {
       "name": "Ice Bow",
       "material": "BOW",
       "itemModel": "nexo:ice_bow",
@@ -118,6 +125,13 @@
       "material": "BOW",
       "itemModel": "nexo:vegetal_bow",
       "model": "bowsbundle/vegetal_bow",
+      "category": "Bows"
+    },
+    {
+      "name": "Volley Bow",
+      "material": "BOW",
+      "cmd": 910302,
+      "model": "ffacore:item/volley_bow",
       "category": "Bows"
     },
     {
@@ -1647,6 +1661,13 @@
       "category": "Decor"
     },
     {
+      "name": "Ancientblade",
+      "material": "NETHERITE_SWORD",
+      "cmd": 17,
+      "model": "weapons/ancientblade",
+      "category": "Misc"
+    },
+    {
       "name": "Arrow Target",
       "material": "PAPER",
       "cmd": 10108,
@@ -1670,7 +1691,7 @@
     {
       "name": "Baton",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:baton",
+      "cmd": 900003,
       "model": "tugkandeman/weapons/baton",
       "category": "Misc"
     },
@@ -1679,6 +1700,13 @@
       "material": "CLAY_BALL",
       "cmd": 6,
       "model": "custom/black_cubes",
+      "category": "Misc"
+    },
+    {
+      "name": "Bloodlust",
+      "material": "NETHERITE_SWORD",
+      "cmd": 3,
+      "model": "weapons/bloodlust",
       "category": "Misc"
     },
     {
@@ -1700,6 +1728,13 @@
       "material": "PAPER",
       "cmd": 1021,
       "model": "bloody_emperor_animated_weapon_set_leggings",
+      "category": "Misc"
+    },
+    {
+      "name": "Boneblade",
+      "material": "NETHERITE_SWORD",
+      "cmd": 1,
+      "model": "weapons/boneblade",
       "category": "Misc"
     },
     {
@@ -1745,10 +1780,45 @@
       "category": "Misc"
     },
     {
+      "name": "Cutlass",
+      "material": "NETHERITE_SWORD",
+      "cmd": 11,
+      "model": "weapons/cutlass",
+      "category": "Misc"
+    },
+    {
       "name": "Dragon Heart",
       "material": "PAPER",
       "cmd": 10,
       "model": "custom/dragon_heart",
+      "category": "Misc"
+    },
+    {
+      "name": "Dragonrend",
+      "material": "NETHERITE_SWORD",
+      "cmd": 16,
+      "model": "weapons/dragonrend",
+      "category": "Misc"
+    },
+    {
+      "name": "Earthgauntlet",
+      "material": "NETHERITE_SWORD",
+      "cmd": 8,
+      "model": "weapons/earthgauntlet",
+      "category": "Misc"
+    },
+    {
+      "name": "Echo",
+      "material": "NETHERITE_SWORD",
+      "cmd": 13,
+      "model": "weapons/echo",
+      "category": "Misc"
+    },
+    {
+      "name": "Eclipse",
+      "material": "NETHERITE_SWORD",
+      "cmd": 14,
+      "model": "weapons/eclipse",
       "category": "Misc"
     },
     {
@@ -1845,7 +1915,7 @@
     {
       "name": "Hazardous Punkblade",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:hazardous_punkblade",
+      "cmd": 900015,
       "model": "tugkandeman/weapons/hazardous_punkblade",
       "category": "Misc"
     },
@@ -1854,6 +1924,13 @@
       "material": "IRON_HOE",
       "cmd": 10000,
       "model": "elitecreatures:bloody_emperor_animated_weapon_set/hoe",
+      "category": "Misc"
+    },
+    {
+      "name": "Hyperion",
+      "material": "NETHERITE_SWORD",
+      "cmd": 6,
+      "model": "weapons/hyperion",
       "category": "Misc"
     },
     {
@@ -1955,6 +2032,13 @@
       "category": "Misc"
     },
     {
+      "name": "Nightpiercer",
+      "material": "NETHERITE_SWORD",
+      "cmd": 5,
+      "model": "weapons/nightpiercer",
+      "category": "Misc"
+    },
+    {
       "name": "Nuke",
       "material": "PAPER",
       "cmd": 6,
@@ -1990,10 +2074,38 @@
       "category": "Misc"
     },
     {
+      "name": "Paxe",
+      "material": "NETHERITE_AXE",
+      "cmd": 910201,
+      "model": "ffacore:item/paxe",
+      "category": "Misc"
+    },
+    {
+      "name": "Pigxaliur",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910007,
+      "model": "ffacore:item/pigxaliur",
+      "category": "Misc"
+    },
+    {
+      "name": "Pureblade",
+      "material": "NETHERITE_SWORD",
+      "cmd": 7,
+      "model": "weapons/pureblade",
+      "category": "Misc"
+    },
+    {
       "name": "Red Beam",
       "material": "RED_CONCRETE",
       "cmd": 1,
       "model": "custom/red_beam",
+      "category": "Misc"
+    },
+    {
+      "name": "Shadowblade",
+      "material": "NETHERITE_SWORD",
+      "cmd": 10,
+      "model": "weapons/shadowblade",
       "category": "Misc"
     },
     {
@@ -2081,6 +2193,13 @@
       "category": "Misc"
     },
     {
+      "name": "Tidebreaker",
+      "material": "NETHERITE_SWORD",
+      "cmd": 15,
+      "model": "weapons/tidebreaker",
+      "category": "Misc"
+    },
+    {
       "name": "Unstabletheesenutsintoyourfatassmouth",
       "material": "PAPER",
       "cmd": 1023,
@@ -2130,10 +2249,24 @@
       "category": "Misc"
     },
     {
+      "name": "Windweaver",
+      "material": "NETHERITE_SWORD",
+      "cmd": 12,
+      "model": "weapons/windweaver",
+      "category": "Misc"
+    },
+    {
       "name": "Withered Ability",
       "material": "CLAY_BALL",
       "cmd": 9,
       "model": "custom/withered_ability",
+      "category": "Misc"
+    },
+    {
+      "name": "Witheredbone",
+      "material": "NETHERITE_SWORD",
+      "cmd": 9,
+      "model": "weapons/witheredbone",
       "category": "Misc"
     },
     {
@@ -2155,6 +2288,13 @@
       "material": "NETHERITE_AXE",
       "cmd": 900005,
       "model": "tugkandeman/weapons/brutal_axe",
+      "category": "Tools"
+    },
+    {
+      "name": "Cob Axe",
+      "material": "NETHERITE_AXE",
+      "cmd": 910203,
+      "model": "ffacore:item/cob_axe",
       "category": "Tools"
     },
     {
@@ -2291,6 +2431,13 @@
       "category": "Tools"
     },
     {
+      "name": "Magma Axe",
+      "material": "NETHERITE_AXE",
+      "cmd": 910204,
+      "model": "ffacore:item/magma_axe",
+      "category": "Tools"
+    },
+    {
       "name": "Massive Axe",
       "material": "CLAY_BALL",
       "cmd": 8,
@@ -2333,6 +2480,13 @@
       "category": "Tools"
     },
     {
+      "name": "Seismic Axe",
+      "material": "NETHERITE_AXE",
+      "cmd": 910202,
+      "model": "ffacore:item/seismic_axe",
+      "category": "Tools"
+    },
+    {
       "name": "Shovel",
       "material": "IRON_SHOVEL",
       "cmd": 10000,
@@ -2365,6 +2519,13 @@
       "material": "STONE_SHOVEL",
       "cmd": 10000,
       "model": "default_tools:stone/stone_shovel",
+      "category": "Tools"
+    },
+    {
+      "name": "Whirl Axe",
+      "material": "NETHERITE_AXE",
+      "cmd": 910205,
+      "model": "ffacore:item/whirl_axe",
       "category": "Tools"
     },
     {
@@ -2467,29 +2628,36 @@
     },
     {
       "name": "Abyss Trident",
-      "material": "TRIDENT",
-      "itemModel": "nexo:abyss_trident",
+      "material": "NETHERITE_SWORD",
+      "cmd": 900001,
       "model": "tugkandeman/weapons/abyss_trident",
+      "category": "Weapons"
+    },
+    {
+      "name": "Adrenaline Blade",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910005,
+      "model": "ffacore:item/adrenaline_blade",
       "category": "Weapons"
     },
     {
       "name": "Adventurer Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:adventurer_sword",
+      "cmd": 20005,
       "model": "adventurer_sword_pack:adventurer_sword",
       "category": "Weapons"
     },
     {
       "name": "Arclight Staff",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:arclight_staff",
+      "cmd": 900002,
       "model": "tugkandeman/weapons/arclight_staff",
       "category": "Weapons"
     },
     {
       "name": "Blood Scythe",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:blood_scythe",
+      "cmd": 900004,
       "model": "tugkandeman/weapons/blood_scythe",
       "category": "Weapons"
     },
@@ -2502,36 +2670,43 @@
     },
     {
       "name": "Broken Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:broken_hammer",
+      "material": "MACE",
+      "cmd": 1000,
       "model": "skulpt:heavy_reign_aftershock/broken_hammer",
       "category": "Weapons"
     },
     {
       "name": "Butcher Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:butcher_sword",
+      "cmd": 20006,
       "model": "adventurer_sword_pack:butcher_sword",
       "category": "Weapons"
     },
     {
       "name": "Catalyst Mace",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:catalyst_mace",
+      "material": "MACE",
+      "cmd": 1001,
       "model": "skulpt:heavy_reign_aftershock/catalyst_mace",
       "category": "Weapons"
     },
     {
       "name": "Celestial Ember Scepter",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:celestial_ember_scepter",
+      "cmd": 900006,
       "model": "tugkandeman/weapons/celestial_ember_scepter",
       "category": "Weapons"
     },
     {
+      "name": "Cob Mace",
+      "material": "MACE",
+      "cmd": 910402,
+      "model": "ffacore:item/cob_mace",
+      "category": "Weapons"
+    },
+    {
       "name": "Core Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:core_hammer",
+      "material": "MACE",
+      "cmd": 1002,
       "model": "skulpt:heavy_reign_aftershock/core_hammer",
       "category": "Weapons"
     },
@@ -2545,28 +2720,28 @@
     {
       "name": "Crimson Katarcleaver",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:crimson_katarcleaver",
+      "cmd": 900008,
       "model": "tugkandeman/weapons/crimson_katarcleaver",
       "category": "Weapons"
     },
     {
       "name": "Crimson Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:crimsion_sword",
+      "cmd": 20007,
       "model": "adventurer_sword_pack:crimson_sword",
       "category": "Weapons"
     },
     {
       "name": "Crystal Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:crystal_hammer",
+      "material": "MACE",
+      "cmd": 1003,
       "model": "skulpt:heavy_reign_aftershock/crystal_hammer",
       "category": "Weapons"
     },
     {
       "name": "Crystal Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:crystal_sword",
+      "cmd": 20008,
       "model": "adventurer_sword_pack:crystal_sword",
       "category": "Weapons"
     },
@@ -2579,30 +2754,58 @@
     },
     {
       "name": "Cursed Kanabo",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:cursed_kanabo",
+      "material": "MACE",
+      "cmd": 1004,
       "model": "skulpt:heavy_reign_aftershock/cursed_kanabo",
       "category": "Weapons"
     },
     {
       "name": "Dark Eclipse Ultra Greatsword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:dark_eclipse_ultra_greatsword",
+      "cmd": 900009,
       "model": "tugkandeman/weapons/dark_eclipse_ultra_greatsword",
+      "category": "Weapons"
+    },
+    {
+      "name": "Dash Mace",
+      "material": "MACE",
+      "cmd": 910404,
+      "model": "ffacore:item/dash_mace",
+      "category": "Weapons"
+    },
+    {
+      "name": "Dash Spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 910103,
+      "model": "ffacore:item/dash_spear",
+      "category": "Weapons"
+    },
+    {
+      "name": "Dash Sword",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910001,
+      "model": "ffacore:item/dash_sword",
       "category": "Weapons"
     },
     {
       "name": "Dawnlight Staff",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:dawnlight_staff",
+      "cmd": 900010,
       "model": "tugkandeman/weapons/dawnlight_staff",
       "category": "Weapons"
     },
     {
       "name": "Dragon Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:dragon_sword",
+      "cmd": 20009,
       "model": "adventurer_sword_pack:dragon_sword",
+      "category": "Weapons"
+    },
+    {
+      "name": "Earthquake Mace",
+      "material": "MACE",
+      "cmd": 910401,
+      "model": "ffacore:item/earthquake_mace",
       "category": "Weapons"
     },
     {
@@ -2635,8 +2838,8 @@
     },
     {
       "name": "Es",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:emerald_spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 10006,
       "model": "spears_and_staffs_1:es",
       "category": "Weapons"
     },
@@ -2650,7 +2853,7 @@
     {
       "name": "Fire Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:fire_sword",
+      "cmd": 20010,
       "model": "adventurer_sword_pack:fire_sword",
       "category": "Weapons"
     },
@@ -2664,8 +2867,15 @@
     {
       "name": "Flanged Mace",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:flanged_mace",
+      "cmd": 900012,
       "model": "tugkandeman/weapons/flanged_mace",
+      "category": "Weapons"
+    },
+    {
+      "name": "Flux Sword",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910006,
+      "model": "ffacore:item/flux_sword",
       "category": "Weapons"
     },
     {
@@ -2683,6 +2893,13 @@
       "category": "Weapons"
     },
     {
+      "name": "Frost Sword",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910002,
+      "model": "ffacore:item/frost_sword",
+      "category": "Weapons"
+    },
+    {
       "name": "Fs",
       "material": "IRON_SWORD",
       "cmd": 10007,
@@ -2692,28 +2909,28 @@
     {
       "name": "Full Edge Cleaver",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:full_edge_cleaver",
+      "cmd": 900013,
       "model": "tugkandeman/weapons/full_edge_cleaver",
       "category": "Weapons"
     },
     {
       "name": "Gold Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:gold_hammer",
+      "material": "MACE",
+      "cmd": 1005,
       "model": "skulpt:heavy_reign_aftershock/gold_hammer",
       "category": "Weapons"
     },
     {
       "name": "Greatsword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:bloody_emperor_animated_weapon_set_greatsword",
+      "cmd": 20004,
       "model": "elitecreatures:bloody_emperor_animated_weapon_set/greatsword",
       "category": "Weapons"
     },
     {
       "name": "Gs",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:gilded_spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 10009,
       "model": "spears_and_staffs_1:gs",
       "category": "Weapons"
     },
@@ -2727,42 +2944,70 @@
     {
       "name": "Haunted Anchor",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:haunted_anchor",
+      "cmd": 900014,
       "model": "tugkandeman/weapons/haunted_anchor",
       "category": "Weapons"
     },
     {
       "name": "Heat Mace",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:heat_mace",
+      "material": "MACE",
+      "cmd": 1006,
       "model": "skulpt:heavy_reign_aftershock/heat_mace",
       "category": "Weapons"
     },
     {
       "name": "Kanabo",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:kanabo",
+      "material": "MACE",
+      "cmd": 900016,
       "model": "tugkandeman/weapons/kanabo",
       "category": "Weapons"
     },
     {
       "name": "King Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:king_sword",
+      "cmd": 20011,
       "model": "adventurer_sword_pack:king_sword",
       "category": "Weapons"
     },
     {
-      "name": "Mace",
+      "name": "Lifestealer Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:mace",
+      "cmd": 910004,
+      "model": "ffacore:item/lifestealer_sword",
+      "category": "Weapons"
+    },
+    {
+      "name": "Lv1",
+      "material": "MACE",
+      "cmd": 1,
+      "model": "weapons/knightfall/mace/lv1",
+      "category": "Weapons"
+    },
+    {
+      "name": "Lv2",
+      "material": "MACE",
+      "cmd": 2,
+      "model": "weapons/knightfall/mace/lv2",
+      "category": "Weapons"
+    },
+    {
+      "name": "Lv3",
+      "material": "MACE",
+      "cmd": 3,
+      "model": "weapons/knightfall/mace/lv3",
+      "category": "Weapons"
+    },
+    {
+      "name": "Mace",
+      "material": "MACE",
+      "cmd": 900017,
       "model": "tugkandeman/weapons/mace",
       "category": "Weapons"
     },
     {
       "name": "Moonstone Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:moonstone_sword",
+      "cmd": 20012,
       "model": "adventurer_sword_pack:moonstone_sword",
       "category": "Weapons"
     },
@@ -2776,14 +3021,14 @@
     {
       "name": "Poison Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:poison_sword",
+      "cmd": 20013,
       "model": "adventurer_sword_pack:poison_sword",
       "category": "Weapons"
     },
     {
       "name": "Pommel Blade",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:pommel_blade",
+      "cmd": 900018,
       "model": "tugkandeman/weapons/pommel_blade",
       "category": "Weapons"
     },
@@ -2811,28 +3056,35 @@
     {
       "name": "Pure Gold Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:pure_gold_sword",
+      "cmd": 900019,
       "model": "tugkandeman/weapons/pure_gold_sword",
       "category": "Weapons"
     },
     {
       "name": "Reaver Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:reaver_sword",
+      "cmd": 20014,
       "model": "adventurer_sword_pack:reaver_sword",
       "category": "Weapons"
     },
     {
+      "name": "Rocket Spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 910101,
+      "model": "ffacore:item/rocket_spear",
+      "category": "Weapons"
+    },
+    {
       "name": "Runed Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:runed_hammer",
+      "material": "MACE",
+      "cmd": 1007,
       "model": "skulpt:heavy_reign_aftershock/runed_hammer",
       "category": "Weapons"
     },
     {
       "name": "Runic Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:runic_sword",
+      "cmd": 900020,
       "model": "tugkandeman/weapons/runic_sword",
       "category": "Weapons"
     },
@@ -2845,15 +3097,15 @@
     },
     {
       "name": "Singularity Hammer",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:singularity_hammer",
+      "material": "MACE",
+      "cmd": 1008,
       "model": "skulpt:heavy_reign_aftershock/singularity_hammer",
       "category": "Weapons"
     },
     {
       "name": "Skymeteor",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:skymeteor_sword",
+      "cmd": 20000,
       "model": "ginko_elven_sword_pack:skymeteor",
       "category": "Weapons"
     },
@@ -2867,7 +3119,7 @@
     {
       "name": "Spike Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:spike_sword",
+      "cmd": 20015,
       "model": "adventurer_sword_pack:spike_sword",
       "category": "Weapons"
     },
@@ -2895,28 +3147,35 @@
     {
       "name": "Staff Of The Sea",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:staff_of_the_sea",
+      "cmd": 900021,
       "model": "tugkandeman/weapons/staff_of_the_sea",
       "category": "Weapons"
     },
     {
       "name": "Stained Glass Ultra Greatsword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:stained_glass_ultra_greatsword",
+      "cmd": 900022,
       "model": "tugkandeman/weapons/stained_glass_ultra_greatsword",
+      "category": "Weapons"
+    },
+    {
+      "name": "Strike Sword",
+      "material": "NETHERITE_SWORD",
+      "cmd": 910003,
+      "model": "ffacore:item/strike_sword",
       "category": "Weapons"
     },
     {
       "name": "Sword",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:bloody_emperor_animated_weapon_set_sword",
+      "cmd": 20003,
       "model": "elitecreatures:bloody_emperor_animated_weapon_set/sword",
       "category": "Weapons"
     },
     {
       "name": "Tree",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:tree_sword",
+      "cmd": 20001,
       "model": "ginko_elven_sword_pack:tree",
       "category": "Weapons"
     },
@@ -2925,6 +3184,20 @@
       "material": "DIAMOND_SPEAR",
       "cmd": 10012,
       "model": "spears_and_staffs_1:ts",
+      "category": "Weapons"
+    },
+    {
+      "name": "Vault Spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 910104,
+      "model": "ffacore:item/vault_spear",
+      "category": "Weapons"
+    },
+    {
+      "name": "Venom Spear",
+      "material": "NETHERITE_SPEAR",
+      "cmd": 910102,
+      "model": "ffacore:item/venom_spear",
       "category": "Weapons"
     },
     {
@@ -2937,29 +3210,36 @@
     {
       "name": "Vine",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:vine_sword",
+      "cmd": 20002,
       "model": "ginko_elven_sword_pack:vine",
       "category": "Weapons"
     },
     {
       "name": "Void Orb Staff",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:void_orb_staff",
+      "cmd": 900024,
       "model": "tugkandeman/weapons/void_orb_staff",
       "category": "Weapons"
     },
     {
       "name": "Warpick",
       "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:warpick",
+      "cmd": 900025,
       "model": "tugkandeman/weapons/warpick",
       "category": "Weapons"
     },
     {
       "name": "Wind Mace",
-      "material": "NETHERITE_SWORD",
-      "itemModel": "nexo:wind_mace",
+      "material": "MACE",
+      "cmd": 1009,
       "model": "skulpt:heavy_reign_aftershock/wind_mace",
+      "category": "Weapons"
+    },
+    {
+      "name": "Wither Mace",
+      "material": "MACE",
+      "cmd": 910403,
+      "model": "ffacore:item/wither_mace",
       "category": "Weapons"
     }
   ]

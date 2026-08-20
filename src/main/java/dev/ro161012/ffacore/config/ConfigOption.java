@@ -221,8 +221,4 @@ public final class ConfigOption {
     public List<String> choices() {
         return choices;
     }
-
-    public Object defaultValue() {
-        return defaultValue;
-    }
 }

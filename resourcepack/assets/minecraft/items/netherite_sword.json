@@ -488,6 +488,55 @@
           "model": "tugkandeman/weapons/warpick",
           "tints": []
         }
+      },
+      {
+        "threshold": 910001,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/dash_sword"
+        }
+      },
+      {
+        "threshold": 910002,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/frost_sword"
+        }
+      },
+      {
+        "threshold": 910003,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/strike_sword"
+        }
+      },
+      {
+        "threshold": 910004,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/lifestealer_sword"
+        }
+      },
+      {
+        "threshold": 910005,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/adrenaline_blade"
+        }
+      },
+      {
+        "threshold": 910006,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/flux_sword"
+        }
+      },
+      {
+        "threshold": 910007,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/pigxaliur"
+        }
       }
     ]
   }

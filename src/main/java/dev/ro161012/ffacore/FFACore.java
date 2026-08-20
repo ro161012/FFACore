@@ -8,6 +8,8 @@ import dev.ro161012.ffacore.arena.ArenaManager;
 import dev.ro161012.ffacore.command.ArenaCommand;
 import dev.ro161012.ffacore.command.FfaCommand;
 import dev.ro161012.ffacore.config.ConfigMenu;
+import dev.ro161012.ffacore.customitem.CustomItemCommand;
+import dev.ro161012.ffacore.customitem.CustomItemManager;
 import dev.ro161012.ffacore.gui.ArenaMenu;
 import dev.ro161012.ffacore.hooks.WorldEditHook;
 import dev.ro161012.ffacore.killtoken.CompressedBlockListener;
@@ -62,6 +64,7 @@ public final class FFACore extends JavaPlugin {
     private Messages messages;
     private PreviewRegistry previewRegistry;
     private PreviewMenu previewMenu;
+    private CustomItemManager customItemManager;
 
     @Override
     public void onLoad() {
@@ -96,21 +99,24 @@ public final class FFACore extends JavaPlugin {
         configMenu = new ConfigMenu(this);
         previewRegistry = new PreviewRegistry(this);
         previewMenu = new PreviewMenu(this);
+        customItemManager = new CustomItemManager(this);
 
         final ArenaCommand arenaCommand = new ArenaCommand(this);
         final KillTokenCommand killTokenCommand = new KillTokenCommand(killTokenManager);
         final AfkCommand afkCommand = new AfkCommand(this);
         final PreviewCommand previewCommand = new PreviewCommand(this, previewMenu);
+        final CustomItemCommand customItemCommand = new CustomItemCommand(customItemManager);
 
         registerArena();
         registerKillToken();
         registerAfk();
         getServer().getPluginManager().registerEvents(previewMenu, this);
+        getServer().getPluginManager().registerEvents(customItemManager, this);
 
         final PluginCommand ffa = getCommand("ffa");
         if (ffa != null) {
             final FfaCommand executor = new FfaCommand(this, arenaCommand,
-                    killTokenCommand, afkCommand, previewCommand);
+                    killTokenCommand, afkCommand, previewCommand, customItemCommand);
             ffa.setExecutor(executor);
             ffa.setTabCompleter(executor);
         }
@@ -152,6 +158,7 @@ public final class FFACore extends JavaPlugin {
         regenerationManager.applyConfig();
         scheduleManager.applyConfig();
         arenaStorage.applyConfig();
+        customItemManager.applyConfig();
         getLogger().info("Configuration applied to all FFACore subsystems.");
     }
 
@@ -181,6 +188,9 @@ public final class FFACore extends JavaPlugin {
         }
         if (afkManager != null) {
             afkManager.shutdown();
+        }
+        if (customItemManager != null) {
+            customItemManager.shutdown();
         }
         getLogger().info("FFACore disabled.");
     }
@@ -243,5 +253,14 @@ public final class FFACore extends JavaPlugin {
 
     public PreviewMenu getPreviewMenu() {
         return previewMenu;
+    }
+
+    /**
+     * Returns the custom item manager.
+     *
+     * @return custom item manager
+     */
+    public CustomItemManager getCustomItemManager() {
+        return customItemManager;
     }
 }

@@ -83,7 +83,7 @@ public final class PreviewCommand implements TabExecutor {
     }
 
     private void handleGive(final Player player, final String[] args) {
-        if (args.length < 2) {
+        if (args.length < 2 || args.length > 3 || args[1].isBlank()) {
             Messages.raw(player, "&cUsage: &f/ffa preview give <name> [amount]");
             return;
         }
@@ -129,8 +129,7 @@ public final class PreviewCommand implements TabExecutor {
     }
 
     private void handleList(final Player player, final String[] args) {
-        final String[] subArgs = java.util.Arrays.copyOfRange(args, 1, args.length);
-        if (subArgs.length == 0) {
+        if (args.length == 1) {
             Messages.raw(player, "&ePreview categories:");
             for (final String category : plugin.getPreviewRegistry().getCategories()) {
                 Messages.raw(player, " &8\u2022 &f" + category + " &8("
@@ -138,9 +137,9 @@ public final class PreviewCommand implements TabExecutor {
             }
             return;
         }
-        final String cat = matchCategory(subArgs[0]);
+        final String cat = matchCategory(args[1]);
         if (cat == null) {
-            Messages.raw(player, "&cUnknown category: &f" + subArgs[0]);
+            Messages.raw(player, "&cUnknown category: &f" + args[1]);
             return;
         }
         menu.openCategory(player, cat, 0);
@@ -153,6 +152,9 @@ public final class PreviewCommand implements TabExecutor {
      * @return the canonical category name, or {@code null}
      */
     private String matchCategory(final String input) {
+        if (input == null || input.isBlank()) {
+            return null;
+        }
         final String q = input.toLowerCase(Locale.ROOT);
         for (final String category : plugin.getPreviewRegistry().getCategories()) {
             if (category.equalsIgnoreCase(q) || category.toLowerCase(Locale.ROOT).startsWith(q)) {
@@ -165,7 +167,7 @@ public final class PreviewCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command,
                                       final String alias, final String[] args) {
-        if (!sender.hasPermission("ffacore.preview")) {
+        if (!sender.hasPermission("ffacore.preview") || args.length == 0) {
             return List.of();
         }
         final List<String> out = new ArrayList<>();
@@ -185,7 +187,7 @@ public final class PreviewCommand implements TabExecutor {
             final List<PreviewItem> matches = plugin.getPreviewRegistry().search(prefix);
             for (final PreviewItem item : matches) {
                 final String words = item.name().toLowerCase(Locale.ROOT).replace(' ', '_');
-                if (out.size() < 30) {
+                if (out.size() < 30 && !out.contains(words)) {
                     out.add(words);
                 }
             }

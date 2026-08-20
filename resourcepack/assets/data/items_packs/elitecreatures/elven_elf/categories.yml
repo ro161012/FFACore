@@ -1,0 +1,23 @@
+  namespace: elitecreatures
+categories:
+  elven_elf_weapon:
+    enabled: true
+    icon: "elitecreatures:elven_elf_weapon-elven_helmet"
+    name: "Elven Elf Animated Weapon"
+    permission: "ia.menu.elven_elf_weapon"
+    items:
+      - "elitecreatures:elven_elf_weapon-bow"
+      - "elitecreatures:elven_elf_weapon-elven_axe"
+      - "elitecreatures:elven_elf_weapon-elven_bow"
+      
+      - "elitecreatures:elven_elf_weapon-elven_saber"
+      - "elitecreatures:elven_elf_weapon-elven_scepeter"
+      - "elitecreatures:elven_elf_weapon-elven_shield"
+      - "elitecreatures:elven_elf_weapon-elven_spear"
+      - "elitecreatures:elven_elf_weapon-elven_staff"
+      - "elitecreatures:elven_elf_weapon-elven_sword"
+      - "elitecreatures:elven_elf_weapon-shield"
+      - "elitecreatures:elven_elf_weapon-elven_helmet"
+      - "elitecreatures:elven_elf_weapon_chestplate"
+      - "elitecreatures:elven_elf_weapon_leggings"
+      - "elitecreatures:elven_elf_weapon_boots"

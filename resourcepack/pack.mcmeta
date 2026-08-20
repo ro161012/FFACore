@@ -1,7 +1,60 @@
 {
   "pack": {
-    "description": "\u00a7bFFACore \u00a77+ \u00a7dAltarSMP \u00a77weapons, textures & sounds",
+    "description": "§bFFACore §7+ §dAltarSMP §7weapons, textures & sounds §8·§e Nexo items",
     "min_format": 75,
-    "max_format": 75
+    "max_format": 199
+  },
+  "overlays": {
+    "entries": [
+      {
+        "formats": [
+          34,
+          41
+        ],
+        "directory": "nexo_1_21_1"
+      },
+      {
+        "formats": [
+          42,
+          45
+        ],
+        "directory": "nexo_1_21_3"
+      },
+      {
+        "formats": [
+          46,
+          54
+        ],
+        "directory": "nexo_1_21_4"
+      },
+      {
+        "formats": [
+          55,
+          62
+        ],
+        "directory": "nexo_1_21_5"
+      },
+      {
+        "formats": [
+          63,
+          74
+        ],
+        "directory": "nexo_1_21_6",
+        "min_format": 63,
+        "max_format": 74
+      },
+      {
+        "formats": [
+          75,
+          99
+        ],
+        "directory": "nexo_1_21_11",
+        "min_format": 75,
+        "max_format": 99
+      }
+    ]
+  },
+  "sodium": {
+    "ignored_shaders": []
   }
 }

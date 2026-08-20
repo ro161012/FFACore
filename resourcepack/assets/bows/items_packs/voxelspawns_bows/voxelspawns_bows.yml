@@ -1,0 +1,66 @@
+info:
+  namespace: voxelspawns_bows
+items:
+  voxelspawns_longbow:
+    display_name: Long Bow
+    permission: vs_long_bow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_longbow
+
+  voxelspawns_composite_bow:
+    display_name: Composite Bow
+    permission: vs_compositebow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_compositebow
+
+  voxelspawns_frost_bow:
+    display_name: Frost Bow
+    permission: vs_frostbow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_frostbow
+
+  voxelspawns_prismarine_bow:
+    display_name: Prismarine Bow
+    permission: vs_prismarinebow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_prismarinebow
+
+  voxelspawns_elven_bow:
+    display_name: Elven Bow
+    permission: vs_elvenbow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_elvenbow
+
+  voxelspawns_asia_bow:
+    display_name: Asian Bow
+    permission: vs_asiabow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_asiabow
+
+  voxelspawns_gold_bow:
+    display_name: Gold Bow
+    permission: vs_goldbow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_goldbow
+
+  voxelspawns_magic_bow:
+    display_name: Magic Bow
+    permission: vs_magicbow
+    resource:
+      material: BOW
+      generate: false
+      model_path: item/vs_magicbow

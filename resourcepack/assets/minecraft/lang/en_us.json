@@ -1,3 +1,5 @@
 {
-  "effect.minecraft.luck": "Pale Rot"
+  "effect.minecraft.luck": "Pale Rot",
+  "menu.game": "§fꐓ§r§fꐔ",
+  "menu.disconnect": "§fDisconnect§r§fꐑ§r"
 }

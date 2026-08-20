@@ -1,23 +1,1841 @@
 {
-    "model": {
-        "type": "range_dispatch",
-        "property": "custom_model_data",
-        "fallback": {
-            "type": "model",
-            "model": "minecraft:item/paper"
-        },
-        "entries": [
-            {"threshold": 1, "model": {"type": "model", "model": "custom/shard_vampire"}},
-            {"threshold": 2, "model": {"type": "model", "model": "custom/shard_pale"}},
-            {"threshold": 3, "model": {"type": "model", "model": "custom/shard_hyperion"}},
-            {"threshold": 4, "model": {"type": "model", "model": "custom/bone_blade_shards"}},
-            {"threshold": 5, "model": {"type": "model", "model": "custom/warden_heart"}},
-            {"threshold": 6, "model": {"type": "model", "model": "weapons/nuke"}},
-            {"threshold": 7, "model": {"type": "model", "model": "custom/enhanced_heavy_core"}},
-            {"threshold": 8, "model": {"type": "model", "model": "custom/lightning_bottle"}},
-            {"threshold": 9, "model": {"type": "model", "model": "custom/weapon_handle"}},
-            {"threshold": 10, "model": {"type": "model", "model": "custom/dragon_heart"}},
-            {"threshold": 11, "model": {"type": "model", "model": "custom/soul"}}
-        ]
+  "model": {
+    "type": "range_dispatch",
+    "property": "custom_model_data",
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "model",
+          "model": "custom/shard_vampire"
+        }
+      },
+      {
+        "threshold": 2,
+        "model": {
+          "type": "model",
+          "model": "custom/shard_pale"
+        }
+      },
+      {
+        "threshold": 3,
+        "model": {
+          "type": "model",
+          "model": "custom/shard_hyperion"
+        }
+      },
+      {
+        "threshold": 4,
+        "model": {
+          "type": "model",
+          "model": "custom/bone_blade_shards"
+        }
+      },
+      {
+        "threshold": 5,
+        "model": {
+          "type": "model",
+          "model": "custom/warden_heart"
+        }
+      },
+      {
+        "threshold": 6,
+        "model": {
+          "type": "model",
+          "model": "weapons/nuke"
+        }
+      },
+      {
+        "threshold": 7,
+        "model": {
+          "type": "model",
+          "model": "custom/enhanced_heavy_core"
+        }
+      },
+      {
+        "threshold": 8,
+        "model": {
+          "type": "model",
+          "model": "custom/lightning_bottle"
+        }
+      },
+      {
+        "threshold": 9,
+        "model": {
+          "type": "model",
+          "model": "custom/weapon_handle"
+        }
+      },
+      {
+        "threshold": 10,
+        "model": {
+          "type": "model",
+          "model": "custom/dragon_heart"
+        }
+      },
+      {
+        "threshold": 11,
+        "model": {
+          "type": "model",
+          "model": "custom/soul"
+        }
+      },
+      {
+        "threshold": 300,
+        "model": {
+          "type": "model",
+          "model": "icon_boost_yes",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 301,
+        "model": {
+          "type": "model",
+          "model": "icon_boost_no",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1000,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/front_sign_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1001,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/front_sign_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1002,
+        "model": {
+          "type": "model",
+          "model": "mage_set_vol1/mage_stick",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1003,
+        "model": {
+          "type": "model",
+          "model": "mage_set_vol1/owl_baloon",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1004,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/front_sign_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1005,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/front_sign_4",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1006,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/front_sign_5",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1007,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/lantern",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1008,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/long_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1009,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/luckyblock",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1010,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/luxury_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1011,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/luxury_table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1012,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/pillar_light_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1013,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/pillar_light_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1014,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/plants",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1015,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/post",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1016,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/road_sign_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1017,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/road_sign_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1018,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/road_sign_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1019,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures/japan_street_v2/road_sign_all",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1020,
+        "model": {
+          "type": "model",
+          "model": "bloody_emperor_animated_weapon_set_chestplate",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1021,
+        "model": {
+          "type": "model",
+          "model": "bloody_emperor_animated_weapon_set_leggings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1022,
+        "model": {
+          "type": "model",
+          "model": "bloody_emperor_animated_weapon_set_boots",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 1023,
+        "model": {
+          "type": "model",
+          "model": "unstabletheesenutsintoyourfatassmouth",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3001,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_backwear",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3002,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3003,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3004,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3005,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_bag",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3006,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3007,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_backwear_wardrobe",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3008,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_backwear_self",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3009,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_wings_wardrobe",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3010,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_wings_self",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3011,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_bag_wardrobe",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 3012,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_bag_self",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6181,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_orange",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6182,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_blue",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6183,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_green",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6184,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_white",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6185,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_yellow",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6186,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_pink",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6187,
+        "model": {
+          "type": "model",
+          "model": "halo:halo/halo_red",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6231,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_black",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6232,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_blue",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6233,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_green",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6234,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_white",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6235,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_yellow",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6236,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_purple",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 6237,
+        "model": {
+          "type": "model",
+          "model": "mini_sus:mini_sus/mini_sus_red",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7151,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_corrupt",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7152,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_elf",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7153,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_forest",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7154,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_leaf",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7155,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_river",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7156,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_royal",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 7157,
+        "model": {
+          "type": "model",
+          "model": "elven_ranger_wings:elven_ranger_wings/elven_ranger_wings_waterfall",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9000,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:angel_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9001,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:astronaut_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9002,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:bluefire_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9003,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:brown_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9004,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:butterfly_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9005,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:demon_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9006,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:dragon_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9007,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:eagle_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9008,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:golden_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9009,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:ocean_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9010,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:purple_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 9011,
+        "model": {
+          "type": "model",
+          "model": "ax_wings_pack:phoenix_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10000,
+        "model": {
+          "type": "model",
+          "model": "icon_left_blue",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10001,
+        "model": {
+          "type": "model",
+          "model": "icon_right_blue",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10002,
+        "model": {
+          "type": "model",
+          "model": "icon_search",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10003,
+        "model": {
+          "type": "model",
+          "model": "icon_cancel",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10004,
+        "model": {
+          "type": "model",
+          "model": "icon_arrow_chest",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10005,
+        "model": {
+          "type": "model",
+          "model": "icon_back_orange",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10006,
+        "model": {
+          "type": "model",
+          "model": "icon_next_orange",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10007,
+        "model": {
+          "type": "model",
+          "model": "workshop_six:quest_board_minipack/quest_board",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10008,
+        "model": {
+          "type": "model",
+          "model": "public_signs:bank_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10009,
+        "model": {
+          "type": "model",
+          "model": "public_signs:cosmetic_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10010,
+        "model": {
+          "type": "model",
+          "model": "public_signs:furniture_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10011,
+        "model": {
+          "type": "model",
+          "model": "public_signs:general_blacksmith_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10012,
+        "model": {
+          "type": "model",
+          "model": "public_signs:general_store_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10013,
+        "model": {
+          "type": "model",
+          "model": "public_signs:here_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10014,
+        "model": {
+          "type": "model",
+          "model": "public_signs:petshop_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10015,
+        "model": {
+          "type": "model",
+          "model": "public_signs:soon_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10016,
+        "model": {
+          "type": "model",
+          "model": "public_signs:we_are_open_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10017,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:afkzone_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10018,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:auction_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10019,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:casino_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10020,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:cropsy_farm_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10021,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:food_store_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10022,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:guild_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10023,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:infomations_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10024,
+        "model": {
+          "type": "model",
+          "model": "public_signs_ii:leaderboard_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10025,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/front_sign_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10026,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/front_sign_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10027,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/front_sign_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10028,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/front_sign_4",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10029,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/front_sign_5",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10030,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/lantern",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10031,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/long_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10032,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/luckyblock",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10033,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/luxury_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10034,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/luxury_table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10035,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/pillar_light_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10036,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/pillar_light_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10037,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/plants",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10038,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/post",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10039,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/road_sign_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10040,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/road_sign_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10041,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/road_sign_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10042,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v2/road_sign_all",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10043,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/log",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10044,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10045,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10046,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10047,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_4",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10048,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_5",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10049,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/shop_6",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10050,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/small_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10051,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/small_flower_pot_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10052,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/small_flower_pot_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10053,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/small_table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10054,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/table_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10055,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/table_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10056,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/tree_pot_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10057,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/tree_pot_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10058,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/water_dispenser_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10059,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/water_dispenser_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10060,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v3/water_dispenser_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10061,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/barral",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10062,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bigbox",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10063,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bin_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10064,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bin_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10065,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bin_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10066,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bin_4",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10067,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/bin_5",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10068,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/box_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10069,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/box_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10070,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10071,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/clock",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10072,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/fishbar_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10073,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/fishbar_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10074,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/floor_sign_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10075,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/floor_sign_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10076,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/flower_bed_1",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10077,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/flower_bed_2",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10078,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:japan_street_v1/flower_bed_3",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10079,
+        "model": {
+          "type": "model",
+          "model": "villagerhats:armorermask",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10080,
+        "model": {
+          "type": "model",
+          "model": "villagerhats:cartographermonocle",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10081,
+        "model": {
+          "type": "model",
+          "model": "villagerhats:librarianhat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10082,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:duck_floatie",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10083,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:flower_crown",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10084,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:mini_fan",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10085,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:snorkel_mask",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10086,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:sun_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10087,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:surfboard",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10088,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:umbrella",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10089,
+        "model": {
+          "type": "model",
+          "model": "plny_summer2025cosmeticsset:water_gun",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10090,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_bench",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10091,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10092,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_doghut",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10093,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_grill",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10094,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_lawnmower",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10095,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_sunbed",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10096,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_picnictable",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10097,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_small_table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10098,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_pool",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10099,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_trampolin",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10100,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_rocks_big",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10101,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_rocks_medium",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10102,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_rocks_small",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10103,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_rocks_tiny",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10104,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_umbrella",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10105,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_spade",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10106,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_wateringcan",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10107,
+        "model": {
+          "type": "model",
+          "model": "lzfurniture:furniture/outdoor/outdoor_wheelbarrow",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10108,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:arrow_target",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10109,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:balloon",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10110,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:bench",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10111,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:chair",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10112,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:drinking_bowl",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10113,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:fan",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10114,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:faucet",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10115,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:fire_hydrant",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10116,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:flower_bucket",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10117,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:garden_umbrella",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10118,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:gnome",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10119,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:gnome_blue",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10120,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:gnome_table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10121,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:inflatable_raft_unicorn",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10122,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:pond",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10123,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:public_phone",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10124,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:road_crossing_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10125,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:stand_fan",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10126,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:table",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10127,
+        "model": {
+          "type": "model",
+          "model": "out_door_decoration:water_pump_lever",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10128,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/backpack",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10129,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/chest",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10130,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10131,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/key",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10132,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/wing",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10133,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10134,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10135,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_hat",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10136,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/coffin_backwear",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10137,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/phantom_wings",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10138,
+        "model": {
+          "type": "model",
+          "model": "mimix:cosmetics/pumpkin_bag",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302011,
+        "model": {
+          "type": "model",
+          "model": "public_signs:bank_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302012,
+        "model": {
+          "type": "model",
+          "model": "public_signs:cosmetic_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302013,
+        "model": {
+          "type": "model",
+          "model": "public_signs:furniture_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302014,
+        "model": {
+          "type": "model",
+          "model": "public_signs:general_blacksmith_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302015,
+        "model": {
+          "type": "model",
+          "model": "public_signs:general_store_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302016,
+        "model": {
+          "type": "model",
+          "model": "public_signs:here_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302017,
+        "model": {
+          "type": "model",
+          "model": "public_signs:petshop_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302018,
+        "model": {
+          "type": "model",
+          "model": "public_signs:soon_sign",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 302019,
+        "model": {
+          "type": "model",
+          "model": "public_signs:we_are_open_sign",
+          "tints": []
+        }
+      }
+    ],
+    "fallback": {
+      "type": "model",
+      "model": "minecraft:item/paper"
     }
+  }
 }

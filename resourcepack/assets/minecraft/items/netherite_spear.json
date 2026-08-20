@@ -9,29 +9,23 @@
           "type": "minecraft:model",
           "model": "minecraft:weapons/omen"
         }
-      }
-    ],
-    "fallback": {
-    "type": "minecraft:select",
-    "cases": [
+      },
       {
+        "threshold": 10006,
         "model": {
-          "type": "minecraft:model",
-          "model": "minecraft:item/netherite_spear"
-        },
-        "when": [
-          "gui",
-          "ground",
-          "fixed",
-          "on_shelf"
-        ]
+          "type": "model",
+          "model": "spears_and_staffs_1:es",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 10009,
+        "model": {
+          "type": "model",
+          "model": "spears_and_staffs_1:gs",
+          "tints": []
+        }
       }
-    ],
-    "fallback": {
-      "type": "minecraft:model",
-      "model": "minecraft:item/netherite_spear_in_hand"
-    },
-    "property": "minecraft:display_context"
-    }
+    ]
   }
 }

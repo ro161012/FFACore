@@ -1,0 +1,33 @@
+info:
+  namespace: default_tools
+items:
+  wooden_pickaxe:
+    display_name: Wooden Pickaxe
+    permission: wooden
+    resource:
+      material: WOODEN_PICKAXE
+      generate: false
+      model_path: wooden/wooden_pickaxe
+  wooden_hoe:
+    display_name: Wooden Hoe
+    permission: wooden
+    resource:
+      material: WOODEN_HOE
+      generate: false
+      model_path: wooden/wooden_hoe
+  wooden_axe:
+    display_name: Wooden Axe
+    permission: wooden
+    resource:
+      material: WOODEN_AXE
+      generate: false
+      model_path: wooden/wooden_axe
+  wooden_shovel:
+    display_name: Wooden Shovel
+    permission: wooden
+    resource:
+      material: WOODEN_SHOVEL
+      generate: false
+      model_path: wooden/wooden_shovel
+
+#883030a749931a99b3f986c5fdd0851e

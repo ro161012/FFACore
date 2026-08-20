@@ -1,25 +1,79 @@
 {
-    "providers": [
-        {
-            "type": "bitmap",
-            "file": "minecraft:icons/negative_space.png",
-            "ascent": -32768,
-            "height": -3,
-            "chars": [""]
-        },
-        {
-            "type": "bitmap",
-            "file": "minecraft:icons/mouse_click.png",
-            "ascent": 7,
-            "height": 7.5,
-            "chars": [""]
-        },
-        {
-            "type": "bitmap",
-            "file": "minecraft:icons/clock.png",
-            "ascent": 7,
-            "height": 7.5,
-            "chars": [""]
-        }
-    ]
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "minecraft:icons/negative_space.png",
+      "ascent": -32768,
+      "height": -3,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:icons/mouse_click.png",
+      "ascent": 7,
+      "height": 7.5,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:icons/clock.png",
+      "ascent": 7,
+      "height": 7.5,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "esc/esc.png",
+      "height": 256,
+      "ascent": 131,
+      "chars": [
+        "ꐑ"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "esc/esc.png",
+      "height": 64,
+      "ascent": -20,
+      "chars": [
+        "ꐑ"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "dark_esc/top_logo_1.png",
+      "height": 64,
+      "ascent": 25,
+      "chars": [
+        "ꐓ"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "required/exit_icon.png",
+      "ascent": 8,
+      "chars": [
+        "ꐏ"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "dark_esc/top_logo_2.png",
+      "height": 64,
+      "ascent": 25,
+      "chars": [
+        "ꐔ"
+      ]
+    },
+    {
+      "type": "reference",
+      "id": "nexo:shift"
+    }
+  ]
 }

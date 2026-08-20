@@ -1,0 +1,53 @@
+info:
+  namespace: spears_and_staffs_1
+items:
+  cross_staff:
+    display_name: "&fHoly Staff"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: cs
+  emerald_spear:
+    display_name: "&fEmerald Spear"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: es
+  flame_staff:
+    display_name: "&fFlame Staff"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: fs
+  frozen_crook:
+    display_name: "&fFrozen Crook"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: fc
+  gilded_spear:
+    display_name: "&fGilded Spear"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: gs
+  prismarine_staff:
+    display_name: "&fPrismarine Staff"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: ps
+  skull_staff:
+    display_name: "&fSkull Staff"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: ss
+  tribal_spear:
+    display_name: "&fTribal Spear"
+    resource:
+      material: IRON_SWORD
+      generate: false
+      model_path: ts
+
+# 09129TTWGGE4A0446YS65

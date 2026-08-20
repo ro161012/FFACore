@@ -208,11 +208,287 @@
             "model": "weapons/withersymbiote"
           }
         }
+      },
+      {
+        "threshold": 20000,
+        "model": {
+          "type": "model",
+          "model": "ginko_elven_sword_pack:skymeteor",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20001,
+        "model": {
+          "type": "model",
+          "model": "ginko_elven_sword_pack:tree",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20002,
+        "model": {
+          "type": "model",
+          "model": "ginko_elven_sword_pack:vine",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20003,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20004,
+        "model": {
+          "type": "model",
+          "model": "elitecreatures:bloody_emperor_animated_weapon_set/greatsword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20005,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:adventurer_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20006,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:butcher_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20007,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:crimson_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20008,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:crystal_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20009,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:dragon_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20010,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:fire_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20011,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:king_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20012,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:moonstone_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20013,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:poison_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20014,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:reaver_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 20015,
+        "model": {
+          "type": "model",
+          "model": "adventurer_sword_pack:spike_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900001,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/abyss_trident",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900002,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/arclight_staff",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900003,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/baton",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900004,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/blood_scythe",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900006,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/celestial_ember_scepter",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900008,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/crimson_katarcleaver",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900009,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/dark_eclipse_ultra_greatsword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900010,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/dawnlight_staff",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900012,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/flanged_mace",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900013,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/full_edge_cleaver",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900014,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/haunted_anchor",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900015,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/hazardous_punkblade",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900018,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/pommel_blade",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900019,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/pure_gold_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900020,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/runic_sword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900021,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/staff_of_the_sea",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900022,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/stained_glass_ultra_greatsword",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900024,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/void_orb_staff",
+          "tints": []
+        }
+      },
+      {
+        "threshold": 900025,
+        "model": {
+          "type": "model",
+          "model": "tugkandeman/weapons/warpick",
+          "tints": []
+        }
       }
-    ],
-    "fallback": {
-      "type": "model",
-      "model": "minecraft:item/netherite_sword"
-    }
+    ]
   }
 }

@@ -1,0 +1,1 @@
+{"model":{"type":"condition","property":"using_item","on_true":{"type":"model","model":"elitecreatures:bloody_emperor_animated_weapon_set/shield_blocking","tints":[]},"on_false":{"type":"model","model":"elitecreatures:bloody_emperor_animated_weapon_set/shield","tints":[]}}}

@@ -1,0 +1,33 @@
+info:
+  namespace: default_tools
+items:
+  netherite_pickaxe:
+    display_name: Netherite Pickaxe
+    permission: netherite
+    resource:
+      material: NETHERITE_PICKAXE
+      generate: false
+      model_path: netherite/netherite_pickaxe
+  netherite_hoe:
+    display_name: Netherite Hoe
+    permission: netherite
+    resource:
+      material: NETHERITE_HOE
+      generate: false
+      model_path: netherite/netherite_hoe
+  netherite_axe:
+    display_name: Netherite Axe
+    permission: netherite
+    resource:
+      material: NETHERITE_AXE
+      generate: false
+      model_path: netherite/netherite_axe
+  netherite_shovel:
+    display_name: Netherite Shovel
+    permission: netherite
+    resource:
+      material: NETHERITE_SHOVEL
+      generate: false
+      model_path: netherite/netherite_shovel
+
+#883030a749931a99b3f986c5fdd0851e

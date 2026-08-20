@@ -1,0 +1,33 @@
+info:
+  namespace: default_tools
+items:
+  golden_pickaxe:
+    display_name: Golden Pickaxe
+    permission: golden
+    resource:
+      material: GOLDEN_PICKAXE
+      generate: false
+      model_path: golden/golden_pickaxe
+  golden_hoe:
+    display_name: Golden Hoe
+    permission: golden
+    resource:
+      material: GOLDEN_HOE
+      generate: false
+      model_path: golden/golden_hoe
+  golden_axe:
+    display_name: Golden Axe
+    permission: golden
+    resource:
+      material: GOLDEN_AXE
+      generate: false
+      model_path: golden/golden_axe
+  golden_shovel:
+    display_name: Golden Shovel
+    permission: golden
+    resource:
+      material: GOLDEN_SHOVEL
+      generate: false
+      model_path: golden/golden_shovel
+
+#883030a749931a99b3f986c5fdd0851e

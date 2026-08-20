@@ -1,0 +1,33 @@
+info:
+  namespace: default_tools
+items:
+  iron_pickaxe:
+    display_name: Iron Pickaxe
+    permission: iron
+    resource:
+      material: IRON_PICKAXE
+      generate: false
+      model_path: iron/iron_pickaxe
+  iron_hoe:
+    display_name: Iron Hoe
+    permission: iron
+    resource:
+      material: IRON_HOE
+      generate: false
+      model_path: iron/iron_hoe
+  iron_axe:
+    display_name: Iron Axe
+    permission: iron
+    resource:
+      material: IRON_AXE
+      generate: false
+      model_path: iron/iron_axe
+  iron_shovel:
+    display_name: Iron Shovel
+    permission: iron
+    resource:
+      material: IRON_SHOVEL
+      generate: false
+      model_path: iron/iron_shovel
+
+#883030a749931a99b3f986c5fdd0851e

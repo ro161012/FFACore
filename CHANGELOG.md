@@ -10,6 +10,11 @@ commits between tags.
 
 ## [Unreleased]
 
+## [1.21.54] - 2026-08-19
+- Merge Nexo pack assets (weapons, wings, furniture, signs, icons)
+- Add /ffa preview command and merge the Nexo item pack
+
+
 ## [1.21.53] - 2026-08-15
 - Remove all custom weapon code and assets
 

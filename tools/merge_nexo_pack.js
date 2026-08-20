@@ -85,10 +85,8 @@ function mergeRangeDispatch(ours, theirs) {
         };
     }
     // Preserve extras like oversized_in_gui from either side.
-    for (const extra of ['oversized_in_gui']) {
-        if (theirs[extra] !== undefined && ours[extra] === undefined) {
-            merged[extra] = theirs[extra];
-        }
+    if (theirs.oversized_in_gui !== undefined && ours.oversized_in_gui === undefined) {
+        merged.oversized_in_gui = theirs.oversized_in_gui;
     }
     return merged;
 }

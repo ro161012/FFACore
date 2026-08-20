@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -17,11 +16,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.NamespacedKey;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Paged chest GUI for browsing every custom item in the merged resource pack.
@@ -38,7 +35,6 @@ public final class PreviewMenu implements Listener {
     private static final int NAV_ROW = PAGES_SIZE - 9;
 
     private final FFACore plugin;
-    private final Map<UUID, Integer> openMenus = new HashMap<>();
 
     /**
      * Creates the menu.
@@ -70,7 +66,6 @@ public final class PreviewMenu implements Listener {
         }
 
         player.openInventory(inv);
-        openMenus.put(player.getUniqueId(), 0);
     }
 
     /**
@@ -107,7 +102,6 @@ public final class PreviewMenu implements Listener {
         inv.setItem(NAV_ROW + 4, navItem(Material.BARRIER, "&cBack to categories"));
 
         player.openInventory(inv);
-        openMenus.put(player.getUniqueId(), safePage);
     }
 
     private ItemStack createPreviewItem(final PreviewItem item) {
@@ -221,7 +215,6 @@ public final class PreviewMenu implements Listener {
                 .withCustomModelData(item.cmd())
                 .withItemModel(item.itemModel())
                 .build();
-        stack.setAmount(amount);
         final Map<Integer, ItemStack> leftover =
                 player.getInventory().addItem(stack);
         for (final ItemStack drop : leftover.values()) {
@@ -229,18 +222,6 @@ public final class PreviewMenu implements Listener {
         }
         Messages.raw(player, "&7Gave you &f" + item.name()
                 + (amount > 1 ? " &7x" + amount : "") + "&7.");
-    }
-
-    /**
-     * Forgets a viewer's page when they close the menu.
-     *
-     * @param event the close event
-     */
-    @EventHandler
-    public void onClose(final InventoryCloseEvent event) {
-        if (event.getPlayer() instanceof Player) {
-            openMenus.remove(event.getPlayer().getUniqueId());
-        }
     }
 
     /**

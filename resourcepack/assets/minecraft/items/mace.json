@@ -119,6 +119,34 @@
           "model": "tugkandeman/weapons/mace",
           "tints": []
         }
+      },
+      {
+        "threshold": 910401,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/earthquake_mace"
+        }
+      },
+      {
+        "threshold": 910402,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/cob_mace"
+        }
+      },
+      {
+        "threshold": 910403,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/wither_mace"
+        }
+      },
+      {
+        "threshold": 910404,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/dash_mace"
+        }
       }
     ]
   }

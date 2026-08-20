@@ -2,6 +2,7 @@ package dev.ro161012.ffacore.command;
 
 import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.afk.AfkCommand;
+import dev.ro161012.ffacore.customitem.CustomItemCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
 import dev.ro161012.ffacore.preview.PreviewCommand;
 import dev.ro161012.ffacore.util.Messages;
@@ -38,6 +39,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     private final KillTokenCommand killTokenCommand;
     private final AfkCommand afkCommand;
     private final PreviewCommand previewCommand;
+    private final CustomItemCommand customItemCommand;
 
     /**
      * Creates the command handler.
@@ -47,16 +49,19 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
      * @param killTokenCommand    the kill token sub-command executor
      * @param afkCommand          the afk sub-command executor
      * @param previewCommand      the preview sub-command executor
+     * @param customItemCommand   the custom item sub-command executor
      */
     public FfaCommand(final FFACore plugin, final ArenaCommand arenaCommand,
                       final KillTokenCommand killTokenCommand,
                       final AfkCommand afkCommand,
-                      final PreviewCommand previewCommand) {
+                      final PreviewCommand previewCommand,
+                      final CustomItemCommand customItemCommand) {
         this.plugin = plugin;
         this.arenaCommand = arenaCommand;
         this.killTokenCommand = killTokenCommand;
         this.afkCommand = afkCommand;
         this.previewCommand = previewCommand;
+        this.customItemCommand = customItemCommand;
     }
 
     @Override
@@ -77,6 +82,9 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 }
                 case "preview", "pv" -> {
                     return previewCommand.onCommand(sender, command, "ffa preview", rest);
+                }
+                case "customitems", "items", "ci" -> {
+                    return customItemCommand.onCommand(sender, command, "ffa customitems", rest);
                 }
                 case "config" -> {
                     return openConfig(sender);
@@ -100,7 +108,9 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/ffa afk&8)");
         messages.raw(sender, "&dPreview &8- &7" + plugin.getPreviewRegistry().getItems().size()
-                + " custom items to browse &8(&f/ffa preview&8)");
+                + " pack items &8(&f/ffa preview&8)");
+        messages.raw(sender, "&5Custom Items &8- &7" + plugin.getCustomItemManager().types().size()
+                + " abilities &8(&f/ffa customitems&8)");
         messages.raw(sender, "&8&m--------------------------------");
         messages.raw(sender, "&7Use &f/ffa config &7to open the in-game config menu.");
         messages.raw(sender, "&7Use &f/ffa reload &7to reload config.yml from disk.");
@@ -136,7 +146,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                                       final String alias, final String[] args) {
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
-            return List.of("arena", "killtoken", "afk", "preview",
+            return List.of("arena", "killtoken", "afk", "preview", "customitems",
                     "config", "reload").stream().filter(s -> s.startsWith(prefix)).toList();
         }
         if (args.length >= 2) {
@@ -149,6 +159,8 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 case "afk" -> afkCommand.onTabComplete(sender, command, "ffa afk", rest);
                 case "preview", "pv" ->
                         previewCommand.onTabComplete(sender, command, "ffa preview", rest);
+                case "customitems", "items", "ci" ->
+                        customItemCommand.onTabComplete(sender, command, "ffa customitems", rest);
                 default -> List.of();
             };
         }

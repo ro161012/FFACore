@@ -35,7 +35,7 @@ function resolveModel(m) {
         return resolveModel(m.on_false) || resolveModel(m.on_true) || resolveModel(m.fallback);
     }
     if (m.type === 'select') {
-        return resolveModel(m.fallback) || null;
+        return resolveModel(m.fallback);
     }
     if (m.type === 'range_dispatch' || m.type === 'dispatch') {
         if (Array.isArray(m.entries) && m.entries.length > 0) {
@@ -169,7 +169,9 @@ function main() {
             continue;
         }
         const modelObj = data.model;
-        if (!modelObj || modelObj.type !== 'range_dispatch') continue;
+        if (!modelObj || !['range_dispatch', 'minecraft:range_dispatch'].includes(modelObj.type)) {
+            continue;
+        }
         const entries = Array.isArray(modelObj.entries) ? modelObj.entries : [];
         for (const entry of entries) {
             const model = resolveModel(entry.model);

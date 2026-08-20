@@ -47,6 +47,8 @@ public final class ConfigMenu {
     private static final int BUTTON_WIDTH = 200;
     private static final int BODY_WIDTH = 400;
     private static final int MAX_STRING_LENGTH = 256;
+    private static final List<String> CUSTOM_ITEM_THEME_CHOICES = List.of(
+            "GLOBAL", "UNIFIED_PURPLE", "ITEM", "EMBER", "FROST", "EARTH", "GOLD", "VOID");
 
     private final FFACore plugin;
     private final List<Section> sections;
@@ -117,23 +119,6 @@ public final class ConfigMenu {
     //  Section dialogs
     // ------------------------------------------------------------------
 
-    /**
-     * Opens a section dialog, converting any failure into a visible message
-     * so a broken input can never make a click appear to do nothing.
-     *
-     * @param player  the player
-     * @param section the section to open
-     */
-    private void openSectionSafely(final Player player, final Section section) {
-        try {
-            openSection(player, section);
-        } catch (final RuntimeException ex) {
-            plugin.getLogger().log(java.util.logging.Level.SEVERE,
-                    "Failed to open config section " + section.id(), ex);
-            Messages.raw(player, "&cFailed to open the section: &f" + ex.getMessage());
-        }
-    }
-
     private void openSection(final Player player, final Section section) {
         final List<DialogInput> inputs = new ArrayList<>();
         for (final ConfigOption option : section.options()) {
@@ -173,26 +158,18 @@ public final class ConfigMenu {
      * @param section the clicked section
      */
     private void openSectionOrSubmenu(final Player player, final Section section) {
-        if (section.children().isEmpty()) {
-            openSectionSafely(player, section);
-        } else {
-            openSubmenuSafely(player, section);
-        }
-    }
-
-    /**
-     * Opens a submenu, converting any failure into a visible message.
-     *
-     * @param player  the player
-     * @param section the section whose children are listed
-     */
-    private void openSubmenuSafely(final Player player, final Section section) {
+        final boolean submenu = !section.children().isEmpty();
         try {
-            openSubmenu(player, section);
+            if (submenu) {
+                openSubmenu(player, section);
+            } else {
+                openSection(player, section);
+            }
         } catch (final RuntimeException ex) {
+            final String kind = submenu ? "submenu" : "section";
             plugin.getLogger().log(java.util.logging.Level.SEVERE,
-                    "Failed to open config submenu " + section.id(), ex);
-            Messages.raw(player, "&cFailed to open the submenu: &f" + ex.getMessage());
+                    "Failed to open config " + kind + " " + section.id(), ex);
+            Messages.raw(player, "&cFailed to open the " + kind + ": &f" + ex.getMessage());
         }
     }
 
@@ -209,7 +186,7 @@ public final class ConfigMenu {
             buttons.add(button(child.title(), tooltip(child.description()),
                     click((view, audience) -> {
                         if (audience instanceof Player target) {
-                            onMainThread(() -> openSectionSafely(target, child));
+                            onMainThread(() -> openSectionOrSubmenu(target, child));
                         }
                     }), child.color()));
         }
@@ -296,6 +273,9 @@ public final class ConfigMenu {
     }
 
     private static float clamp(final float value, final float min, final float max) {
+        if (!Float.isFinite(value)) {
+            return min;
+        }
         return Math.max(min, Math.min(max, value));
     }
 
@@ -359,13 +339,24 @@ public final class ConfigMenu {
             case BOOLEAN -> view.getBoolean(option.key());
             case INTEGER -> {
                 final Float value = view.getFloat(option.key());
-                yield value == null ? null : Math.round(value);
+                yield value == null ? null : Math.round(clamp(value, option.min(), option.max()));
             }
             case DECIMAL -> {
                 final Float value = view.getFloat(option.key());
-                yield value == null ? null : Math.round(value * 10.0f) / 10.0d;
+                if (value == null) {
+                    yield null;
+                }
+                final float clamped = clamp(value, option.min(), option.max());
+                final float step = option.step();
+                final double snapped = step <= 0f
+                        ? clamped : Math.round(clamped / step) * (double) step;
+                yield Math.max(option.min(), Math.min(option.max(), snapped));
             }
-            case STRING -> view.getText(option.key());
+            case STRING -> {
+                final String value = view.getText(option.key());
+                yield value == null || value.length() <= MAX_STRING_LENGTH
+                        ? value : value.substring(0, MAX_STRING_LENGTH);
+            }
             case ENUM -> {
                 final String raw = view.getText(option.key());
                 if (raw == null) {
@@ -380,6 +371,203 @@ public final class ConfigMenu {
     // ------------------------------------------------------------------
     //  Sections
     // ------------------------------------------------------------------
+
+    private Section customItemsSection() {
+        return new Section("custom-items", "Custom Items",
+                "Configure every ability, bind, cooldown, balance value and tooltip theme.",
+                List.of(), List.of(
+                        new Section("custom-items-global", "Global",
+                                "Shared switches and the unified resource-pack tooltip theme. Active abilities use the swap-hands key; move weapons manually in the inventory when you want them offhand.",
+                                List.of(
+                                        ConfigOption.bool("custom-items.enabled", "Enable custom items",
+                                                "Enable custom item abilities and passive effects.", true),
+                                        ConfigOption.enumOption("custom-items.tooltip-theme", "Tooltip theme",
+                                                "Gradient background and title palette used by every custom item.",
+                                                List.of("UNIFIED_PURPLE", "ITEM", "EMBER", "FROST",
+                                                        "EARTH", "GOLD", "VOID"), "UNIFIED_PURPLE")
+                                ), TextColor.color(0xC56BFF)),
+                        customItemsGroup("custom-items.swords", "Swords",
+                                "Swords and their passive or active powers.", List.of(
+                                        customItem("custom-items.dash-sword", "Dash Sword",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.dash-sword.cooldown-seconds", "Cooldown", "Dash cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.dash-sword.distance", "Distance", "Blocks travelled by the dash.", 0.5f, 30f, 0.5f, 8.0),
+                                                        ConfigOption.integer("custom-items.dash-sword.duration-ticks", "Duration", "Dash duration in ticks.", 1, 40, 6)
+                                                ), 0xA78BFA),
+                                        customItem("custom-items.frost-sword", "Frost Sword",
+                                                List.of(
+                                                        ConfigOption.decimal("custom-items.frost-sword.proc-chance", "Freeze chance", "Chance to freeze a hit target.", 0f, 1f, 0.01f, 0.20),
+                                                        ConfigOption.decimal("custom-items.frost-sword.freeze-seconds", "Freeze seconds", "Freeze duration in seconds.", 0.1f, 30f, 0.1f, 3.0)
+                                                ), 0x7DD3FC),
+                                        customItem("custom-items.strike-sword", "Strike Sword",
+                                                List.of(ConfigOption.decimal("custom-items.strike-sword.proc-chance", "Lightning chance", "Chance to call damaging lightning on a hit.", 0f, 1f, 0.01f, 0.15)), 0xF4D34A),
+                                        customItem("custom-items.lifestealer-sword", "Lifestealer Sword",
+                                                List.of(
+                                                        ConfigOption.decimal("custom-items.lifestealer-sword.proc-chance", "Lifesteal chance", "Chance to heal on a hit.", 0f, 1f, 0.01f, 0.20),
+                                                        ConfigOption.decimal("custom-items.lifestealer-sword.heal-amount", "Heal amount", "Health restored on a proc.", 0.5f, 20f, 0.5f, 4.0)
+                                                ), 0xFF6B78),
+                                        customItem("custom-items.adrenaline-blade", "Adrenaline Blade",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.adrenaline-blade.cooldown-seconds", "Cooldown", "Second-chance cooldown in seconds.", 0, 600, 70),
+                                                        ConfigOption.decimal("custom-items.adrenaline-blade.second-chance-seconds", "Second-chance seconds", "Duration of the second chance.", 0.1f, 30f, 0.1f, 4.0),
+                                                        ConfigOption.integer("custom-items.adrenaline-blade.absorption-hearts", "Absorption hearts", "Absorption hearts granted after the lethal hit.", 1, 40, 14)
+                                                ), 0x48D7FF),
+                                        customItem("custom-items.flux-sword", "Flux Sword",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.flux-sword.cooldown-seconds", "Cooldown", "Beam cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.flux-sword.damage", "Damage", "Damage dealt once per target.", 0f, 100f, 0.5f, 24.0),
+                                                        ConfigOption.decimal("custom-items.flux-sword.range", "Range", "Beam range in blocks.", 1f, 64f, 0.5f, 24.0),
+                                                        ConfigOption.decimal("custom-items.flux-sword.radius", "Hit radius", "Beam hit radius.", 0.25f, 5f, 0.05f, 1.35)
+                                                ), 0x55B7FF),
+                                        customItem("custom-items.pigxaliur", "Pigxaliur",
+                                                List.of(
+                                                        ConfigOption.decimal("custom-items.pigxaliur.proc-chance", "Hoglin chance", "Chance to summon hoglins on hit.", 0f, 1f, 0.01f, 0.20),
+                                                        ConfigOption.integer("custom-items.pigxaliur.cooldown-seconds", "Cooldown", "Hoglin proc cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.integer("custom-items.pigxaliur.hoglin-count", "Hoglin count", "Hoglins summoned per proc.", 1, 10, 3),
+                                                        ConfigOption.decimal("custom-items.pigxaliur.hoglin-lifetime-seconds", "Hoglin lifetime", "How long summoned hoglins survive.", 1f, 120f, 1f, 20.0)
+                                                ), 0x58E36B)
+                                ), 0xA78BFA),
+                        customItemsGroup("custom-items.spears", "Spears",
+                                "Rocket, venom, dash and vault spear tuning.", List.of(
+                                        customItem("custom-items.rocket-spear", "Rocket Spear",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.rocket-spear.cooldown-seconds", "Cooldown", "Rocket cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.launch-seconds", "Launch seconds", "Time spent rising.", 0.1f, 5f, 0.05f, 1.0),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.maximum-air-seconds", "Maximum air seconds", "Safety timeout before the slam.", 1f, 20f, 0.5f, 4.0),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.launch-velocity", "Launch velocity", "Initial upward velocity.", 0.1f, 4f, 0.05f, 1.45),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.slam-velocity", "Slam velocity", "Downward slam velocity.", 0.1f, 6f, 0.05f, 2.2),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.impact-radius", "Impact radius", "Radius of the landing hit.", 1f, 20f, 0.5f, 5.0),
+                                                        ConfigOption.decimal("custom-items.rocket-spear.impact-damage", "Impact damage", "Damage dealt on landing.", 0f, 100f, 0.5f, 12.0)
+                                                ), 0xFF805A),
+                                        customItem("custom-items.venom-spear", "Venom Spear",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.venom-spear.cooldown-seconds", "Cooldown", "Dash cooldown in seconds.", 0, 300, 12),
+                                                        ConfigOption.decimal("custom-items.venom-spear.distance", "Distance", "Blocks travelled by the dash.", 0.5f, 30f, 0.5f, 8.0),
+                                                        ConfigOption.integer("custom-items.venom-spear.duration-ticks", "Duration", "Dash duration in ticks.", 1, 40, 6),
+                                                        ConfigOption.decimal("custom-items.venom-spear.proc-chance", "Venom chance", "Chance to poison and blind on dash.", 0f, 1f, 0.01f, 0.20),
+                                                        ConfigOption.decimal("custom-items.venom-spear.effect-radius", "Effect radius", "Radius of the venom effect.", 1f, 50f, 0.5f, 20.0),
+                                                        ConfigOption.decimal("custom-items.venom-spear.poison-seconds", "Poison seconds", "Poison duration.", 0.1f, 30f, 0.1f, 5.0),
+                                                        ConfigOption.decimal("custom-items.venom-spear.blind-seconds", "Blind seconds", "Blindness duration.", 0.1f, 30f, 0.1f, 3.0)
+                                                ), 0x70E85A),
+                                        customItem("custom-items.dash-spear", "Dash Spear",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.dash-spear.cooldown-seconds", "Cooldown", "Dash cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.dash-spear.distance", "Distance", "Blocks travelled by the dash.", 0.5f, 30f, 0.5f, 9.0),
+                                                        ConfigOption.integer("custom-items.dash-spear.duration-ticks", "Duration", "Dash duration in ticks.", 1, 40, 6)
+                                                ), 0xFF78C8),
+                                        customItem("custom-items.vault-spear", "Vault Spear",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.vault-spear.cooldown-seconds", "Cooldown", "Vault cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.vault-spear.forward-velocity", "Forward velocity", "Forward vault velocity.", 0f, 3f, 0.05f, 0.55),
+                                                        ConfigOption.decimal("custom-items.vault-spear.vertical-velocity", "Vertical velocity", "Upward vault velocity.", 0f, 3f, 0.05f, 1.35)
+                                                ), 0x81C8FF)
+                                ), 0xFF78C8),
+                        customItemsGroup("custom-items.axes", "Axes",
+                                "Earthquakes, magma, cobweb and whirlwind axe powers.", List.of(
+                                        customItem("custom-items.paxe", "Paxe",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.paxe.cooldown-seconds", "Cooldown", "Glass prison cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.paxe.duration-seconds", "Duration", "Glass prison duration.", 1f, 120f, 1f, 20.0)
+                                                ), 0xFFB347),
+                                        customItem("custom-items.seismic-axe", "Seismic Axe",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.seismic-axe.cooldown-seconds", "Cooldown", "Earthquake cooldown in seconds.", 0, 300, 25),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.launch-seconds", "Launch seconds", "Time spent rising.", 0.1f, 5f, 0.05f, 0.75),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.maximum-air-seconds", "Maximum air seconds", "Safety timeout before impact.", 1f, 20f, 0.5f, 3.0),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.launch-velocity", "Launch velocity", "Initial upward velocity.", 0.1f, 4f, 0.05f, 1.15),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.slam-velocity", "Slam velocity", "Downward slam velocity.", 0.1f, 6f, 0.05f, 1.8),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.impact-radius", "Impact radius", "Radius of the earthquake.", 1f, 24f, 0.5f, 8.0),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.impact-damage", "Impact damage", "Damage dealt by the earthquake.", 0f, 100f, 0.5f, 24.0),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.knockback", "Knockback", "Horizontal launch strength.", 0f, 5f, 0.05f, 1.35),
+                                                        ConfigOption.decimal("custom-items.seismic-axe.vertical-knockback", "Vertical knockback", "Vertical launch strength.", 0f, 3f, 0.05f, 0.85)
+                                                ), 0xD89224),
+                                        customItem("custom-items.cob-axe", "Cob Axe",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.cob-axe.cooldown-seconds", "Cooldown", "Cobweb shred cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.integer("custom-items.cob-axe.radius", "Radius", "Cobweb removal radius.", 1, 20, 7)
+                                                ), 0xE6E6E6),
+                                        customItem("custom-items.magma-axe", "Magma Axe",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.magma-axe.cooldown-seconds", "Cooldown", "Magma ring cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.integer("custom-items.magma-axe.radius", "Radius", "Magma ring and damage radius.", 1, 20, 6),
+                                                        ConfigOption.decimal("custom-items.magma-axe.damage", "Damage", "Damage dealt by the magma ring.", 0f, 100f, 0.5f, 14.0),
+                                                        ConfigOption.decimal("custom-items.magma-axe.fire-seconds", "Fire seconds", "Ignition duration.", 0.1f, 30f, 0.1f, 4.0),
+                                                        ConfigOption.decimal("custom-items.magma-axe.visual-seconds", "Visual seconds", "How long magma displays remain.", 0.1f, 10f, 0.1f, 2.0)
+                                                ), 0xFF8A3D),
+                                        customItem("custom-items.whirl-axe", "Whirl Axe",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.whirl-axe.cooldown-seconds", "Cooldown", "Whirlwind cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.integer("custom-items.whirl-axe.radius", "Radius", "Whirlwind radius.", 1, 20, 6),
+                                                        ConfigOption.decimal("custom-items.whirl-axe.damage", "Damage", "Damage dealt by the whirlwind.", 0f, 100f, 0.5f, 8.0),
+                                                        ConfigOption.decimal("custom-items.whirl-axe.knockback", "Knockback", "Horizontal launch strength.", 0f, 5f, 0.05f, 1.4),
+                                                        ConfigOption.decimal("custom-items.whirl-axe.vertical-knockback", "Vertical knockback", "Vertical launch strength.", 0f, 3f, 0.05f, 0.65)
+                                                ), 0xBFF7EE)
+                                ), 0xFFB347),
+                        customItemsGroup("custom-items.bows", "Bows",
+                                "Grapple movement and volley arrow tuning.", List.of(
+                                        customItem("custom-items.grapple-bow", "Grapple Bow",
+                                                List.of(ConfigOption.decimal("custom-items.grapple-bow.dash-velocity", "Dash velocity", "Velocity applied in the shot direction.", 0.1f, 4f, 0.05f, 1.35)), 0xB886FF),
+                                        customItem("custom-items.volley-bow", "Volley Bow",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.volley-bow.cooldown-seconds", "Cooldown", "Extra-arrow cooldown in seconds.", 0, 300, 8),
+                                                        ConfigOption.decimal("custom-items.volley-bow.arrow-speed", "Arrow speed", "Speed of the two extra arrows.", 0.5f, 6f, 0.05f, 3.0),
+                                                        ConfigOption.decimal("custom-items.volley-bow.spread-degrees", "Spread degrees", "Angle of the two extra arrows.", 0f, 45f, 0.5f, 7.0)
+                                                ), 0xFFE070)
+                                ), 0xFFE070),
+                        customItemsGroup("custom-items.maces", "Maces",
+                                "Impact, cobweb, wither and dash mace powers.", List.of(
+                                        customItem("custom-items.earthquake-mace", "Earthquake",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.earthquake-mace.cooldown-seconds", "Cooldown", "Earthquake cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.launch-seconds", "Launch seconds", "Time spent rising.", 0.1f, 5f, 0.05f, 0.75),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.maximum-air-seconds", "Maximum air seconds", "Safety timeout before impact.", 1f, 20f, 0.5f, 3.0),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.launch-velocity", "Launch velocity", "Initial upward velocity.", 0.1f, 4f, 0.05f, 1.15),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.slam-velocity", "Slam velocity", "Downward slam velocity.", 0.1f, 6f, 0.05f, 1.8),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.impact-radius", "Impact radius", "Radius of the earthquake.", 1f, 24f, 0.5f, 8.0),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.impact-damage", "Impact damage", "Damage dealt by the earthquake.", 0f, 100f, 0.5f, 12.0),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.knockback", "Knockback", "Horizontal launch strength.", 0f, 5f, 0.05f, 1.35),
+                                                        ConfigOption.decimal("custom-items.earthquake-mace.vertical-knockback", "Vertical knockback", "Vertical launch strength.", 0f, 3f, 0.05f, 0.85)
+                                                ), 0xE0A51A),
+                                        customItem("custom-items.cob-mace", "Cob Mace",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.cob-mace.cooldown-seconds", "Cooldown", "Cobweb shred cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.integer("custom-items.cob-mace.radius", "Radius", "Cobweb removal radius.", 1, 20, 7)
+                                                ), 0xE9E9E9),
+                                        customItem("custom-items.wither-mace", "Wither Mace",
+                                                List.of(
+                                                        ConfigOption.decimal("custom-items.wither-mace.proc-chance", "Wither chance", "Chance to inflict Wither II.", 0f, 1f, 0.01f, 0.20),
+                                                        ConfigOption.integer("custom-items.wither-mace.cooldown-seconds", "Cooldown", "Wither proc cooldown in seconds.", 0, 300, 30),
+                                                        ConfigOption.decimal("custom-items.wither-mace.wither-seconds", "Wither seconds", "Wither II duration.", 0.1f, 30f, 0.1f, 10.0)
+                                                ), 0xA68B99),
+                                        customItem("custom-items.dash-mace", "Dash Mace",
+                                                List.of(
+                                                        ConfigOption.integer("custom-items.dash-mace.cooldown-seconds", "Cooldown", "Dash cooldown in seconds.", 0, 300, 20),
+                                                        ConfigOption.decimal("custom-items.dash-mace.dash-velocity", "Dash velocity", "Velocity in the look direction.", 0.1f, 4f, 0.05f, 1.35)
+                                                ), 0x69E86A)
+                                ), 0x9B8CFF)
+                ));
+    }
+
+    private Section customItemsGroup(final String id, final String title,
+                                     final String description, final List<Section> children,
+                                     final int color) {
+        return new Section(id, title, description, List.of(), children,
+                TextColor.color(color));
+    }
+
+    private Section customItem(final String id, final String title,
+                               final List<ConfigOption> options, final int color) {
+        final TextColor tint = TextColor.color(color);
+        final List<ConfigOption> themedOptions = new ArrayList<>();
+        for (final ConfigOption option : options) {
+            themedOptions.add(option.withColor(tint));
+        }
+        themedOptions.add(ConfigOption.enumOption(id + ".tooltip-theme", "Tooltip theme",
+                "Background and title gradient for this item; GLOBAL follows the shared theme.",
+                CUSTOM_ITEM_THEME_CHOICES, "GLOBAL").withColor(tint));
+        return new Section(id, title, "Tune this item's ability, balance values and theme.",
+                themedOptions, tint);
+    }
 
     private List<Section> defineSections() {
         return List.of(
@@ -487,6 +675,7 @@ public final class ConfigMenu {
                                         "Message sent when the player earns shards.",
                                         "&b+1 &3AFK Shard &7(the deep rewards patience)")
                         )),
+                customItemsSection(),
                 new Section("performance", "Storage & Performance",
                         "Snapshot compression, caching and async I/O.",
                         List.of(

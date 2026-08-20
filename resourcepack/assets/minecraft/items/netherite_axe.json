@@ -55,6 +55,41 @@
           "model": "tugkandeman/weapons/verdant_scythe",
           "tints": []
         }
+      },
+      {
+        "threshold": 910201,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/paxe"
+        }
+      },
+      {
+        "threshold": 910202,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/seismic_axe"
+        }
+      },
+      {
+        "threshold": 910203,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/cob_axe"
+        }
+      },
+      {
+        "threshold": 910204,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/magma_axe"
+        }
+      },
+      {
+        "threshold": 910205,
+        "model": {
+          "type": "model",
+          "model": "ffacore:item/whirl_axe"
+        }
       }
     ],
     "fallback": {

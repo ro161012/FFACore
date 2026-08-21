@@ -1,0 +1,24 @@
+{
+    "model": {
+        "type": "range_dispatch",
+        "property": "custom_model_data",
+        "fallback": {
+            "type": "model",
+            "model": "minecraft:item/clay_ball"
+        },
+        "entries": [
+            {"threshold": 1, "model": {"type": "model", "model": "block/heavy_core"}},
+            {"threshold": 2, "model": {"type": "model", "model": "item/breeze_rod"}},
+            {"threshold": 3, "model": {"type": "model", "model": "custom/vulcans_skull"}},
+            {"threshold": 4, "model": {"type": "model", "model": "weapons/crazy_slots"}},
+            {"threshold": 5, "model": {"type": "model", "model": "custom/white_beam"}},
+            {"threshold": 6, "model": {"type": "model", "model": "custom/black_cubes"}},
+            {"threshold": 7, "model": {"type": "model", "model": "custom/slashing"}},
+            {"threshold": 8, "model": {"type": "model", "model": "custom/massive_axe"}},
+            {"threshold": 9, "model": {"type": "model", "model": "custom/withered_ability"}},
+            {"threshold": 10, "model": {"type": "model", "model": "custom/clock"}},
+            {"threshold": 11, "model": {"type": "model", "model": "custom/ticks"}},
+            {"threshold": 12, "model": {"type": "model", "model": "weapons/nukeremote"}}
+        ]
+    }
+}

@@ -4,37 +4,34 @@
     "property": "minecraft:custom_model_data",
     "entries": [
       {
-        "threshold": 910101,
+        "threshold": 1,
         "model": {
-          "type": "model",
-          "model": "ffacore:item/rocket_spear"
-        }
-      },
-      {
-        "threshold": 910102,
-        "model": {
-          "type": "model",
-          "model": "ffacore:item/venom_spear"
-        }
-      },
-      {
-        "threshold": 910103,
-        "model": {
-          "type": "model",
-          "model": "ffacore:item/dash_spear"
-        }
-      },
-      {
-        "threshold": 910104,
-        "model": {
-          "type": "model",
-          "model": "ffacore:item/vault_spear"
+          "type": "minecraft:model",
+          "model": "minecraft:weapons/omen"
         }
       }
     ],
     "fallback": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/netherite_spear"
+        },
+        "when": [
+          "gui",
+          "ground",
+          "fixed",
+          "on_shelf"
+        ]
+      }
+    ],
+    "fallback": {
       "type": "minecraft:model",
-      "model": "minecraft:item/netherite_spear"
+      "model": "minecraft:item/netherite_spear_in_hand"
+    },
+    "property": "minecraft:display_context"
     }
   }
 }

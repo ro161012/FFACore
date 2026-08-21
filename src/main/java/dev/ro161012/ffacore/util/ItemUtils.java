@@ -23,12 +23,6 @@ import org.bukkit.persistence.PersistentDataType;
  */
 public final class ItemUtils {
 
-    /** Custom model data used by the Kill Token texture override. */
-    public static final int KILL_TOKEN_MODEL_DATA = 1001;
-
-    /** Custom model data used by the AFK Shard texture override. */
-    public static final int AFK_SHARD_MODEL_DATA = 1002;
-
     /** NBT tag identifying a Kill Token currency item. */
     public static final NamespacedKey KILL_TOKEN_KEY =
             new NamespacedKey("ffacore", "kill_token");
@@ -47,9 +41,9 @@ public final class ItemUtils {
     private static final int OCEAN_FROM = 0x0A2A6B;
     private static final int OCEAN_TO = 0x58C7F3;
 
-    // Ember palette (Kill Token).
-    private static final int EMBER_FROM = 0x7A0B0B;
-    private static final int EMBER_TO = 0xFF5C5C;
+    // Ember palette (Kill Token), light to dark.
+    private static final int EMBER_FROM = 0xFF5C5C;
+    private static final int EMBER_TO = 0x7A0B0B;
 
     private ItemUtils() {
         // Utility class.

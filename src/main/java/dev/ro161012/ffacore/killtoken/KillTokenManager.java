@@ -228,7 +228,8 @@ public final class KillTokenManager {
 
     /**
      * Creates the default token: a Nether Star with an ember gradient name,
-     * the ember tooltip style, and the {@code ffacore:kill_token} tag.
+     * the ember tooltip style, and the {@code ffacore:kill_token} tag. It
+     * renders as the vanilla Nether Star item.
      *
      * @return the default currency item
      */
@@ -239,7 +240,6 @@ public final class KillTokenManager {
             meta.displayName(ItemUtils.emberTitle(DEFAULT_TOKEN_NAME));
             meta.lore(List.of(
                     Component.text(DEFAULT_TOKEN_LORE, NamedTextColor.GRAY)));
-            meta.setCustomModelData(ItemUtils.KILL_TOKEN_MODEL_DATA);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
             stack.setItemMeta(meta);
         }

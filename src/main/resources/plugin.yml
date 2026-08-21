@@ -11,7 +11,7 @@ softdepend: [PlaceholderAPI, WorldEdit]
 commands:
   ffa:
     description: FFACore - arena regeneration, Kill Token currency and AFK zones.
-    usage: /ffa <arena|killtoken|afk|customitems|config|reload>
+    usage: /ffa <arena|killtoken|afk|config|reload>
 
 permissions:
   ffacore.admin:
@@ -22,14 +22,9 @@ permissions:
       ffacore.killtoken.admin: true
       ffacore.afk.admin: true
       ffacore.config: true
-      ffacore.customitems: true
 
   ffacore.config:
     description: Open the in-game config menu and apply changes in realtime.
-    default: op
-
-  ffacore.customitems:
-    description: Give and list the FFACore ability items.
     default: op
 
   # ---- Arena ----

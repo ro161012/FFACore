@@ -1,1 +1,0 @@
-{"model":{"type":"range_dispatch","property":"custom_model_data","entries":[{"threshold":10000.0,"model":{"type":"model","model":"default_tools:golden/golden_shovel","tints":[]}}],"fallback":{"type":"model","model":"item/golden_shovel","tints":[]}}}

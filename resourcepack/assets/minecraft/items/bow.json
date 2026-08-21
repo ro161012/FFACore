@@ -1,51 +1,8 @@
 {
   "model": {
-    "type": "range_dispatch",
-    "property": "custom_model_data",
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
     "entries": [
-      {
-        "model": {
-          "on_false": {
-            "model": "weapons/striker/striker",
-            "type": "model"
-          },
-          "on_true": {
-            "entries": [
-              {
-                "model": {
-                  "model": "weapons/striker/pulling_1",
-                  "type": "model"
-                },
-                "threshold": 0
-              },
-              {
-                "model": {
-                  "model": "weapons/striker/pulling_2",
-                  "type": "model"
-                },
-                "threshold": 0.45
-              },
-              {
-                "model": {
-                  "model": "weapons/striker/pulling_3",
-                  "type": "model"
-                },
-                "threshold": 0.75
-              }
-            ],
-            "fallback": {
-              "model": "weapons/striker/striker",
-              "type": "model"
-            },
-            "property": "use_duration",
-            "scale": 0.05,
-            "type": "range_dispatch"
-          },
-          "property": "using_item",
-          "type": "condition"
-        },
-        "threshold": 1
-      },
       {
         "threshold": 910301,
         "model": {
@@ -62,37 +19,37 @@
       }
     ],
     "fallback": {
+      "type": "minecraft:condition",
       "on_false": {
-        "model": "item/bow",
-        "type": "model"
+        "type": "minecraft:model",
+        "model": "minecraft:item/bow"
       },
       "on_true": {
+        "type": "minecraft:range_dispatch",
         "entries": [
           {
             "model": {
-              "model": "item/bow_pulling_1",
-              "type": "model"
+              "type": "minecraft:model",
+              "model": "minecraft:item/bow_pulling_1"
             },
             "threshold": 0.65
           },
           {
             "model": {
-              "model": "item/bow_pulling_2",
-              "type": "model"
+              "type": "minecraft:model",
+              "model": "minecraft:item/bow_pulling_2"
             },
             "threshold": 0.9
           }
         ],
         "fallback": {
-          "model": "item/bow_pulling_0",
-          "type": "model"
+          "type": "minecraft:model",
+          "model": "minecraft:item/bow_pulling_0"
         },
-        "property": "use_duration",
-        "scale": 0.05,
-        "type": "range_dispatch"
+        "property": "minecraft:use_duration",
+        "scale": 0.05
       },
-      "property": "using_item",
-      "type": "condition"
+      "property": "minecraft:using_item"
     }
   }
 }

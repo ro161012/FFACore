@@ -124,7 +124,102 @@ function save(rel, c) {
 //   ember_frame.png       <- Altar "red"
 
 // ---------------------------------------------------------------------------
-// 2. Kill Token (ember star) 16x16
+// 2. Per-theme tooltip backgrounds and frames (100x100 nine-slice)
+// ---------------------------------------------------------------------------
+//
+// Each custom-item theme gets its own gradient tooltip: the background tints
+// the whole panel and the frame draws a matching gradient border, so the
+// tooltip colour matches the item title gradient in CustomItemManager.
+
+const THEMES = {
+  ember:  { from: 0xffe0a3, to: 0xe04646 },
+  frost:  { from: 0xe6ffff, to: 0x429bff },
+  earth:  { from: 0xffe2a4, to: 0x8b4f2a },
+  gold:   { from: 0xfff3a1, to: 0xe58a00 },
+  void:   { from: 0xf9c1ff, to: 0x6e2cad },
+  purple: { from: 0xf0d1ff, to: 0x8b5cf6 },
+};
+
+function themeGradient(y, from, to) {
+  const t = y / 99;
+  return [lerp(from[0], to[0], t), lerp(from[1], to[1], t), lerp(from[2], to[2], t)];
+}
+
+// Darkens a colour so the tooltip panel stays readable behind light text
+// while keeping the theme hue (matches the AltarSMP cutlass/bloodlust
+// design: an opaque dark panel, not a translucent tint).
+function darken(r, g, b, amount) {
+  return [Math.round(r * amount), Math.round(g * amount), Math.round(b * amount)];
+}
+
+function tooltipBackground(theme) {
+  const { from, to } = THEMES[theme];
+  const f = rgb(from);
+  const t = rgb(to);
+  const c = canvas(100, 100);
+  // Opaque dark gradient panel with a 9px transparent margin so the
+  // nine-slice rounds the corners, matching the AltarSMP cutlass design.
+  for (let y = 9; y < 91; y++) {
+    const [r, g, b] = themeGradient(y, f, t);
+    const [dr, dg, db] = darken(r, g, b, 0.22);
+    for (let x = 9; x < 91; x++) {
+      px(c, x, y, dr, dg, db, 255);
+    }
+  }
+  return c;
+}
+
+function tooltipFrame(theme) {
+  const { from, to } = THEMES[theme];
+  const f = rgb(from);
+  const t = rgb(to);
+  const c = canvas(100, 100);
+  // 2px gradient border: left/right bars and top/bottom bars (the AltarSMP
+  // cutlass frame sits 2px inside a 10px nine-slice border).
+  for (let y = 7; y <= 92; y++) {
+    const [r, g, b] = themeGradient(y, f, t);
+    for (const x of [7, 8]) px(c, x, y, r, g, b, 255);
+    for (const x of [91, 92]) px(c, x, y, r, g, b, 255);
+  }
+  for (let x = 8; x <= 91; x++) {
+    const [r, g, b] = themeGradient(7, f, t);
+    for (const y of [7, 8]) px(c, x, y, r, g, b, 255);
+    const [r2, g2, b2] = themeGradient(92, f, t);
+    for (const y of [91, 92]) px(c, x, y, r2, g2, b2, 255);
+  }
+  return c;
+}
+
+function saveMcmeta(rel, border) {
+  const path = join(ROOT, rel);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify({
+    gui: {
+      scaling: {
+        type: 'nine_slice',
+        width: 100,
+        height: 100,
+        border,
+        stretch_inner: true,
+      },
+    },
+  }, null, 2) + '\n');
+  console.log('wrote', rel);
+}
+
+for (const theme of Object.keys(THEMES)) {
+  save(`ffacore/textures/gui/sprites/tooltip/${theme}_background.png`,
+    tooltipBackground(theme));
+  save(`ffacore/textures/gui/sprites/tooltip/${theme}_frame.png`,
+    tooltipFrame(theme));
+  // Background is a 9px-margin panel; the frame's 2px border sits inside a
+  // 10px nine-slice (matches the vanilla tooltip sprite conventions).
+  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_background.png.mcmeta`, 9);
+  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_frame.png.mcmeta`, 10);
+}
+
+// ---------------------------------------------------------------------------
+// 3. Kill Token (ember star) 16x16
 // ---------------------------------------------------------------------------
 
 function killToken() {
@@ -152,7 +247,7 @@ function killToken() {
 save('ffacore/textures/item/kill_token.png', killToken());
 
 // ---------------------------------------------------------------------------
-// 3. AFK Shard (ocean crystal) 16x16
+// 4. AFK Shard (ocean crystal) 16x16
 // ---------------------------------------------------------------------------
 
 function afkShard() {
@@ -180,7 +275,7 @@ function afkShard() {
 save('ffacore/textures/item/afk_shard.png', afkShard());
 
 // ---------------------------------------------------------------------------
-// 4. Pack icon 128x128
+// 5. Pack icon 128x128
 // ---------------------------------------------------------------------------
 
 function packIcon() {

@@ -1,1 +1,0 @@
-{"model":{"type":"range_dispatch","property":"custom_model_data","entries":[{"threshold":10000.0,"model":{"type":"model","model":"elitecreatures:elven_elf_weapon/elven_helmet","tints":[]}}],"fallback":{"type":"model","model":"item/kelp","tints":[]}}}

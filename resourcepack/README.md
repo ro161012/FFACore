@@ -1,29 +1,13 @@
 # FFACore Resource Pack
 
 Companion resource pack for the FFACore plugin. It provides custom textures
-for the two currencies and ability items, plus animated gradient tooltip
-backgrounds and frames that keep every custom item visually consistent.
+for the two currencies and the configurable ability items, plus a matching
+gradient tooltip per theme so every custom item looks consistent in-game.
 
-## Merged packs
-
-This directory is the merge target for both the FFACore/Altar assets and the
-**Nexo item packs** that ship alongside them (weapons, bows, wings, halos,
-furniture, signs, icons &hellip;). The Nexo pack is merged in with
-`tools/merge_nexo_pack.js` (run automatically by `tools/release.sh` when the
-source `../../asdasdads` folder exists):
-
-* New files are copied in wholesale.
-* `assets/minecraft/items/*.json` custom-model-data dispatches are merged
-  entry-by-entry, so both packs' model ranges keep working on the same base
-  item.
-* Font providers, language keys and sound events are merged; the FFACore
-  side wins collisions.
-* `pack.mcmeta` keeps the FFACore description and carries Nexo's overlay
-  directories (`nexo_1_21_*`) plus the format range over.
-
-The plugin's `/ffa preview` command reads `preview-items.json`, which is
-regenerated from this directory by `tools/gen_preview_registry.js`, and lets
-admins browse + take every custom item in the pack from in-game.
+The pack is self-contained: it only ships what the plugin needs. The custom
+item models are thin wrappers around the weapon models they reuse, and the
+Nexo/Altar item packs are **not** merged in anymore — anything a custom item
+needs (parent models, textures, dispatches) lives right here.
 
 ## Contents
 
@@ -31,14 +15,17 @@ admins browse + take every custom item in the pack from in-game.
 |---|---|
 | `assets/minecraft/items/nether_star.json` | Kill Token texture (custom model data `1001`) |
 | `assets/minecraft/items/echo_shard.json` | AFK Shard texture (custom model data `1002`) |
+| `assets/minecraft/items/{netherite_sword,netherite_spear,netherite_axe,bow,mace}.json` | Ability item model dispatches (`910xxx` model-data range) |
 | `assets/ffacore/models/item/*.json` | The custom item models |
 | `assets/ffacore/textures/item/*.png` | The currency textures |
-| `assets/ffacore/textures/gui/sprites/tooltip/ocean_*.png` | Legacy ocean gradient tooltip (kept for old items) |
-| `assets/ffacore/textures/gui/sprites/tooltip/ember_*.png` | Legacy ember gradient tooltip (kept for old items) |
+| `assets/ffacore/textures/gui/sprites/tooltip/{theme}_{background,frame}.png` | Per-theme gradient tooltips (`purple`, `ember`, `frost`, `earth`, `gold`, `void`) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/cutlass_*.png` | Animated ocean-blue tooltip (AFK Shard, 20 frames) |
 | `assets/altarsmp/textures/gui/sprites/tooltip/bloodlust_*.png` | Animated ember-red tooltip (Kill Token + block, 20 frames) |
-| `assets/minecraft/textures/gui/sprites/tooltip/*.png` | Purple, frost, earth, gold and void gradient tooltips for abilities; ITEM uses the vanilla frame with an item-colored title |
 
+The `assets/minecraft/models/*`, `assets/skulpt/*` and
+`assets/spears_and_staffs_1/*` folders hold only the parent models and
+textures that the custom item models reference — nothing else from those
+packs is shipped.
 
 ## Installation
 
@@ -58,33 +45,25 @@ show as incompatible on 1.21.11.
 The display names of the Kill Token and AFK Shard use a smooth per-character
 gradient, and the items carry a `minecraft:tooltip_style` data component:
 
-* AFK Shard &rarr; `altarsmp:cutlass` (animated)
-* Kill Token &rarr; `altarsmp:bloodlust` (animated)
-* Compressed Kill Token Block &rarr; `altarsmp:bloodlust` (animated)
-* Ability items default to `minecraft:purple`; their global or per-item theme
-  can be changed from `/ffa config` or `config.yml` without rebuilding the pack.
+* `altarsmp:cutlass` — ocean-blue animated tooltip (AFK Shard)
+* `altarsmp:bloodlust` — ember-red animated tooltip (Kill Token + block)
 
-The client resolves each style to a pair of nine-slice sprites under
-`textures/gui/sprites/tooltip/` &mdash; `<style>_background.png` (stretched
-gradient fill) and `<style>_frame.png` (the border). The `.mcmeta` files next
-to each PNG define the nine-slice border (9px for backgrounds, 10px for
-frames) and the animation (20 frames, 3 ticks each, interpolated) so the
-gradient flows behind the tooltip.
+The custom ability items resolve their style from the configured
+`custom-items.*.tooltip-theme` (or the global `custom-items.tooltip-theme`).
+Each theme maps to a `ffacore:<theme>` tooltip style whose background tint
+and border gradient are generated from the same palette as the item title, so
+the tooltip colour always matches the item name:
 
-The `cutlass` and `bloodlust` sprites are sourced from the Altar SMP texture
-pack (custom tooltip styles, added in 1.21.2) and shipped inside this pack so
-players see them even without the Altar pack installed. The legacy
-`ffacore:ocean`/`ffacore:ember` styles are kept for items handed out before
-the switch.
+| Theme | Title / border gradient |
+|---|---|
+| `UNIFIED_PURPLE` (default) | `#F0D1FF` → `#8B5CF6` |
+| `ITEM` | Per-item `nameColor` title on the vanilla default frame |
+| `EMBER` | `#FFE0A3` → `#E04646` |
+| `FROST` | `#E6FFFF` → `#429BFF` |
+| `EARTH` | `#FFE2A4` → `#8B4F2A` |
+| `GOLD` | `#FFF3A1` → `#E58A00` |
+| `VOID` | `#F9C1FF` → `#6E2CAD` |
 
-## Regenerating the art
-
-The pixel art is generated by a dependency-free Node script:
-
-```bash
-node tools/generate-assets.mjs
-```
-
-Edit `tools/generate-assets.mjs` to change the palettes or shapes, then rerun
-it. The pack icon (`pack.png`), the currency textures, and the tooltip
-background/frame sprites are all produced by that script.
+The per-theme sprites are generated by `tools/generate-assets.mjs`
+(`node tools/generate-assets.mjs`) and committed, so the pack builds
+without a Node step.

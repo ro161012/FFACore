@@ -154,8 +154,8 @@ public final class ItemUtils {
      * Returns whether the item's custom model data matches any of the given
      * values. Both the integer form (set with
      * {@link ItemMeta#setCustomModelData}) and the float-list form used by
-     * {@code /give} ({@code custom_model_data:{floats:[...]}}) are read, so a
-     * hand-made preview item is recognised just like a plugin-built one.
+     * {@code /give} ({@code custom_model_data:{floats:[...]}}) are read, so an
+     * item created by hand is recognised just like a plugin-built one.
      *
      * @param stack    the item to check
      * @param expected accepted custom model data values

@@ -4,7 +4,6 @@ import dev.ro161012.ffacore.FFACore;
 import dev.ro161012.ffacore.afk.AfkCommand;
 import dev.ro161012.ffacore.customitem.CustomItemCommand;
 import dev.ro161012.ffacore.killtoken.KillTokenCommand;
-import dev.ro161012.ffacore.preview.PreviewCommand;
 import dev.ro161012.ffacore.util.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,8 +24,6 @@ import java.util.Locale;
  *   <li>{@code /ffa killtoken ...} &mdash; the Kill Token currency.</li>
  *   <li>{@code /ffa afk ...} &mdash; AFK zones and AFK Shards.</li>
  *   <li>{@code /ffa config} &mdash; the in-game config menu.</li>
- *   <li>{@code /ffa preview} &mdash; browse and take every custom item from
- *       the merged resource pack.</li>
  *   <li>{@code /ffa reload} &mdash; reload config.yml from disk.</li>
  * </ul>
  *
@@ -38,7 +35,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
     private final ArenaCommand arenaCommand;
     private final KillTokenCommand killTokenCommand;
     private final AfkCommand afkCommand;
-    private final PreviewCommand previewCommand;
     private final CustomItemCommand customItemCommand;
 
     /**
@@ -48,19 +44,16 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
      * @param arenaCommand        the arena sub-command executor
      * @param killTokenCommand    the kill token sub-command executor
      * @param afkCommand          the afk sub-command executor
-     * @param previewCommand      the preview sub-command executor
      * @param customItemCommand   the custom item sub-command executor
      */
     public FfaCommand(final FFACore plugin, final ArenaCommand arenaCommand,
                       final KillTokenCommand killTokenCommand,
                       final AfkCommand afkCommand,
-                      final PreviewCommand previewCommand,
                       final CustomItemCommand customItemCommand) {
         this.plugin = plugin;
         this.arenaCommand = arenaCommand;
         this.killTokenCommand = killTokenCommand;
         this.afkCommand = afkCommand;
-        this.previewCommand = previewCommand;
         this.customItemCommand = customItemCommand;
     }
 
@@ -79,9 +72,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 }
                 case "afk" -> {
                     return afkCommand.onCommand(sender, command, "ffa afk", rest);
-                }
-                case "preview", "pv" -> {
-                    return previewCommand.onCommand(sender, command, "ffa preview", rest);
                 }
                 case "customitems", "items", "ci" -> {
                     return customItemCommand.onCommand(sender, command, "ffa customitems", rest);
@@ -107,8 +97,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
         messages.raw(sender, "&3AFK Zones &8- &7" + plugin.getAfkManager().getZoneCount()
                 + " zones, &f" + plugin.getAfkManager().getActiveCount()
                 + "&7 player(s) inside &8(&f/ffa afk&8)");
-        messages.raw(sender, "&dPreview &8- &7" + plugin.getPreviewRegistry().getItems().size()
-                + " pack items &8(&f/ffa preview&8)");
         messages.raw(sender, "&5Custom Items &8- &7" + plugin.getCustomItemManager().types().size()
                 + " abilities &8(&f/ffa customitems&8)");
         messages.raw(sender, "&8&m--------------------------------");
@@ -146,7 +134,7 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                                       final String alias, final String[] args) {
         if (args.length == 1) {
             final String prefix = args[0].toLowerCase(Locale.ROOT);
-            return List.of("arena", "killtoken", "afk", "preview", "customitems",
+            return List.of("arena", "killtoken", "afk", "customitems",
                     "config", "reload").stream().filter(s -> s.startsWith(prefix)).toList();
         }
         if (args.length >= 2) {
@@ -157,8 +145,6 @@ public final class FfaCommand implements CommandExecutor, TabCompleter {
                 case "killtoken", "token", "kt" ->
                         killTokenCommand.onTabComplete(sender, command, "ffa killtoken", rest);
                 case "afk" -> afkCommand.onTabComplete(sender, command, "ffa afk", rest);
-                case "preview", "pv" ->
-                        previewCommand.onTabComplete(sender, command, "ffa preview", rest);
                 case "customitems", "items", "ci" ->
                         customItemCommand.onTabComplete(sender, command, "ffa customitems", rest);
                 default -> List.of();

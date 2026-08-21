@@ -4,29 +4,6 @@
     "property": "minecraft:custom_model_data",
     "entries": [
       {
-        "threshold": 1,
-        "model": {
-          "type": "minecraft:model",
-          "model": "minecraft:weapons/omen"
-        }
-      },
-      {
-        "threshold": 10006,
-        "model": {
-          "type": "model",
-          "model": "spears_and_staffs_1:es",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 10009,
-        "model": {
-          "type": "model",
-          "model": "spears_and_staffs_1:gs",
-          "tints": []
-        }
-      },
-      {
         "threshold": 910101,
         "model": {
           "type": "model",
@@ -54,6 +31,10 @@
           "model": "ffacore:item/vault_spear"
         }
       }
-    ]
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_spear"
+    }
   }
 }

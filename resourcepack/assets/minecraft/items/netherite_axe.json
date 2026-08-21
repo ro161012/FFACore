@@ -1,61 +1,8 @@
 {
   "model": {
-    "type": "range_dispatch",
-    "property": "custom_model_data",
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
     "entries": [
-      {
-        "threshold": 1,
-        "model": {
-          "type": "model",
-          "model": "custom/frostsideways"
-        }
-      },
-      {
-        "threshold": 2,
-        "model": {
-          "type": "model",
-          "model": "weapons/paladinaxe"
-        }
-      },
-      {
-        "threshold": 9999,
-        "model": {
-          "type": "model",
-          "model": "custom/amethyst_axe"
-        }
-      },
-      {
-        "threshold": 10000,
-        "model": {
-          "type": "model",
-          "model": "default_tools:netherite/netherite_axe",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 900005,
-        "model": {
-          "type": "model",
-          "model": "tugkandeman/weapons/brutal_axe",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 900007,
-        "model": {
-          "type": "model",
-          "model": "tugkandeman/weapons/crescent_sickle",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 900023,
-        "model": {
-          "type": "model",
-          "model": "tugkandeman/weapons/verdant_scythe",
-          "tints": []
-        }
-      },
       {
         "threshold": 910201,
         "model": {
@@ -93,7 +40,7 @@
       }
     ],
     "fallback": {
-      "type": "model",
+      "type": "minecraft:model",
       "model": "minecraft:item/netherite_axe"
     }
   }

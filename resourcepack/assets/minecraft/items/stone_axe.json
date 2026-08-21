@@ -1,1 +1,0 @@
-{"model":{"type":"range_dispatch","property":"custom_model_data","entries":[{"threshold":10000.0,"model":{"type":"model","model":"default_tools:stone/stone_axe","tints":[]}}],"fallback":{"type":"model","model":"item/stone_axe","tints":[]}}}

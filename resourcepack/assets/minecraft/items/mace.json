@@ -4,123 +4,6 @@
     "property": "minecraft:custom_model_data",
     "entries": [
       {
-        "threshold": 1,
-        "model": {
-          "type": "model",
-          "model": "weapons/knightfall/mace/lv1"
-        }
-      },
-      {
-        "threshold": 2,
-        "model": {
-          "type": "model",
-          "model": "weapons/knightfall/mace/lv2"
-        }
-      },
-      {
-        "threshold": 3,
-        "model": {
-          "type": "model",
-          "model": "weapons/knightfall/mace/lv3"
-        }
-      },
-      {
-        "threshold": 1000,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/broken_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1001,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/catalyst_mace",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1002,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/core_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1003,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/crystal_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1004,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/cursed_kanabo",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1005,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/gold_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1006,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/heat_mace",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1007,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/runed_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1008,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/singularity_hammer",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 1009,
-        "model": {
-          "type": "model",
-          "model": "skulpt:heavy_reign_aftershock/wind_mace",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 900016,
-        "model": {
-          "type": "model",
-          "model": "tugkandeman/weapons/kanabo",
-          "tints": []
-        }
-      },
-      {
-        "threshold": 900017,
-        "model": {
-          "type": "model",
-          "model": "tugkandeman/weapons/mace",
-          "tints": []
-        }
-      },
-      {
         "threshold": 910401,
         "model": {
           "type": "model",
@@ -148,6 +31,10 @@
           "model": "ffacore:item/dash_mace"
         }
       }
-    ]
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/mace"
+    }
   }
 }

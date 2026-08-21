@@ -61,8 +61,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Owns the screenshot-based custom items and their combat abilities.
  *
  * <p>Items are identified by a persistent key rather than their display name,
- * while their model-data values also work for preview-pack handouts that were
- * created before the plugin tag was added.</p>
+ * while their model-data values also work for items created before the plugin
+ * tag was added.</p>
  */
 public final class CustomItemManager implements Listener {
 
@@ -184,7 +184,7 @@ public final class CustomItemManager implements Listener {
     }
 
     /**
-     * Resolves an item from the preview catalog's base material and model data.
+     * Resolves an item from its base material and model data.
      *
      * @param material base material
      * @param modelData model-data value
@@ -1259,17 +1259,17 @@ public final class CustomItemManager implements Listener {
         }
         return switch (theme) {
             case "EMBER" -> new TooltipPalette(0xFFE0A3, 0xE04646,
-                    Key.key("minecraft", "red"));
+                    Key.key("ffacore", "ember"));
             case "FROST" -> new TooltipPalette(0xE6FFFF, 0x429BFF,
-                    Key.key("minecraft", "frost"));
+                    Key.key("ffacore", "frost"));
             case "EARTH" -> new TooltipPalette(0xFFE2A4, 0x8B4F2A,
-                    Key.key("minecraft", "earth"));
+                    Key.key("ffacore", "earth"));
             case "GOLD" -> new TooltipPalette(0xFFF3A1, 0xE58A00,
-                    Key.key("minecraft", "gold"));
+                    Key.key("ffacore", "gold"));
             case "VOID" -> new TooltipPalette(0xF9C1FF, 0x6E2CAD,
-                    Key.key("minecraft", "omen"));
+                    Key.key("ffacore", "void"));
             default -> new TooltipPalette(0xF0D1FF, 0x8B5CF6,
-                    Key.key("minecraft", "purple"));
+                    Key.key("ffacore", "purple"));
         };
     }
 

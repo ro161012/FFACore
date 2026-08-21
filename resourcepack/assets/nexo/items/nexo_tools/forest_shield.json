@@ -1,1 +1,0 @@
-{"model":{"type":"condition","property":"using_item","on_true":{"type":"model","model":"nexo:item/nexo_tools/forest_shield_blocking","tints":[]},"on_false":{"type":"model","model":"nexo:item/nexo_tools/forest_shield","tints":[]}}}

@@ -1,1 +1,0 @@
-{"model":{"entries":[{"model":{"model":"custom/invis_snowball","type":"model"},"threshold":1},{"model":{"model":"minecraft:custom/star","type":"model"},"threshold":2}],"fallback":{"model":"item/snowball","type":"model"},"property":"custom_model_data","type":"range_dispatch"},"oversized_in_gui":true}

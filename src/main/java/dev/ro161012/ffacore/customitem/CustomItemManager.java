@@ -1086,7 +1086,7 @@ public final class CustomItemManager implements Listener {
                 lines.add(gray("A sword that gives you a second chance."));
                 lines.add(Component.empty());
                 lines.add(colored("POWERS:", 0x3B8CFF).decorate(TextDecoration.BOLD));
-                lines.add(colored("✦ SECOND CHANCE", 0x6EA8FF));
+                lines.add(colored("★ SECOND CHANCE", 0x6EA8FF));
                 lines.add(Component.empty());
                 lines.add(colored("SECOND CHANCE", 0x3B8CFF).decorate(TextDecoration.BOLD));
                 lines.add(colored("Allows its user to gain a second chance", 0x8BB8FF));

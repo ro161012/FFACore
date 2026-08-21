@@ -145,16 +145,25 @@ function themeGradient(y, from, to) {
   return [lerp(from[0], to[0], t), lerp(from[1], to[1], t), lerp(from[2], to[2], t)];
 }
 
+// Darkens a colour so the tooltip panel stays readable behind light text
+// while keeping the theme hue (matches the AltarSMP cutlass/bloodlust
+// design: an opaque dark panel, not a translucent tint).
+function darken(r, g, b, amount) {
+  return [Math.round(r * amount), Math.round(g * amount), Math.round(b * amount)];
+}
+
 function tooltipBackground(theme) {
   const { from, to } = THEMES[theme];
   const f = rgb(from);
   const t = rgb(to);
   const c = canvas(100, 100);
-  // Tint the whole panel with a subtle vertical gradient.
-  for (let y = 0; y < 100; y++) {
+  // Opaque dark gradient panel with a 9px transparent margin so the
+  // nine-slice rounds the corners, matching the AltarSMP cutlass design.
+  for (let y = 9; y < 91; y++) {
     const [r, g, b] = themeGradient(y, f, t);
-    for (let x = 0; x < 100; x++) {
-      px(c, x, y, r, g, b, 85);
+    const [dr, dg, db] = darken(r, g, b, 0.22);
+    for (let x = 9; x < 91; x++) {
+      px(c, x, y, dr, dg, db, 255);
     }
   }
   return c;
@@ -165,7 +174,8 @@ function tooltipFrame(theme) {
   const f = rgb(from);
   const t = rgb(to);
   const c = canvas(100, 100);
-  // 2px gradient border: left/right bars and top/bottom bars.
+  // 2px gradient border: left/right bars and top/bottom bars (the AltarSMP
+  // cutlass frame sits 2px inside a 10px nine-slice border).
   for (let y = 7; y <= 92; y++) {
     const [r, g, b] = themeGradient(y, f, t);
     for (const x of [7, 8]) px(c, x, y, r, g, b, 255);
@@ -180,7 +190,7 @@ function tooltipFrame(theme) {
   return c;
 }
 
-function saveMcmeta(rel) {
+function saveMcmeta(rel, border) {
   const path = join(ROOT, rel);
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify({
@@ -189,7 +199,7 @@ function saveMcmeta(rel) {
         type: 'nine_slice',
         width: 100,
         height: 100,
-        border: 10,
+        border,
         stretch_inner: true,
       },
     },
@@ -202,8 +212,10 @@ for (const theme of Object.keys(THEMES)) {
     tooltipBackground(theme));
   save(`ffacore/textures/gui/sprites/tooltip/${theme}_frame.png`,
     tooltipFrame(theme));
-  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_background.png.mcmeta`);
-  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_frame.png.mcmeta`);
+  // Background is a 9px-margin panel; the frame's 2px border sits inside a
+  // 10px nine-slice (matches the vanilla tooltip sprite conventions).
+  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_background.png.mcmeta`, 9);
+  saveMcmeta(`ffacore/textures/gui/sprites/tooltip/${theme}_frame.png.mcmeta`, 10);
 }
 
 // ---------------------------------------------------------------------------

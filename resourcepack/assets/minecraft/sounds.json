@@ -1,0 +1,51 @@
+{
+    "bloodlust.hit": {
+        "sounds": [
+            {
+                "name":"minecraft:blood"
+            }
+        ]
+    },
+    "bloodlust.kill": {
+        "sounds": [
+            {
+                "name":"minecraft:bloodlust_kill"
+            }
+        ]
+    },
+    "bloodlust.dive": {
+        "sounds": [
+            {
+                "name":"minecraft:bloodstep_dive"
+            }
+        ]
+    },
+    "bloodlust.resurface": {
+        "sounds": [
+            {
+                "name":"minecraft:bloodstep_resurface"
+            }
+        ]
+    },
+    "sword.slash": {
+        "sounds": [
+            {
+                "name":"minecraft:sword_slash"
+            }
+        ]
+    },
+    "dragonrend.tick": {
+        "sounds": [
+            {
+                "name":"minecraft:tick"
+            }
+        ]
+    },
+    "dragonrend.use": {
+        "sounds": [
+            {
+                "name":"minecraft:use"
+            }
+        ]
+    }
+}

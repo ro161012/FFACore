@@ -1,0 +1,8 @@
+{
+  "use": {
+    "sounds": [ "altar:use" ]
+  },
+  "tick": {
+    "sounds": [ "altar:tick" ]
+  }
+}

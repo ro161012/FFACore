@@ -16,10 +16,10 @@ import java.util.List;
  * Builds the AFK Shard currency item.
  *
  * <p>The shard is an {@link Material#ECHO_SHARD} carrying the
- * {@code ffacore:afk_shard} NBT tag, the {@code altarsmp:cutlass} tooltip
+ * {@code ffacore:afk_shard} NBT tag and the {@code altarsmp:cutlass} tooltip
  * style (an animated ocean gradient background + frame from the resource
- * pack), and a custom model data value for its crystal texture. The item is
- * built once and cloned per award.
+ * pack). It renders as the vanilla Echo Shard item. The item is built once
+ * and cloned per award.
  */
 public final class AfkShard {
 
@@ -50,7 +50,6 @@ public final class AfkShard {
         meta.lore(List.of(
                 Component.text("Earned by resting in an AFK Zone.", NamedTextColor.AQUA),
                 ItemUtils.oceanGradient("The ocean rewards those who wait.")));
-        meta.setCustomModelData(ItemUtils.AFK_SHARD_MODEL_DATA);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         stack.setItemMeta(meta);
 

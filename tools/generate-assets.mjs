@@ -112,63 +112,7 @@ function save(rel, c) {
 }
 
 // ---------------------------------------------------------------------------
-// 1. Kill Token (ember star) 16x16
-// ---------------------------------------------------------------------------
-
-function killToken() {
-  const c = canvas(16, 16);
-  const from = rgb(0xff5c5c);
-  const to = rgb(0x8f0e0e);
-  for (let y = 0; y < 16; y++) {
-    for (let x = 0; x < 16; x++) {
-      const dx = x - 7.5;
-      const dy = y - 7.5;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const ang = Math.atan2(dy, dx);
-      const spike = Math.abs(Math.cos(2 * ang));
-      const radius = 7.6 * (0.38 + 0.62 * Math.pow(spike, 1.6));
-      if (dist > radius) continue;
-      const t = Math.min(1, dist / radius);
-      px(c, x, y, lerp(from[0], to[0], t), lerp(from[1], to[1], t),
-        lerp(from[2], to[2], t), 255);
-      if (dist < 2.2) blend(c, x, y, 255, 255, 255, 90);
-    }
-  }
-  return c;
-}
-
-save('ffacore/textures/item/kill_token.png', killToken());
-
-// ---------------------------------------------------------------------------
-// 2. AFK Shard (ocean crystal) 16x16
-// ---------------------------------------------------------------------------
-
-function afkShard() {
-  const c = canvas(16, 16);
-  const from = rgb(0x6fd6ff);
-  const to = rgb(0x0a2a6b);
-  for (let y = 0; y < 16; y++) {
-    for (let x = 0; x < 16; x++) {
-      const nx = Math.abs(x - 7.5) / 7.5;
-      const ny = Math.abs(y - 7.5) / 7.5;
-      if (nx + ny > 1.0) continue;
-      const t = y / 15 + nx * 0.35;
-      px(c, x, y, lerp(from[0], to[0], t), lerp(from[1], to[1], t),
-        lerp(from[2], to[2], t), 255);
-    }
-  }
-  for (let y = 2; y < 14; y++) {
-    const x = Math.round(7.5 - 3 * (1 - Math.abs(y - 7.5) / 7.5));
-    blend(c, x, y, 255, 255, 255, 60);
-    blend(c, x + 1, y, 255, 255, 255, 30);
-  }
-  return c;
-}
-
-save('ffacore/textures/item/afk_shard.png', afkShard());
-
-// ---------------------------------------------------------------------------
-// 3. Pack icon 128x128
+// 1. Pack icon 128x128
 // ---------------------------------------------------------------------------
 
 function packIcon() {
